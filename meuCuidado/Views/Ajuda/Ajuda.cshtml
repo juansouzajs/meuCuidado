@@ -1,51 +1,157 @@
 ﻿@model meuCuidado.Dominio.Models.Ajuda
-
-<h4>Solicite suporte:</h4>
-
-@using (Html.BeginForm("Ajuda", "Home", FormMethod.Post))
-{
-    @*@Html.AntiForgeryToken()*@
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.Titulo)
-        @Html.TextBoxFor(m => m.Titulo, new { @class = "form-control", maxlength = "100" })
-        @Html.ValidationMessageFor(m => m.Titulo, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.Descricao)
-        @Html.TextAreaFor(m => m.Descricao, new { @class = "form-control", maxlength = "1000" })
-        @Html.ValidationMessageFor(m => m.Descricao, "", new { @class = "text-danger"})
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.Telefone)
-        @Html.TextBoxFor(m => m.Telefone, new { @class = "form-control", placeholder = "+55 (31) 9 9000-9000" })
-        @Html.ValidationMessageFor(m => m.Telefone, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.Email)
-        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "contato@email.com" })
-        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.FormaDeRetorno)
-        @Html.DropDownListFor(m => m.FormaDeRetorno, new SelectList(new[]
-        {
-            new { Value = "email", Text = "E-mail" },
-            new { Value = "whatsapp", Text = "WhatsApp" }
-        }, "Value", "Text"), "Selecione uma opção", new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.FormaDeRetorno, "", new { @class = "text-danger" })
-    </div>
-
-    <button type="submit" class="btn btn-primary">Enviar</button>
-
-    if (ViewBag.Message != null)
-    {
-        <div class="alert alert-success mt-3" role="alert">
-            @ViewBag.Message
-        </div>
-    }
+@{
+    ViewBag.Title = "Ajuda";
 }
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-sm-10">
+
+        <div class="card shadow-sm mt-5">
+            <div class="card-body">
+
+                <h4 class="text-center mb-4">Solicitar suporte</h4>
+
+                @using (Html.BeginForm("Ajuda", "Home", FormMethod.Post))
+                {
+                    @*@Html.AntiForgeryToken()*@
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Titulo)
+                        @Html.TextBoxFor(m => m.Titulo, new
+                        {
+                            @class = "form-control",
+                            maxlength = "100",
+                            placeholder = "Ex: Problema no cadastro"
+                        })
+                        @Html.ValidationMessageFor(m => m.Titulo, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Descricao)
+                        @Html.TextAreaFor(m => m.Descricao, new
+                        {
+                            @class = "form-control",
+                            rows = 4,
+                            maxlength = "1000",
+                            placeholder = "Descreva o problema com detalhes"
+                        })
+                        @Html.ValidationMessageFor(m => m.Descricao, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Telefone")
+                        @Html.TextBoxFor(
+                            m => m.Telefone,
+                            new
+                            {
+                                @class = "form-control",
+                                @id = "telefone",
+                                value = "+55 ",
+                                placeholder = "+55 (XX) XXXXX-XXXX",
+                                type = "tel"
+                            })
+                        @Html.ValidationMessageFor(m => m.Telefone, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Email)
+                        @Html.TextBoxFor(m => m.Email, new
+                        {
+                            @class = "form-control",
+                            placeholder = "contato@email.com",
+                            type = "email"
+                        })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.FormaDeRetorno)
+                        @Html.DropDownListFor(
+                            m => m.FormaDeRetorno,
+                            new SelectList(new[]
+                            {
+                                new { Value = "email", Text = "E-mail" },
+                                new { Value = "whatsapp", Text = "WhatsApp" }
+                            }, "Value", "Text"),
+                            "Selecione uma opção",
+                            new { @class = "form-control" }
+                        )
+                        @Html.ValidationMessageFor(m => m.FormaDeRetorno, "", new { @class = "text-danger" })
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Enviar solicitação
+                    </button>
+
+                    if (ViewBag.Message != null)
+                    {
+                        <div class="alert alert-success mt-3 text-center">
+                            @ViewBag.Message
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const input = document.getElementById("telefone");
+        if (!input) return;
+
+        const PREFIX = "+55 ";
+
+        // Garante que o prefixo sempre exista
+        if (!input.value.startsWith(PREFIX)) {
+            input.value = PREFIX;
+        }
+
+        input.addEventListener("input", function () {
+            // Se tentar apagar o +55, restaura
+            if (!input.value.startsWith(PREFIX)) {
+                input.value = PREFIX;
+            }
+
+            // Só trabalha com o que vem depois do +55
+            let digits = input.value.substring(PREFIX.length).replace(/\D/g, "");
+
+            // Limite: DDD + número (11 dígitos)
+            if (digits.length > 11) {
+                digits = digits.substring(0, 11);
+            }
+
+            let result = PREFIX;
+
+            // DDD
+            if (digits.length > 2) {
+                result += "(" + digits.substring(0, 2) + ") ";
+                digits = digits.substring(2);
+            } else {
+                result += digits;
+                input.value = result;
+                return;
+            }
+
+            // Número
+            if (digits.length <= 4) {
+                result += digits;
+            } else if (digits.length <= 8) {
+                result += digits.substring(0, 4) + "-" + digits.substring(4);
+            } else {
+                result += digits.substring(0, 5) + "-" + digits.substring(5);
+            }
+
+            input.value = result;
+        });
+
+        // Impede cursor antes do +55
+        input.addEventListener("keydown", function (e) {
+            if (input.selectionStart < PREFIX.length) {
+                input.setSelectionRange(PREFIX.length, PREFIX.length);
+            }
+        });
+    });
+</script>

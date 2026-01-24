@@ -3,34 +3,139 @@
     ViewBag.Title = "Adicionar Medicamento";
 }
 
-<h2>Adicionar Medicamento</h2>
+<div class="med-container">
+    <h2>Adicionar Medicamento</h2>
 
-@using (Html.BeginForm())
-{
-    @*@Html.AntiForgeryToken()*@
-    <div class="form-group">
-        @Html.LabelFor(model => model.Nome)
-        @Html.TextBoxFor(model => model.Nome, new { @class = "form-control" })
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.Dosagem)
-        @Html.TextBoxFor(model => model.Dosagem, new { @class = "form-control" })
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.DataHoraPrimeiroAlerta)
-        @Html.TextBoxFor(model => model.DataHoraPrimeiroAlerta, new { @class = "form-control", type = "datetime-local" })
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.FormaFarmaceutica)
-        @Html.TextBoxFor(model => model.FormaFarmaceutica, new { @class = "form-control" })
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.DuracaoEmDias)
-        @Html.TextBoxFor(model => model.DuracaoEmDias, new { @class = "form-control", type = "number" })
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.Observacoes)
-        @Html.TextAreaFor(model => model.Observacoes, new { @class = "form-control" })
-    </div>
-    <button type="submit" class="btn btn-primary">Adicionar Medicamento</button>
-}
+    @using (Html.BeginForm())
+    {
+        <div class="form-group">
+            @Html.LabelFor(model => model.Nome)
+            @Html.TextBoxFor(model => model.Nome, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Dosagem)
+            @Html.TextBoxFor(model => model.Dosagem, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DataHoraPrimeiroAlerta)
+            @Html.TextBoxFor(model => model.DataHoraPrimeiroAlerta, new { @class = "form-control", type = "datetime-local" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.FormaFarmaceutica)
+            @Html.TextBoxFor(model => model.FormaFarmaceutica, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DuracaoEmDias)
+            @Html.TextBoxFor(model => model.DuracaoEmDias, new { @class = "form-control", type = "number" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Observacoes)
+            @Html.TextAreaFor(model => model.Observacoes, new { @class = "form-control", rows = 3 })
+        </div>
+
+        <button type="submit" class="btn-primary">
+            Salvar Medicamento
+        </button>
+    }
+</div>
+
+<style>
+    body {
+        background-color: #f4f6f8;
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    .med-container {
+        max-width: 520px;
+        margin: 60px auto;
+        padding: 28px;
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+        animation: fadeIn 0.3s ease;
+    }
+
+        .med-container h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #1f2937;
+            text-align: center;
+        }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid #d1d5db;
+        background-color: #f9fafb;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+        .form-control:focus {
+            border-color: #3b82f6;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+            outline: none;
+        }
+
+    textarea.form-control {
+        resize: vertical;
+    }
+
+    .btn-primary {
+        width: 100%;
+        margin-top: 10px;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        border: none;
+        color: white;
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(37,99,235,0.4);
+        }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(6px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .med-container {
+            margin: 30px 16px;
+            padding: 22px;
+        }
+    }
+</style>

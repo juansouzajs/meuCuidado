@@ -5,33 +5,104 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container">
-    <h2>Inserir Medicamento</h2>
-    <form asp-action="AdicionarMedicamento" asp-controller="Medicamento" method="post">
-        <div class="form-group">
-            <label for="Nome">Nome do Medicamento</label>
-            <input type="text" class="form-control" id="Nome" name="Nome" required />
+<div class="container medicamento-container">
+    <div class="card medicamento-card">
+        <div class="card-body">
+            <h2 class="titulo">Inserir Medicamento</h2>
+
+            <form asp-action="AdicionarMedicamento" asp-controller="Medicamento" method="post">
+
+                <div class="form-group">
+                    <label for="Nome">Nome do Medicamento</label>
+                    <input type="text" class="form-control" id="Nome" name="Nome" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="Dosagem">Dosagem</label>
+                    <input type="text" class="form-control" id="Dosagem" name="Dosagem" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="DataHoraPrimeiroAlerta">Primeiro Alerta</label>
+                    <input type="datetime-local" class="form-control" id="DataHoraPrimeiroAlerta" name="DataHoraPrimeiroAlerta" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="FormaFarmaceutica">Forma Farmacêutica</label>
+                    <input type="text" class="form-control" id="FormaFarmaceutica" name="FormaFarmaceutica" />
+                </div>
+
+                <div class="form-group">
+                    <label for="DuracaoEmDias">Duração em Dias</label>
+                    <input type="number" class="form-control" id="DuracaoEmDias" name="DuracaoEmDias" min="1" />
+                </div>
+
+                <div class="form-group">
+                    <label for="Observacoes">Observações</label>
+                    <textarea class="form-control" id="Observacoes" name="Observacoes" rows="3"></textarea>
+                </div>
+
+                <div class="acoes">
+                    <button type="submit" class="btn btn-primary">
+                        Salvar Medicamento
+                    </button>
+                </div>
+
+            </form>
         </div>
-        <div class="form-group">
-            <label for="Dosagem">Dosagem</label>
-            <input type="text" class="form-control" id="Dosagem" name="Dosagem" required />
-        </div>
-        <div class="form-group">
-            <label for="DataHoraPrimeiroAlerta">Primeiro Alerta</label>
-            <input type="datetime-local" class="form-control" id="DataHoraPrimeiroAlerta" name="DataHoraPrimeiroAlerta" required />
-        </div>
-        <div class="form-group">
-            <label for="FormaFarmaceutica">Forma Farmacêutica</label>
-            <input type="text" class="form-control" id="FormaFarmaceutica" name="FormaFarmaceutica" />
-        </div>
-        <div class="form-group">
-            <label for="DuracaoEmDias">Duração em Dias</label>
-            <input type="number" class="form-control" id="DuracaoEmDias" name="DuracaoEmDias" />
-        </div>
-        <div class="form-group">
-            <label for="Observacoes">Observações</label>
-            <textarea class="form-control" id="Observacoes" name="Observacoes"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Salvar Medicamento</button>
-    </form>
+    </div>
 </div>
+
+<style>
+    .medicamento-container {
+        max-width: 600px;
+        margin: 40px auto;
+    }
+
+    .medicamento-card {
+        border-radius: 12px;
+        background-color: #f5f5f5;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    }
+
+    .card-body {
+        padding: 25px;
+    }
+
+    .titulo {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #007bff;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .form-control {
+        border-radius: 6px;
+        padding: 8px 10px;
+    }
+
+    .acoes {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .btn-primary {
+        padding: 10px 30px;
+        font-size: 16px;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+        }
+</style>

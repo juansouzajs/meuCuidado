@@ -2,16 +2,19 @@
 
 @if (Model != null && Model.Any())
 {
-    <div class="row">
+    <div class="row usuarios-grid">
         @foreach (var usuario in Model)
         {
-            <div class="col-lg-3 col-md-4 col-sm-6 col-12" style="margin-bottom: 20px;">
-                <a href="@Url.Action("PerfilDetalhado", "Perfil", new { id = usuario.Id })">
-                    <div class="card" style="height: 450px;">
-                        <img src="https://i.pinimg.com/564x/ac/0f/41/ac0f419e977af681516e00829c5393ee.jpg" alt="Descrição da imagem" class="card-img-top" style="max-width:100%; height:250px; object-fit: cover;" />
-                        <div class="card-body" style="padding: 20px;">
-                            <h5 class="card-title" style="font-size: 1.25rem;">@usuario.Nome</h5>
-                            <p class="card-text" style="font-size: 1rem;">@usuario.Email</p>
+            <div class="col-lg-3 col-md-4 col-sm-6 col-12 usuario-col">
+                <a href="@Url.Action("PerfilDetalhado", "Perfil", new { id = usuario.Id })" class="usuario-link">
+                    <div class="card usuario-card">
+                        <img src="https://i.pinimg.com/564x/ac/0f/41/ac0f419e977af681516e00829c5393ee.jpg"
+                             alt="Foto do usuário"
+                             class="card-img-top usuario-img" />
+
+                        <div class="card-body usuario-body">
+                            <h5 class="card-title usuario-nome">@usuario.Nome</h5>
+                            <p class="card-text usuario-email">@usuario.Email</p>
                         </div>
                     </div>
                 </a>
@@ -21,5 +24,61 @@
 }
 else
 {
-    <p>Nenhum usuário encontrado</p>
+    <p class="text-muted">Nenhum usuário encontrado</p>
 }
+
+<style>
+    .usuarios-grid {
+        margin-top: 10px;
+    }
+
+    .usuario-col {
+        margin-bottom: 24px;
+    }
+
+    .usuario-link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .usuario-card {
+        height: 450px;
+        border-radius: 18px;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .usuario-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+        }
+
+    .usuario-img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .usuario-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 200px;
+    }
+
+    .usuario-nome {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #212529;
+    }
+
+    .usuario-email {
+        font-size: 0.95rem;
+        color: #6c757d;
+        word-break: break-word;
+    }
+</style>

@@ -3,7 +3,7 @@
     ViewBag.Title = "Cadastro de Profissional";
 }
 
-<div class="container">
+<div class="container cadastro-container">
     <h2>Cadastro de Profissional</h2>
 
     @using (Html.BeginForm("CadastroProfissional", "Cadastro", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form" }))
@@ -23,126 +23,170 @@
 
         <div class="form-group">
             @Html.LabelFor(m => m.Usuario.Genero, "Gênero")
-            @Html.DropDownListFor(m => m.Usuario.Genero, new SelectList(new[] { "Feminino", "Masculino" }), new { @class = "form-control", id = "Genero" })
+            @Html.DropDownListFor(
+                m => m.Usuario.Genero,
+                new SelectList(new[] { "Feminino", "Masculino" }),
+                "Selecione",
+                new { @class = "form-control", id = "Genero", required = "required" }
+            )
             @Html.ValidationMessageFor(m => m.Usuario.Genero, "", new { @class = "text-danger" })
         </div>
 
         <div class="form-group">
-            @Html.Label("Foto com Documento")
+            <label>Foto com Documento</label>
             <label class="custom-file-upload">
-                <input type="file" name="FotoDocumento" accept="image/*" required="required" onchange="updateFileName(this, 'fotoDocumentoNome')" />
+                <input type="file" name="FotoDocumento" accept="image/*" onchange="updateFileName(this,'fotoDocumentoNome')" required />
                 Escolher arquivo
             </label>
-            <small id="fotoDocumentoNome"></small>
+            <small id="fotoDocumentoNome" class="file-name"></small>
             <span class="text-danger" id="fotoDocumentoError"></span>
         </div>
 
         <div class="form-group">
-            @Html.Label("Foto do Documento")
+            <label>Foto do Documento</label>
             <label class="custom-file-upload">
-                <input type="file" name="Documento" accept="image/*" required="required" onchange="updateFileName(this, 'documentoNome')" />
+                <input type="file" name="Documento" accept="image/*" onchange="updateFileName(this,'documentoNome')" required />
                 Escolher arquivo
             </label>
-            <small id="documentoNome"></small>
+            <small id="documentoNome" class="file-name"></small>
             <span class="text-danger" id="documentoError"></span>
         </div>
 
         <div class="form-group">
-            @Html.Label("Certificado de Bons Antecedentes")
+            <label>Certificado de Bons Antecedentes</label>
             <label class="custom-file-upload">
-                <input type="file" name="CertificadoBonsAntecedentes" accept="application/pdf" required="required" onchange="updateFileName(this, 'certificadoBonsAntecedentesNome')" />
+                <input type="file" name="CertificadoBonsAntecedentes" accept="application/pdf" onchange="updateFileName(this,'certificadoBonsAntecedentesNome')" required />
                 Escolher arquivo
             </label>
-            <small id="certificadoBonsAntecedentesNome"></small>
+            <small id="certificadoBonsAntecedentesNome" class="file-name"></small>
             <span class="text-danger" id="certificadoBonsAntecedentesError"></span>
         </div>
 
-        <div id="dispensaExercito" class="form-group" style="display:none;">
-            @Html.Label("Certificado de Dispensa do Exército")
+        <div class="form-group" id="dispensaExercito" style="display:none;">
+            <label>Certificado de Dispensa do Exército</label>
             <label class="custom-file-upload">
-                <input type="file" name="CertificadoDispensa" accept="application/pdf" required="required" onchange="updateFileName(this, 'certificadoDispensaNome')" />
+                <input type="file" name="CertificadoDispensa" accept="application/pdf" onchange="updateFileName(this,'certificadoDispensaNome')" />
                 Escolher arquivo
             </label>
-            <small id="certificadoDispensaNome"></small>
+            <small id="certificadoDispensaNome" class="file-name"></small>
             <span class="text-danger" id="certificadoDispensaError"></span>
         </div>
 
         <div class="form-group">
-            <button type="submit" class="btn btn-primary">Cadastrar</button>
+            <button type="submit" class="btn btn-primary btn-submit">Cadastrar</button>
         </div>
     }
 </div>
 
-@section styles {
-    <style>
-        input[type="file"] {
-            display: none; /* Oculta o botão padrão */
+<style>
+    .cadastro-container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: #f5f5f5;
+        padding: 25px;
+        border-radius: 10px;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+
+    .custom-file-upload {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #e0f7fa;
+        border: 1px solid #b2ebf2;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.3s;
+        font-weight: 500;
+    }
+
+        .custom-file-upload:hover {
+            background-color: #b2ebf2;
+            color: #000;
         }
 
-        .custom-file-upload {
-            display: inline-block;
-            padding: 10px 20px;
-            cursor: pointer;
-            background-color: #e0f7fa; /* Azul pastel */
-            color: #000; /* Cor do texto */
-            border: 1px solid #b2ebf2; /* Borda azul pastel */
-            border-radius: 5px;
-            transition: background-color 0.3s, color 0.3s; /* Transição suave */
-        }
+    .file-name {
+        display: block;
+        margin-top: 5px;
+        font-size: 13px;
+        color: #555;
+    }
 
-            .custom-file-upload:hover {
-                background-color: #b2ebf2; /* Azul pastel mais escuro ao passar o mouse */
-                color: #fff; /* Cor do texto ao passar o mouse */
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 6px;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+
+        $('#Genero').change(function () {
+            if ($(this).val() === 'Masculino') {
+                $('#dispensaExercito').slideDown();
+                $('input[name="CertificadoDispensa"]').attr('required', 'required');
+            } else {
+                $('#dispensaExercito').slideUp();
+                $('input[name="CertificadoDispensa"]').removeAttr('required');
+                $('#certificadoDispensaError').text('');
             }
-    </style>
-}
-
-@section scripts {
-    <script>
-        $(document).ready(function () {
-            // Exibe o campo Certificado de Dispensa do Exército apenas para homens
-            $('#Genero').change(function () {
-                if ($(this).val() === 'Masculino') {
-                    $('#dispensaExercito').show();
-                    $('input[name="CertificadoDispensa"]').attr('required', 'required');  // Torna obrigatório
-                } else {
-                    $('#dispensaExercito').hide();
-                    $('input[name="CertificadoDispensa"]').removeAttr('required');  // Remove a obrigatoriedade
-                }
-            });
-
-            // Adiciona validação de obrigatoriedade nos campos ao submeter
-            $('form').submit(function (e) {
-                var isValid = true;
-
-                // Verifica se os campos obrigatórios estão preenchidos
-                if ($('input[name="FotoDocumento"]').val() === '') {
-                    $('#fotoDocumentoError').text('Foto com Documento é obrigatório.');
-                    isValid = false;
-                }
-                if ($('input[name="Documento"]').val() === '') {
-                    $('#documentoError').text('Foto do Documento é obrigatório.');
-                    isValid = false;
-                }
-                if ($('input[name="CertificadoBonsAntecedentes"]').val() === '') {
-                    $('#certificadoBonsAntecedentesError').text('Certificado de Bons Antecedentes é obrigatório.');
-                    isValid = false;
-                }
-                if ($('#Genero').val() === 'Masculino' && $('input[name="CertificadoDispensa"]').val() === '') {
-                    $('#certificadoDispensaError').text('Certificado de Dispensa do Exército é obrigatório.');
-                    isValid = false;
-                }
-
-                // Previne o envio do formulário se houver erro
-                if (!isValid) {
-                    e.preventDefault();
-                }
-            });
         });
 
-        function updateFileName(input, outputId) {
-            var fileName = input.files.length > 0 ? input.files[0].name : '';
-            document.getElementById(outputId).innerText = fileName;
+        $('form').submit(function (e) {
+            let valido = true;
+            $('.text-danger').text('');
+
+            if (!$('input[name="FotoDocumento"]').val()) {
+                $('#fotoDocumentoError').text('Campo obrigatório.');
+                valido = false;
+            }
+
+            if (!$('input[name="Documento"]').val()) {
+                $('#documentoError').text('Campo obrigatório.');
+                valido = false;
+            }
+
+            if (!$('input[name="CertificadoBonsAntecedentes"]').val()) {
+                $('#certificadoBonsAntecedentesError').text('Campo obrigatório.');
+                valido = false;
+            }
+
+            if ($('#Genero').val() === 'Masculino' && !$('input[name="CertificadoDispensa"]').val()) {
+                $('#certificadoDispensaError').text('Campo obrigatório.');
+                valido = false;
+            }
+
+            if (!valido) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    function updateFileName(input, outputId) {
+        if (input.files.length > 0) {
+            document.getElementById(outputId).innerText = input.files[0].name;
+        } else {
+            document.getElementById(outputId).innerText = '';
         }
-    </script>
-}
+    }
+</script>

@@ -4,118 +4,146 @@
 }
 
 <div class="auth-container">
-    <h2>Autenticação de Dois Fatores</h2>
+    <h2>Verificação de Segurança</h2>
+    <p class="subtitle">Digite o código enviado para seu e-mail</p>
 
     <div class="auth-content">
-        <p>@ViewBag.PopupMessage</p>
+        <p class="info-text">@ViewBag.PopupMessage</p>
+
         <div class="code-inputs">
-            <!-- 5 campos para o código -->
-            @Html.TextBoxFor(m => m.Codigo1, new { @maxlength = "1", @class = "code-box", id = "Codigo1" })
-            @Html.TextBoxFor(m => m.Codigo2, new { @maxlength = "1", @class = "code-box", id = "Codigo2" })
-            @Html.TextBoxFor(m => m.Codigo3, new { @maxlength = "1", @class = "code-box", id = "Codigo3" })
-            @Html.TextBoxFor(m => m.Codigo4, new { @maxlength = "1", @class = "code-box", id = "Codigo4" })
-            @Html.TextBoxFor(m => m.Codigo5, new { @maxlength = "1", @class = "code-box", id = "Codigo5" })
+            @Html.TextBoxFor(m => m.Codigo1, new { maxlength = "1", @class = "code-box", id = "Codigo1" })
+            @Html.TextBoxFor(m => m.Codigo2, new { maxlength = "1", @class = "code-box", id = "Codigo2" })
+            @Html.TextBoxFor(m => m.Codigo3, new { maxlength = "1", @class = "code-box", id = "Codigo3" })
+            @Html.TextBoxFor(m => m.Codigo4, new { maxlength = "1", @class = "code-box", id = "Codigo4" })
+            @Html.TextBoxFor(m => m.Codigo5, new { maxlength = "1", @class = "code-box", id = "Codigo5" })
         </div>
+
         <input type="hidden" id="email" value="@Model.Email" />
     </div>
 
     <div class="auth-footer">
-        <button type="button" id="confirmButton" class="confirm-btn">Confirmar</button>
+        <button type="button" id="confirmButton" class="confirm-btn">
+            Confirmar
+        </button>
+
         <button type="button" id="resendButton" class="resend-btn" disabled>
-            <span id="spinner" class="spinner"></span> Reenviar Código
+            <span id="spinner" class="spinner hidden"></span>
+            Reenviar código
         </button>
     </div>
 </div>
 
 <style>
     body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        color: #333;
-        margin: 0;
-        padding: 0;
+        background: linear-gradient(135deg, #f4f6f8, #eef1f5);
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
 
     .auth-container {
-        max-width: 400px;
-        margin: 50px auto;
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 420px;
+        margin: 80px auto;
+        padding: 30px 28px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         text-align: center;
+        animation: fadeIn 0.4s ease;
     }
 
     h2 {
         font-size: 22px;
-        margin-bottom: 20px;
-        color: #0056b3;
-        font-weight: bold;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 6px;
     }
 
-    .auth-content {
-        margin-bottom: 20px;
+    .subtitle {
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 24px;
+    }
+
+    .info-text {
+        font-size: 14px;
+        color: #374151;
+        margin-bottom: 18px;
     }
 
     .code-inputs {
         display: flex;
         justify-content: center;
-        gap: 10px;
+        gap: 12px;
+        margin-bottom: 10px;
     }
 
     .code-box {
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
+        width: 54px;
+        height: 58px;
+        font-size: 22px;
+        font-weight: 600;
         text-align: center;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        transition: border-color 0.3s, box-shadow 0.3s;
+        border-radius: 12px;
+        border: 1px solid #d1d5db;
+        background-color: #f9fafb;
+        transition: all 0.2s ease;
     }
 
-    .code-box:focus {
-        border-color: #0056b3;
-        box-shadow: 0 0 5px rgba(0, 86, 179, 0.5);
-        outline: none;
-    }
+        .code-box:focus {
+            border-color: #3b82f6;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+            outline: none;
+            transform: translateY(-1px);
+        }
 
     .auth-footer {
-        margin-top: 20px;
+        margin-top: 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
     }
 
-    .confirm-btn,
-    .resend-btn {
-        display: inline-block;
-        background-color: #007bff;
-        color: #fff;
+    .confirm-btn {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
         border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+
+        .confirm-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(37,99,235,0.4);
+        }
+
+    .resend-btn {
+        background: none;
+        border: none;
+        color: #2563eb;
         font-size: 14px;
         cursor: pointer;
-        transition: background-color 0.3s, transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
     }
 
-    .confirm-btn:hover,
-    .resend-btn:hover {
-        background-color: #0056b3;
-        transform: scale(1.05);
-    }
-
-    .resend-btn:disabled {
-        background-color: #aaa;
-        cursor: not-allowed;
-    }
+        .resend-btn:disabled {
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
 
     .spinner {
-        display: inline-block;
         width: 16px;
         height: 16px;
-        border: 2px solid #fff;
-        border-top: 2px solid #0056b3;
+        border: 2px solid #e5e7eb;
+        border-top: 2px solid #2563eb;
         border-radius: 50%;
         animation: spin 1s linear infinite;
-        margin-right: 8px;
     }
 
     .hidden {
@@ -123,30 +151,33 @@
     }
 
     @@keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
+        to {
             transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(6px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
     }
 
     @@media (max-width: 480px) {
         .auth-container {
-            margin: 20px auto;
-            padding: 15px;
+            margin: 40px 16px;
+            padding: 24px 20px;
         }
 
         .code-box {
-            width: 40px;
-            height: 40px;
-            font-size: 18px;
-        }
-
-        .confirm-btn,
-        .resend-btn {
-            padding: 8px 16px;
-            font-size: 12px;
+            width: 46px;
+            height: 50px;
+            font-size: 20px;
         }
     }
 </style>
