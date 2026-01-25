@@ -1,0 +1,112 @@
+﻿@model meuCuidado.Dominio.ViewModels.SolicitacaoProfissionalDetalheViewModel
+@model meuCuidado.Dominio.ViewModels.DocumentoViewModel
+@{
+    ViewBag.Title = "Cadastro do Profissional";
+    Layout = null;
+}
+
+<div class="detalhe-container">
+    <h2>Cadastro do Profissional</h2>
+
+    <div class="card info">
+        <h3>Informações Pessoais</h3>
+        <p><strong>Nome:</strong> @Model.Nome</p>
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Tipo:</strong> @Model.TipoProfissional</p>
+        <p><strong>Telefone:</strong> @Model.Telefone</p>
+    </div>
+
+    <div class="card info">
+        <h3>Documentos Anexados</h3>
+        <ul>
+            @foreach (var doc in Model.Documentos)
+            {
+                <li>
+                    <a href="@doc.Url" target="_blank">@doc.Nome</a>
+                </li>
+            }
+        </ul>
+    </div>
+
+    <div class="acoes">
+        <button class="btn aprovar">Aprovar</button>
+        <button class="btn reprovar">Reprovar</button>
+    </div>
+</div>
+
+<style>
+    .detalhe-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .info {
+        margin-bottom: 24px;
+    }
+
+        .info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        .info p {
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            color: #495057;
+        }
+
+    ul {
+        list-style: none;
+        padding: 0;
+    }
+
+        ul li {
+            background-color: #f8f9fa;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+            ul li a {
+                text-decoration: none;
+                color: #0d6efd;
+                font-weight: 500;
+            }
+
+    .acoes {
+        display: flex;
+        justify-content: flex-end;
+        gap: 16px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        padding: 12px 20px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: bold;
+    }
+
+        .btn.aprovar {
+            background-color: #198754;
+            color: #fff;
+        }
+
+            .btn.aprovar:hover {
+                background-color: #146c43;
+            }
+
+        .btn.reprovar {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+            .btn.reprovar:hover {
+                background-color: #b02a37;
+            }
+</style>

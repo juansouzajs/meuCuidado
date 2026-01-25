@@ -5,63 +5,158 @@
 }
 
 <div class="perfil-detalhado">
-    @*TODO:
-imagem e dados de usuario
-imagem e dados de usuario
-imagem e dados de usuario
-imagem e dados de usuario
-imagem e dados de usuario*@
-    <!-- Informações de Currículo -->
-    <div class="curriculo">
+    <!-- Currículo -->
+    <div class="card curriculo">
         <h3>Currículo</h3>
-        @*<p><strong>Nome:</strong> @Model?.Curriculo.Nome</p>*@
-        @*<p><strong>Anos de Experiência:</strong> @Model?.Curriculo.AnosExperiencia</p>*@
-        @*<p><strong>Escolaridade:</strong> @Model?.Curriculo.Escolaridade</p>*@
 
-        <h4>Cursos:</h4>
-        <ul>
-            @foreach (var curso in Model.Curriculo.Cursos)
-            {
-                <li>@curso</li>
-            }
-        </ul>
+        <div class="secao">
+            <h4>Cursos</h4>
+            <ul>
+                @foreach (var curso in Model.Curriculo.Cursos)
+                {
+                    <li>@curso</li>
+                }
+            </ul>
+        </div>
 
-        <h4>Experiências:</h4>
-        <ul>
-            @foreach (var experiencia in Model.Curriculo.Experiencias)
-            {
-                <li>@experiencia</li>
-            }
-        </ul>
+        <div class="secao">
+            <h4>Experiências</h4>
+            <ul>
+                @foreach (var experiencia in Model.Curriculo.Experiencias)
+                {
+                    <li>@experiencia</li>
+                }
+            </ul>
+        </div>
 
-        <h4>Redes Sociais:</h4>
-        <ul>
-            @foreach (var redeSocial in Model.Curriculo.RedesSociais)
-            {
-                <li>@redeSocial</li>
-            }
-        </ul>
+        <div class="secao">
+            <h4>Redes Sociais</h4>
+            <ul>
+                @foreach (var redeSocial in Model.Curriculo.RedesSociais)
+                {
+                    <li>@redeSocial</li>
+                }
+            </ul>
+        </div>
     </div>
 
-    <!-- Informações de Avaliação -->
-    <div class="avaliacao">
+    <!-- Avaliação -->
+    <div class="card avaliacao">
         <h3>Avaliação</h3>
-        <p><strong>Média de Avaliação:</strong> @Model.Curriculo.AvaliacaoMedia</p>
-        <p><strong>Número de Avaliações:</strong> @Model.Curriculo.NumeroAvaliacoes</p>
-        <p>
-            <strong>Avaliação do Usuário:</strong>
-            @if (Model.Curriculo.AvaliacaoMedia >= 4)
-            {
-                <span>Excelente</span>
-            }
-            else if (Model.Curriculo.AvaliacaoMedia >= 3)
-            {
-                <span>Bom</span>
-            }
-            else
-            {
-                <span>Regular</span>
-            }
-        </p>
+
+        <div class="avaliacao-info">
+            <p><strong>Média:</strong> @Model.Curriculo.AvaliacaoMedia</p>
+            <p><strong>Total de Avaliações:</strong> @Model.Curriculo.NumeroAvaliacoes</p>
+
+            <p class="avaliacao-status">
+                @if (Model.Curriculo.AvaliacaoMedia >= 4)
+                {
+                    <span class="badge excelente">Excelente</span>
+                }
+                else if (Model.Curriculo.AvaliacaoMedia >= 3)
+                {
+                    <span class="badge bom">Bom</span>
+                }
+                else
+                {
+                    <span class="badge regular">Regular</span>
+                }
+            </p>
+        </div>
     </div>
 </div>
+
+<style>
+    body {
+        background-color: #f4f6f9;
+        font-family: Arial, sans-serif;
+    }
+
+    .perfil-detalhado {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 15px;
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+    }
+
+    .card {
+        background-color: #fff;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    h3 {
+        margin-bottom: 20px;
+        font-size: 1.4rem;
+        color: #212529;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+    }
+
+    h4 {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        color: #495057;
+    }
+
+    .secao {
+        margin-bottom: 20px;
+    }
+
+    ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+    }
+
+        ul li {
+            background-color: #f8f9fa;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: #343a40;
+        }
+
+    .avaliacao-info p {
+        font-size: 1rem;
+        margin-bottom: 10px;
+        color: #495057;
+    }
+
+    .avaliacao-status {
+        margin-top: 16px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+        .badge.excelente {
+            background-color: #d1f7e3;
+            color: #0f5132;
+        }
+
+        .badge.bom {
+            background-color: #e7f1ff;
+            color: #084298;
+        }
+
+        .badge.regular {
+            background-color: #fff3cd;
+            color: #664d03;
+        }
+
+    @@media (max-width: 768px) {
+        .perfil-detalhado {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

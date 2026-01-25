@@ -4,137 +4,149 @@
     ViewBag.Title = "Cadastro Tutor e Médico";
 }
 
-<div class="container">
-    <h2>Informe o Tutor e médico(s) de referência</h2>
+<div class="container cadastro-container">
+    <h2>Informe o Tutor e Médico(s) de Referência</h2>
 
     <!-- Dados do Idoso -->
-    <div class="form-group">
-        <label>Nome:</label>
-        <p class="form-control-static">@Model.Idoso.Nome</p>
+    <div class="dados-idoso">
+        <div class="form-group">
+            <label>Nome:</label>
+            <p class="form-control-static">@Model.Idoso.Nome</p>
+        </div>
+
+        <div class="form-group">
+            <label>E-mail:</label>
+            <p class="form-control-static">@Model.Idoso.Email</p>
+        </div>
     </div>
-    <div class="form-group">
-        <label>E-mail:</label>
-        <p class="form-control-static">@Model.Idoso.Email</p>
-    </div>
-    <!--<div class="form-group">
-        <label>CPF:</label>
-        <p class="form-control-static">@Model.Idoso.CPF</p>--> @*TODO: INSERIR INFORMAÇÃO AO ADICIONAR O CPF*@
-    <!--</div>-->
 
     <hr />
 
     @using (Html.BeginForm("SalvarCadastroTutorEMedico", "Cadastro", FormMethod.Post))
     {
-        <!-- Dados do Tutor -->
+        <!-- Tutor -->
         <h3>Cadastro do Tutor</h3>
+
         <div class="form-group">
-            <label for="NomeTutor">Nome do Tutor:</label>
-            <input type="text" id="NomeTutor" name="Tutor.Nome" value="@Model.Tutor.Nome" class="form-control" required />
+            <label>Nome do Tutor</label>
+            <input type="text" name="Tutor.Nome" value="@Model.Tutor.Nome" class="form-control" required />
         </div>
 
         <div class="form-group">
-            <label for="EmailTutor">E-mail do Tutor:</label>
-            <input type="email" id="EmailTutor" name="Tutor.Email" value="@Model.Tutor.Email" class="form-control" required />
+            <label>E-mail do Tutor</label>
+            <input type="email" name="Tutor.Email" value="@Model.Tutor.Email" class="form-control" required />
         </div>
 
         <div class="form-group">
-            <label for="CPFTutor">CPF do Tutor:</label>
-            <input type="text" id="CPFTutor" name="Tutor.CPF" value="@Model.Tutor.CPF" class="form-control" required />
+            <label>CPF do Tutor</label>
+            <input type="text" name="Tutor.CPF" value="@Model.Tutor.CPF" class="form-control" required />
         </div>
 
         <div class="form-group">
-            <label for="RelacaoComIdoso">Relação com o Idoso:</label>
-            <input type="text" id="RelacaoComIdoso" name="Tutor.RelacaoComIdoso" value="@Model.Tutor.RelacaoComIdoso" class="form-control" required />
+            <label>Relação com o Idoso</label>
+            <input type="text" name="Tutor.RelacaoComIdoso" value="@Model.Tutor.RelacaoComIdoso" class="form-control" required />
         </div>
 
         <hr />
 
-        <!-- Cadastro de Médicos -->
-        <h3>Cadastro de Médicos</h3>
+        <!-- Médicos -->
+        <h3>Médicos de Referência</h3>
+
         <div id="medicos-container">
             @for (int i = 0; i < Model.Medicos.Count; i++)
             {
-                <div class="form-group">
-                    <label for="Medico_@i">Médico:</label>
-                    <input type="text" id="Medico_@i" name="Medicos[@i].Nome" value="@Model.Medicos[i].Nome" class="form-control" required />
+                <div class="form-group medico-item">
+                    <label>Médico @(i + 1)</label>
+                    <input type="text"
+                           name="Medicos[@i].Nome"
+                           value="@Model.Medicos[i].Nome"
+                           class="form-control"
+                           required />
                 </div>
             }
         </div>
 
-        <!-- Botão para adicionar mais médicos -->
-        <button type="button" class="btn btn-secondary" id="add-medico-btn">Adicionar Médico</button>
+        <button type="button" class="btn btn-secondary" id="add-medico-btn">
+            + Adicionar Médico
+        </button>
 
         <hr />
 
-        <!-- Botão de salvar -->
         <div class="form-group">
-            <button type="submit" class="btn btn-primary">Salvar Cadastro</button>
+            <button type="submit" class="btn btn-primary btn-submit">
+                Salvar Cadastro
+            </button>
         </div>
     }
 </div>
 
-<!-- Script para adicionar mais médicos dinamicamente -->
-<script>
-    document.getElementById('add-medico-btn').addEventListener('click', function () {
-        const container = document.getElementById('medicos-container');
-        const index = container.children.length;
-
-        const div = document.createElement('div');
-        div.className = 'form-group';
-        div.innerHTML = `
-            <label for="Medico_${index}">Médico:</label>
-            <input type="text" id="Medico_${index}" name="Medicos[${index}].Nome" class="form-control" required />
-        `;
-
-        container.appendChild(div);
-    });
-</script>
-
-<!-- Estilo minimalista -->
 <style>
-    .container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 20px;
+    .cadastro-container {
+        max-width: 650px;
+        margin: 40px auto;
+        background-color: #f5f5f5;
+        padding: 25px;
+        border-radius: 10px;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    h3 {
+        margin-top: 25px;
+        color: #555;
     }
 
     .form-group {
         margin-bottom: 15px;
     }
 
-    .form-control-static {
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background-color: #f9f9f9;
+    label {
+        font-weight: 500;
     }
 
     .form-control {
         width: 100%;
-        padding: 8px;
+        padding: 10px;
         margin-top: 5px;
+        border-radius: 5px;
         border: 1px solid #ccc;
-        border-radius: 4px;
+    }
+
+    .form-control-static {
+        padding: 10px;
+        background-color: #fafafa;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .medico-item {
+        background: #ffffff;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+    }
+
+    .btn {
+        border: none;
+        cursor: pointer;
+        border-radius: 6px;
     }
 
     .btn-primary {
         background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
-        cursor: pointer;
+        color: #fff;
+        padding: 12px;
+        width: 100%;
         font-size: 16px;
     }
 
     .btn-secondary {
         background-color: #6c757d;
-        color: white;
-        border: none;
-        padding: 8px 15px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
+        color: #fff;
+        padding: 8px 14px;
         margin-top: 10px;
     }
 
@@ -146,14 +158,28 @@
         background-color: #5a6268;
     }
 
-    h3 {
-        margin-top: 30px;
-        color: #555;
-    }
-
     hr {
-        margin-top: 30px;
+        margin: 30px 0;
         border: none;
         border-top: 1px solid #ccc;
     }
 </style>
+
+<script>
+    document.getElementById('add-medico-btn').addEventListener('click', function () {
+        const container = document.getElementById('medicos-container');
+        const index = container.children.length;
+
+        const div = document.createElement('div');
+        div.className = 'form-group medico-item';
+        div.innerHTML = `
+            <label>Médico ${index + 1}</label>
+            <input type="text"
+                   name="Medicos[${index}].Nome"
+                   class="form-control"
+                   required />
+        `;
+
+        container.appendChild(div);
+    });
+</script>

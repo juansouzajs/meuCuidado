@@ -1,70 +1,85 @@
 ﻿@model meuCuidado.Dominio.Models.Curriculo
 
-<div class="container mt-5">
-    <div class="card">
+<div class="container curriculo-container">
+    <div class="card curriculo-card">
         <div class="card-header text-center">
-            <img src="https://via.placeholder.com/150" alt="Foto de perfil" class="img-fluid rounded-circle mb-3" style="max-width: 150px;">
-            @*<h5>@model.Nome</h5>*@
+            <img src="https://via.placeholder.com/150"
+                 alt="Foto de perfil"
+                 class="foto-perfil" />
         </div>
+
         <div class="card-body">
-            <!-- Avaliação -->
-            <div class="text-center mb-3">
-                @*<span>
+            <!-- Avaliação (reservado para uso futuro) -->
+            @*
+                <div class="avaliacao text-center">
                     @for (int i = 1; i <= 5; i++)
                     {
                         if (i <= Model.AvaliacaoMedia)
                         {
-                            <i class="fa fa-star text-warning"></i>
+                            <i class="fa fa-star estrela-ativa"></i>
                         }
                         else
                         {
-                            <i class="fa fa-star text-secondary"></i>
+                            <i class="fa fa-star estrela-inativa"></i>
                         }
                     }
-                </span>
-                <span>(@Model.NumeroAvaliacoes)</span>*@
+                    <span>(@Model.NumeroAvaliacoes)</span>
+                </div>
+            *@
+
+            <!-- Informações principais -->
+            <div class="info-bloco">
+                <p><strong>Experiência:</strong> @Model.AnosExperiencia anos como cuidadora de idosos</p>
+                <p><strong>Escolaridade:</strong> @Model.Escolaridade</p>
             </div>
 
-            <!-- Detalhes -->
-            <p><strong>Cuidadora de idosos há:</strong> @Model.AnosExperiencia anos</p>
-            <p><strong>Escolaridade:</strong> @Model.Escolaridade</p>
-
             <!-- Cursos -->
-            <p><strong>Cursos:</strong></p>
-            <ul>
-                @foreach (var curso in Model.Cursos)
-                {
-                    <li>@curso</li>
-                }
-            </ul>
+            <div class="info-bloco">
+                <h4>Cursos</h4>
+                <ul>
+                    @foreach (var curso in Model.Cursos)
+                    {
+                        <li>@curso</li>
+                    }
+                </ul>
+            </div>
 
             <!-- Experiências -->
-            <p><strong>Experiência:</strong></p>
-            <ul>
-                @foreach (var experiencia in Model.Experiencias)
-                {
-                    <li>@experiencia</li>
-                }
-            </ul>
+            <div class="info-bloco">
+                <h4>Experiência Profissional</h4>
+                <ul>
+                    @foreach (var experiencia in Model.Experiencias)
+                    {
+                        <li>@experiencia</li>
+                    }
+                </ul>
+            </div>
 
-            <!-- Redes Sociais -->
-            <p><strong>Redes Sociais:</strong></p>
-            <div>
+            <!-- Redes sociais -->
+            <div class="info-bloco redes-sociais">
+                <h4>Redes Sociais</h4>
+
                 @if (Model.RedesSociais != null)
                 {
                     foreach (var rede in Model.RedesSociais)
                     {
                         if (rede.Contains("linkedin"))
                         {
-                            <a href="@rede" target="_blank"><i class="fa fa-linkedin fa-2x me-2 text-primary"></i></a>
+                            <a href="@rede" target="_blank" title="LinkedIn">
+                                <i class="fa fa-linkedin"></i>
+                            </a>
                         }
                         else if (rede.Contains("facebook"))
                         {
-                            <a href="@rede" target="_blank"><i class="fa fa-facebook fa-2x me-2 text-primary"></i></a>
+                            <a href="@rede" target="_blank" title="Facebook">
+                                <i class="fa fa-facebook"></i>
+                            </a>
                         }
                         else if (rede.Contains("instagram"))
                         {
-                            <a href="@rede" target="_blank"><i class="fa fa-instagram fa-2x text-danger"></i></a>
+                            <a href="@rede" target="_blank" title="Instagram">
+                                <i class="fa fa-instagram"></i>
+                            </a>
                         }
                     }
                 }
@@ -72,3 +87,76 @@
         </div>
     </div>
 </div>
+
+<style>
+    .curriculo-container {
+        max-width: 650px;
+        margin: 40px auto;
+    }
+
+    .curriculo-card {
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: #f5f5f5;
+    }
+
+    .card-header {
+        background-color: #e0f7fa;
+        padding: 25px;
+    }
+
+    .foto-perfil {
+        width: 140px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid #ffffff;
+    }
+
+    .card-body {
+        padding: 25px;
+    }
+
+    .info-bloco {
+        margin-bottom: 25px;
+    }
+
+        .info-bloco h4 {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+    ul {
+        padding-left: 20px;
+    }
+
+        ul li {
+            margin-bottom: 6px;
+        }
+
+    .redes-sociais a {
+        font-size: 28px;
+        margin-right: 15px;
+        color: #555;
+        transition: color 0.2s;
+    }
+
+        .redes-sociais a:hover {
+            color: #007bff;
+        }
+
+    /* Avaliação (caso ative depois) */
+    .avaliacao {
+        margin-bottom: 20px;
+    }
+
+    .estrela-ativa {
+        color: #ffc107;
+        font-size: 20px;
+    }
+
+    .estrela-inativa {
+        color: #ccc;
+        font-size: 20px;
+    }
+</style>

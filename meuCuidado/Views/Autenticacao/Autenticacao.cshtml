@@ -3,31 +3,37 @@
     ViewBag.Title = "Autenticação";
 }
 
-<div class="auth-container">
-    <h2>Autenticação de Dois Fatores</h2>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="auth-card">
 
-    <div class="auth-content">
-        <p>@ViewBag.PopupMessage</p>
-        <div class="code-inputs">
-            <!-- 5 campos para o código -->
-            @Html.TextBoxFor(m => m.Codigo1, new { @maxlength = "1", @class = "code-box", id = "Codigo1" })
-            @Html.TextBoxFor(m => m.Codigo2, new { @maxlength = "1", @class = "code-box", id = "Codigo2" })
-            @Html.TextBoxFor(m => m.Codigo3, new { @maxlength = "1", @class = "code-box", id = "Codigo3" })
-            @Html.TextBoxFor(m => m.Codigo4, new { @maxlength = "1", @class = "code-box", id = "Codigo4" })
-            @Html.TextBoxFor(m => m.Codigo5, new { @maxlength = "1", @class = "code-box", id = "Codigo5" })
+        <h4 class="mb-2">Verificação de Segurança</h4>
+        <p class="text-muted mb-4">
+            Digite o código de 5 dígitos enviado para você
+        </p>
+
+        <p class="small text-info mb-3">@ViewBag.PopupMessage</p>
+
+        <div class="code-inputs mb-4">
+            @Html.TextBoxFor(m => m.Codigo1, new { maxlength = "1", @class = "code-box", id = "Codigo1" })
+            @Html.TextBoxFor(m => m.Codigo2, new { maxlength = "1", @class = "code-box", id = "Codigo2" })
+            @Html.TextBoxFor(m => m.Codigo3, new { maxlength = "1", @class = "code-box", id = "Codigo3" })
+            @Html.TextBoxFor(m => m.Codigo4, new { maxlength = "1", @class = "code-box", id = "Codigo4" })
+            @Html.TextBoxFor(m => m.Codigo5, new { maxlength = "1", @class = "code-box", id = "Codigo5" })
         </div>
-        <input type="hidden" id="email" value="@Model.Email" />
-    </div>
 
-    <div class="auth-footer">
-        <button type="button" id="confirmButton" class="confirm-btn">Confirmar</button>
+        <input type="hidden" id="email" value="@Model.Email" />
+
+        <button type="button" id="confirmButton" class="btn btn-primary btn-block">
+            Confirmar código
+        </button>
+
     </div>
 </div>
 
 @if (ViewBag.ErrorMessage != null)
 {
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             showToaster('@ViewBag.ErrorMessage', 'error');
         });
     </script>
@@ -36,111 +42,70 @@
 @if (ViewBag.SuccessMessage != null)
 {
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             showToaster('@ViewBag.SuccessMessage', 'success');
         });
     </script>
 }
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        color: #333;
-        margin: 0;
-        padding: 0;
-    }
-
-    .auth-container {
-        max-width: 400px;
-        margin: 50px auto;
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    .auth-card {
+        background: #ffffff;
+        padding: 30px 25px;
+        border-radius: 14px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         text-align: center;
     }
 
-    h2 {
-        font-size: 24px;
-        margin-bottom: 20px;
-        color: #007BFF;
-    }
-
-    .auth-content {
-        margin-bottom: 20px;
+    .auth-card h4 {
+        font-weight: 600;
+        color: #1f2937;
     }
 
     .code-inputs {
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
+        gap: 10px;
     }
 
     .code-box {
-        width: 50px;
-        height: 50px;
-        margin: 0 5px;
-        font-size: 24px;
+        width: 52px;
+        height: 56px;
+        font-size: 22px;
         text-align: center;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        transition: border-color 0.3s;
+        border-radius: 10px;
+        border: 1px solid #d1d5db;
+        transition: all 0.2s ease;
     }
 
-        .code-box:focus {
-            border-color: #007BFF;
-            outline: none;
-        }
-
-    .auth-footer {
-        margin-top: 20px;
-    }
-
-    .confirm-btn {
-        background-color: #007BFF;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-        .confirm-btn:hover {
-            background-color: #0056b3;
-        }
-
-    /* Responsividade */
-    .auth-container {
-        width: 100%;
-        max-width: 400px;
-        padding: 10px;
-    }
-
-    .code-box {
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
+    .code-box:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
     }
 </style>
 
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.5.1.min.js"></script>
 <script>
-    $(document).ready(function() {
-        // Foco no primeiro campo do código
+    $(document).ready(function () {
+
         $('#Codigo1').focus();
 
-        // Avança automaticamente para o próximo campo de código quando preenchido
-        $('input[type="text"]').on('input', function () {
-            if ($(this).val().length == $(this).attr('maxlength')) {
-                $(this).next('input').focus();
+        $('.code-box').on('input', function () {
+            if (this.value.length === 1) {
+                $(this).next('.code-box').focus();
             }
         });
 
-        // Lógica para envio do código de autenticação via AJAX
-        $('#confirmButton').click(function (e) {
-            e.preventDefault(); // Evita o envio tradicional do formulário
+        $('.code-box').on('keydown', function (e) {
+            if (e.key === 'Backspace' && this.value === '') {
+                $(this).prev('.code-box').focus();
+            }
+        });
+
+        $('#confirmButton').click(function () {
 
             let viewModel = {
                 Codigo1: $('#Codigo1').val(),
@@ -148,28 +113,23 @@
                 Codigo3: $('#Codigo3').val(),
                 Codigo4: $('#Codigo4').val(),
                 Codigo5: $('#Codigo5').val(),
-                Email: $('#email').val() // Pega o e-mail do campo hidden, se aplicável
+                Email: $('#email').val()
             };
 
             $.ajax({
-                url: '@Url.Action("ValidarCodigoAutenticacao", "Login")', // URL correta do método no controller
+                url: '@Url.Action("ValidarCodigoAutenticacao", "Login")',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(viewModel),
-                data: JSON.stringify(viewModel),
                 success: function (response) {
                     if (response.success) {
-                        // Se o código for válido, redireciona para a Dashboard
                         window.location.href = response.redirectUrl;
                     } else {
-                        // Se o código for inválido, exibe uma mensagem de erro
-                        alert(response.message);
+                        showToaster(response.message, 'error');
                     }
                 },
-
-
                 error: function () {
-                    alert("Erro ao enviar os códigos.");
+                    showToaster("Erro ao validar o código.", 'error');
                 }
             });
         });
