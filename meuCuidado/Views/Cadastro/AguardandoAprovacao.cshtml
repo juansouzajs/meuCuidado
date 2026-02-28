@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "Aguardando Aprovação";
+}
+
+<div class="auth-wrapper">
+    <div class="auth-card" style="text-align:center;">
+
+        <div class="clock"></div>
+
+        <h1 class="auth-title" style="margin-top:20px;">
+            Aguarde a aprovação do seu cadastro
+        </h1>
+
+        <p class="auth-subtitle">
+            Estamos analisando suas informações.<br />
+            Retornaremos por e-mail em breve. Você pode fechar essa página.
+        </p>
+
+    </div>
+</div>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e6f4f1, #f8fbff);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .auth-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .auth-card {
+        background: #ffffff;
+        width: 100%;
+        max-width: 420px;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .auth-title {
+        font-size: 26px;
+        font-weight: 600;
+        text-align: center;
+        color: #2f6f68;
+    }
+
+    .auth-subtitle {
+        text-align: center;
+        color: #6c8f8b;
+        margin-bottom: 25px;
+        font-size: 14px;
+    }
+
+    /* RELÓGIO MAIS LENTO E LIMPO */
+    .clock {
+        width: 90px;
+        height: 90px;
+        border: 6px solid #4db6ac;
+        border-radius: 50%;
+        margin: 0 auto;
+        position: relative;
+        animation: spin 8s linear infinite;
+    }
+
+        .clock::after {
+            content: "";
+            width: 6px;
+            height: 34px;
+            background: #4db6ac;
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform-origin: bottom;
+            border-radius: 3px;
+        }
+
+    @@keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>

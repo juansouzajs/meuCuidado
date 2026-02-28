@@ -5,55 +5,57 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container lembretes-container">
+<div class="cadastro-container">
+    <div class="cadastro-card">
 
-    <!-- Seletor de pessoa -->
-    <div class="top-bar">
-        <select id="selectPessoa" class="form-control select-pessoa">
-            <option value="Todos">Todos</option>
-            <option value="Maria">Maria</option>
-            <option value="Josefa">Josefa</option>
-            <option value="Abraão">Abraão</option>
-        </select>
+        <h2 class="cadastro-titulo">Lembretes</h2>
 
-        <button id="addPersonButton" class="btn btn-add">+</button>
-    </div>
+        <!-- Seletor de pessoa -->
+        <div class="top-bar">
+            <select id="selectPessoa" class="input-padrao">
+                <option value="Todos">Todos</option>
+                <option value="Maria">Maria</option>
+                <option value="Josefa">Josefa</option>
+                <option value="Abraão">Abraão</option>
+            </select>
 
-    <!-- Calendário -->
-    <div id="calendar" class="calendar-card">
-        <div class="calendar-header">
-            <button id="prevMonth" class="calendar-btn">&lt;</button>
-            <h4 id="monthYear"></h4>
-            <button id="nextMonth" class="calendar-btn">&gt;</button>
+            <button id="addPersonButton" class="btn-padrao btn-add">+</button>
         </div>
 
-        <div class="calendar-grid" id="calendarGrid"></div>
-    </div>
+        <!-- Calendário -->
+        <div id="calendar" class="calendar-card">
+            <div class="calendar-header">
+                <button id="prevMonth" class="btn-padrao">&lt;</button>
+                <h4 id="monthYear"></h4>
+                <button id="nextMonth" class="btn-padrao">&gt;</button>
+            </div>
 
-    <!-- Lista de lembretes -->
-    <div id="ListaLembretesContainer" class="lista-lembretes">
-        @Html.Partial("ListaLembretes", Model)
-    </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
 
-    <!-- Formulário -->
-    <div class="card form-card">
-        <div class="card-body">
-            <h4>Adicionar Lembrete</h4>
+        <!-- Lista de lembretes -->
+        <div id="ListaLembretesContainer">
+            @Html.Partial("ListaLembretes", Model)
+        </div>
+
+        <!-- Formulário -->
+        <div class="form-area">
+            <h3>Adicionar Lembrete</h3>
 
             <form id="addReminderForm">
-                <div class="form-group">
+                <div class="campo">
                     <label>Descrição</label>
-                    <input type="text" class="form-control" id="descricao" required />
+                    <input type="text" class="input-padrao" id="descricao" required />
                 </div>
 
-                <div class="form-group">
+                <div class="campo">
                     <label>Hora do Lembrete</label>
-                    <input type="time" class="form-control" id="dataHora" required />
+                    <input type="time" class="input-padrao" id="dataHora" required />
                 </div>
 
-                <div class="form-group">
+                <div class="campo">
                     <label>Medicamento (Opcional)</label>
-                    <select class="form-control" id="MedicamentoId">
+                    <select class="input-padrao" id="MedicamentoId">
                         <option value="">Nenhum</option>
                         @foreach (var medicamento in ViewBag.Medicamentos)
                         {
@@ -62,9 +64,9 @@
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="campo">
                     <label>Dosagem (Opcional)</label>
-                    <select class="form-control" id="DosagemId">
+                    <select class="input-padrao" id="DosagemId">
                         <option value="">Nenhum</option>
                         @foreach (var medicamento in ViewBag.Medicamentos)
                         {
@@ -74,59 +76,83 @@
                 </div>
 
                 <div class="acoes">
-                    <button type="button" class="btn btn-link"
+                    <button type="button" class="btn-link"
                             onclick="window.location.href='@Url.Action("AdicionarMedicamento", "Medicamento")'">
                         + Adicionar Novo Medicamento
                     </button>
 
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn-padrao">
                         Adicionar Lembrete
                     </button>
                 </div>
             </form>
         </div>
+
     </div>
 </div>
 
 <style>
-    .lembretes-container {
-        max-width: 900px;
-        margin: 30px auto;
+    body {
+        background-color: #f0f8ff;
+        font-family: Arial, sans-serif;
     }
+
+    .cadastro-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+    }
+
+    .cadastro-card {
+        background-color: white;
+        padding: 30px;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 850px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .cadastro-titulo {
+        text-align: center;
+        color: #5a9fa8;
+        margin-bottom: 20px;
+    }
+
+    .input-padrao {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #a8dadc;
+        margin-bottom: 10px;
+    }
+
+    .btn-padrao {
+        background-color: #a8dadc;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+        .btn-padrao:hover {
+            background-color: #5a9fa8;
+        }
 
     .top-bar {
         display: flex;
-        justify-content: flex-end;
-        align-items: center;
+        justify-content: space-between;
         gap: 10px;
         margin-bottom: 20px;
     }
 
-    .select-pessoa {
-        width: auto;
-    }
-
-    .btn-add {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background-color: #a8dadc;
-        color: white;
-        border: none;
-        font-size: 20px;
-        line-height: 0;
-    }
-
-        .btn-add:hover {
-            background-color: #5a9fa8;
-        }
-
     .calendar-card {
-        background: #f5f5f5;
+        background: #ffffff;
         border-radius: 10px;
         padding: 20px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        margin-bottom: 30px;
+        border: 1px solid #a8dadc;
+        margin-bottom: 20px;
     }
 
     .calendar-header {
@@ -134,15 +160,6 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 15px;
-    }
-
-    .calendar-btn {
-        background-color: #a8dadc;
-        border: none;
-        color: white;
-        padding: 6px 12px;
-        font-size: 18px;
-        border-radius: 5px;
     }
 
     .calendar-grid {
@@ -154,10 +171,10 @@
 
     .day {
         padding: 10px;
-        background: white;
+        background: #f0f8ff;
         border-radius: 6px;
         cursor: pointer;
-        border: 1px solid #ddd;
+        border: 1px solid #a8dadc;
     }
 
         .day.selected {
@@ -166,13 +183,8 @@
             font-weight: bold;
         }
 
-    .lista-lembretes {
-        margin-bottom: 30px;
-    }
-
-    .form-card {
-        border-radius: 10px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    .campo {
+        margin-bottom: 15px;
     }
 
     .acoes {
@@ -181,11 +193,21 @@
         align-items: center;
         margin-top: 20px;
     }
+
+    .btn-link {
+        background: none;
+        border: none;
+        color: #5a9fa8;
+        cursor: pointer;
+        text-decoration: underline;
+    }
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
     $(document).ready(function () {
+
         let currentMonth = new Date();
         let selectedDate = '';
         const monthYear = $('#monthYear');

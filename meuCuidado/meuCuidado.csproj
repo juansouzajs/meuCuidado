@@ -279,6 +279,7 @@
     <Content Include="Views\Cadastro\CadastroTutorEMedicoDoIdoso.cshtml" />
     <Content Include="Views\Administrador\Administrador.cshtml" />
     <Content Include="Views\Administrador\SolicitacoesDetalhadas.cshtml" />
+    <Content Include="Views\Cadastro\AguardandoAprovacao.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

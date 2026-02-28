@@ -208,7 +208,7 @@ namespace meuCuidado.Controllers
                     SalvarDocumento(CertificadoDispensa, TipoDocumento.CertificadoDispensa, cadastroProfissionalViewModel.Usuario.Id);
                 }
 
-                return RedirectToAction("Login", "Login", cadastroProfissionalViewModel.Usuario);
+                return RedirectToAction("AguardandoAprovacao");
             }
 
             // Pega os erros da model
@@ -291,6 +291,11 @@ namespace meuCuidado.Controllers
             }
 
             return errors;
+        }
+
+        public ActionResult AguardandoAprovacao()
+        {
+            return View();
         }
     }
 }

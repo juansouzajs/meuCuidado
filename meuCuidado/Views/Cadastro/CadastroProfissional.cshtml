@@ -1,192 +1,207 @@
 ﻿@model meuCuidado.Dominio.ViewModels.CadastroViewModel
 @{
     ViewBag.Title = "Cadastro de Profissional";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container cadastro-container">
-    <h2>Cadastro de Profissional</h2>
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h1 class="auth-title">Cadastro de Profissional</h1>
+        <p class="auth-subtitle">
+            Envie seus documentos para concluir o cadastro 💚
+        </p>
 
-    @using (Html.BeginForm("CadastroProfissional", "Cadastro", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form" }))
-    {
-        @Html.HiddenFor(model => model.TipoUsuario)
-        @Html.HiddenFor(model => model.Usuario.Nome)
-        @Html.HiddenFor(model => model.Usuario.Email)
-        @Html.HiddenFor(model => model.Usuario.Endereco)
-        @Html.HiddenFor(model => model.Usuario.Telefone)
-        @Html.HiddenFor(model => model.Usuario.Senha)
+        @using (Html.BeginForm("CadastroProfissional", "Cadastro", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.HiddenFor(model => model.TipoUsuario)
+            @Html.HiddenFor(model => model.Usuario.Nome)
+            @Html.HiddenFor(model => model.Usuario.Email)
+            @Html.HiddenFor(model => model.Usuario.Endereco)
+            @Html.HiddenFor(model => model.Usuario.Telefone)
+            @Html.HiddenFor(model => model.Usuario.Senha)
 
-        <div class="form-group">
-            @Html.LabelFor(m => m.Usuario.CPF, "CPF")
-            @Html.TextBoxFor(m => m.Usuario.CPF, new { @class = "form-control", placeholder = "Digite seu CPF", required = "required" })
-            @Html.ValidationMessageFor(m => m.Usuario.CPF, "", new { @class = "text-danger" })
-        </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Usuario.CPF, "CPF")
+                @Html.TextBoxFor(m => m.Usuario.CPF, new { @class = "form-control", placeholder = "Digite seu CPF", required = "required" })
+                @Html.ValidationMessageFor(m => m.Usuario.CPF, "", new { @class = "text-danger" })
+            </div>
 
-        <div class="form-group">
-            @Html.LabelFor(m => m.Usuario.Genero, "Gênero")
-            @Html.DropDownListFor(
-                m => m.Usuario.Genero,
-                new SelectList(new[] { "Feminino", "Masculino" }),
-                "Selecione",
-                new { @class = "form-control", id = "Genero", required = "required" }
-            )
-            @Html.ValidationMessageFor(m => m.Usuario.Genero, "", new { @class = "text-danger" })
-        </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Usuario.Genero, "Gênero")
+                @Html.DropDownListFor(
+                    m => m.Usuario.Genero,
+                    new SelectList(new[] { "Feminino", "Masculino" }),
+                    "Selecione",
+                    new { @class = "form-control", id = "Genero", required = "required" }
+                )
+                @Html.ValidationMessageFor(m => m.Usuario.Genero, "", new { @class = "text-danger" })
+            </div>
 
-        <div class="form-group">
-            <label>Foto com Documento</label>
-            <label class="custom-file-upload">
-                <input type="file" name="FotoDocumento" accept="image/*" onchange="updateFileName(this,'fotoDocumentoNome')" required />
-                Escolher arquivo
-            </label>
-            <small id="fotoDocumentoNome" class="file-name"></small>
-            <span class="text-danger" id="fotoDocumentoError"></span>
-        </div>
+            <div id="areaDocumentos" style="display:none;">
 
-        <div class="form-group">
-            <label>Foto do Documento</label>
-            <label class="custom-file-upload">
-                <input type="file" name="Documento" accept="image/*" onchange="updateFileName(this,'documentoNome')" required />
-                Escolher arquivo
-            </label>
-            <small id="documentoNome" class="file-name"></small>
-            <span class="text-danger" id="documentoError"></span>
-        </div>
+                <div class="form-group">
+                    <label>Foto com Documento</label>
+                    <input type="file" name="FotoDocumento" class="form-control documentoObrigatorio" />
+                </div>
 
-        <div class="form-group">
-            <label>Certificado de Bons Antecedentes</label>
-            <label class="custom-file-upload">
-                <input type="file" name="CertificadoBonsAntecedentes" accept="application/pdf" onchange="updateFileName(this,'certificadoBonsAntecedentesNome')" required />
-                Escolher arquivo
-            </label>
-            <small id="certificadoBonsAntecedentesNome" class="file-name"></small>
-            <span class="text-danger" id="certificadoBonsAntecedentesError"></span>
-        </div>
+                <div class="form-group">
+                    <label>Foto do Documento</label>
+                    <input type="file" name="Documento" class="form-control documentoObrigatorio" />
+                </div>
 
-        <div class="form-group" id="dispensaExercito" style="display:none;">
-            <label>Certificado de Dispensa do Exército</label>
-            <label class="custom-file-upload">
-                <input type="file" name="CertificadoDispensa" accept="application/pdf" onchange="updateFileName(this,'certificadoDispensaNome')" />
-                Escolher arquivo
-            </label>
-            <small id="certificadoDispensaNome" class="file-name"></small>
-            <span class="text-danger" id="certificadoDispensaError"></span>
-        </div>
+                <div class="form-group">
+                    <label>Certificado de Bons Antecedentes</label>
+                    <input type="file" name="CertificadoBonsAntecedentes" class="form-control documentoObrigatorio" />
+                </div>
 
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-submit">Cadastrar</button>
-        </div>
-    }
+                <div class="form-group" id="dispensaExercito" style="display:none;">
+                    <label>Certificado de Dispensa do Exército</label>
+                    <input type="file" name="CertificadoDispensa" class="form-control" />
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn-primary-auth">
+                Finalizar Cadastro
+            </button>
+        }
+    </div>
 </div>
 
-<style>
-    .cadastro-container {
-        max-width: 600px;
-        margin: 40px auto;
-        background: #f5f5f5;
-        padding: 25px;
-        border-radius: 10px;
-    }
-
-    h2 {
-        text-align: center;
-        margin-bottom: 25px;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-    }
-
-    input[type="file"] {
-        display: none;
-    }
-
-    .custom-file-upload {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #e0f7fa;
-        border: 1px solid #b2ebf2;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: 0.3s;
-        font-weight: 500;
-    }
-
-        .custom-file-upload:hover {
-            background-color: #b2ebf2;
-            color: #000;
-        }
-
-    .file-name {
-        display: block;
-        margin-top: 5px;
-        font-size: 13px;
-        color: #555;
-    }
-
-    .btn-submit {
-        width: 100%;
-        padding: 12px;
-        font-size: 16px;
-        border-radius: 6px;
-    }
-</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
     $(document).ready(function () {
 
-        $('#Genero').change(function () {
-            if ($(this).val() === 'Masculino') {
+        function atualizarCampos() {
+            var genero = $('#Genero').val();
+
+            if (genero === "") {
+                $('#areaDocumentos').slideUp();
+
+                $('.documentoObrigatorio').removeAttr('required');
+                $('input[name="CertificadoDispensa"]').removeAttr('required');
+
+                return;
+            }
+
+            $('#areaDocumentos').slideDown();
+
+            // Torna todos os documentos obrigatórios
+            $('.documentoObrigatorio').attr('required', 'required');
+
+            if (genero === 'Masculino') {
                 $('#dispensaExercito').slideDown();
                 $('input[name="CertificadoDispensa"]').attr('required', 'required');
             } else {
                 $('#dispensaExercito').slideUp();
                 $('input[name="CertificadoDispensa"]').removeAttr('required');
-                $('#certificadoDispensaError').text('');
             }
-        });
-
-        $('form').submit(function (e) {
-            let valido = true;
-            $('.text-danger').text('');
-
-            if (!$('input[name="FotoDocumento"]').val()) {
-                $('#fotoDocumentoError').text('Campo obrigatório.');
-                valido = false;
-            }
-
-            if (!$('input[name="Documento"]').val()) {
-                $('#documentoError').text('Campo obrigatório.');
-                valido = false;
-            }
-
-            if (!$('input[name="CertificadoBonsAntecedentes"]').val()) {
-                $('#certificadoBonsAntecedentesError').text('Campo obrigatório.');
-                valido = false;
-            }
-
-            if ($('#Genero').val() === 'Masculino' && !$('input[name="CertificadoDispensa"]').val()) {
-                $('#certificadoDispensaError').text('Campo obrigatório.');
-                valido = false;
-            }
-
-            if (!valido) {
-                e.preventDefault();
-            }
-        });
-    });
-
-    function updateFileName(input, outputId) {
-        if (input.files.length > 0) {
-            document.getElementById(outputId).innerText = input.files[0].name;
-        } else {
-            document.getElementById(outputId).innerText = '';
         }
-    }
+
+        $('#Genero').change(function () {
+            atualizarCampos();
+        });
+
+        atualizarCampos();
+    });
 </script>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e6f4f1, #f8fbff);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .auth-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .auth-card {
+        background: #ffffff;
+        width: 100%;
+        max-width: 420px;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .auth-title {
+        font-size: 26px;
+        font-weight: 600;
+        text-align: center;
+        color: #2f6f68;
+    }
+
+    .auth-subtitle {
+        text-align: center;
+        color: #6c8f8b;
+        margin-bottom: 25px;
+        font-size: 14px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        font-size: 13px;
+        color: #4a6f6a;
+        margin-bottom: 5px;
+    }
+
+    .form-control {
+        height: 45px;
+        border-radius: 10px;
+        border: 1px solid #cfe3df;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+        .form-control:focus {
+            border-color: #4db6ac;
+            box-shadow: 0 0 0 2px rgba(77,182,172,0.2);
+        }
+
+    .btn-primary-auth {
+        width: 100%;
+        height: 48px;
+        background: #4db6ac;
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+
+        .btn-primary-auth:hover {
+            background: #3da59b;
+        }
+
+    input[type="file"] {
+        padding: 8px;
+        background: #f0f7f6;
+        cursor: pointer;
+    }
+
+        input[type="file"]::file-selector-button {
+            background: #4db6ac;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            margin-right: 10px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+            input[type="file"]::file-selector-button:hover {
+                background: #3da59b;
+            }
+</style>
