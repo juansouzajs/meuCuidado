@@ -17,17 +17,19 @@ namespace meuCuidado.Dominio.Models
 
         public int? MedicamentoId { get; set; }
 
+        [ForeignKey("MedicamentoId")]
+        public virtual Medicamento Medicamento { get; set; }
+
         public string Descricao { get; set; }
+
+        public DateTime? DataHoraPrimeiroAlerta { get; set; }
 
         [Required]
         public DateTime DataHora { get; set; }
 
         [Required]
-        public bool Repete { get; set; }
+        public bool Repete { get; set; } = false;
 
         public virtual RelacionamentoIdosoProfissional RelacionamentoIdosoProfissional { get; set; }
-
-        // Propriedade de navegação
-        public virtual Medicamento Medicamento { get; set; }
     }
 }

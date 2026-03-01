@@ -59,9 +59,10 @@ namespace meuCuidado.Dominio.Models
                 .HasKey(l => l.Id); // Define a chave primária
 
             modelBuilder.Entity<Lembrete>()
-                .HasOptional(l => l.Medicamento)  // Lembrete pode ter 0 ou 1 Medicamento
-                .WithOptionalDependent(m => m.Lembrete)  // Medicamento pode ter ou não um Lembrete
-                .WillCascadeOnDelete(false);  // Sem exclusão em cascata
+                .HasOptional(l => l.Medicamento)
+                .WithMany(m => m.Lembretes)
+                .HasForeignKey(l => l.MedicamentoId)
+                .WillCascadeOnDelete(false);
 
             // Configurações para Medicamento
             modelBuilder.Entity<Medicamento>()

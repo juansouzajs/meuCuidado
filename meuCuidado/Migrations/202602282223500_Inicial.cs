@@ -3,7 +3,7 @@
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class _new : DbMigration
+    public partial class Inicial : DbMigration
     {
         public override void Up()
         {
@@ -197,6 +197,7 @@
                         RelacionamentoIdosoProfissionalId = c.Int(nullable: false),
                         MedicamentoId = c.Int(),
                         Descricao = c.String(),
+                        DataHoraPrimeiroAlerta = c.DateTime(),
                         DataHora = c.DateTime(nullable: false),
                         Repete = c.Boolean(nullable: false),
                         Medicamento_Id = c.Int(),
@@ -215,8 +216,6 @@
                         IdentificadorUnico = c.Guid(nullable: false),
                         Nome = c.String(nullable: false),
                         Dosagem = c.String(nullable: false),
-                        DataHoraPrimeiroAlerta = c.DateTime(nullable: false),
-                        DataHoraSegundoAlerta = c.DateTime(),
                         FormaFarmaceutica = c.String(),
                         DuracaoEmDias = c.Int(nullable: false),
                         Observacoes = c.String(),

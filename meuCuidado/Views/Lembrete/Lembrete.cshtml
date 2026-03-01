@@ -33,90 +33,99 @@
             <div class="calendar-grid" id="calendarGrid"></div>
         </div>
 
-        <!-- Lista de lembretes -->
+        <!-- Lista -->
         <div id="ListaLembretesContainer">
             @Html.Partial("ListaLembretes", Model)
         </div>
 
-        <!-- Formulário -->
+        <!-- Form -->
         <div class="form-area">
+
             <h3>Adicionar Lembrete</h3>
 
             <form id="addReminderForm">
+
                 <div class="campo">
                     <label>Descrição</label>
                     <input type="text" class="input-padrao" id="descricao" required />
                 </div>
 
                 <div class="campo">
-                    <label>Hora do Lembrete</label>
+                    <label>Hora</label>
                     <input type="time" class="input-padrao" id="dataHora" required />
                 </div>
 
                 <div class="campo">
-                    <label>Medicamento (Opcional)</label>
+                    <label>Medicamento</label>
                     <select class="input-padrao" id="MedicamentoId">
-                        <option value="">Nenhum</option>
-                        @foreach (var medicamento in ViewBag.Medicamentos)
-                        {
-                            <option value="@medicamento.Id">@medicamento.Nome</option>
-                        }
-                    </select>
-                </div>
 
-                <div class="campo">
-                    <label>Dosagem (Opcional)</label>
-                    <select class="input-padrao" id="DosagemId">
                         <option value="">Nenhum</option>
+
                         @foreach (var medicamento in ViewBag.Medicamentos)
                         {
-                            <option value="@medicamento.Id">@medicamento.Dosagem</option>
+                            <option value="@medicamento.Id">
+                                @medicamento.Nome
+                            </option>
                         }
+
                     </select>
                 </div>
 
                 <div class="acoes">
-                    <button type="button" class="btn-link"
+
+                    <button type="button"
+                            class="btn-link"
                             onclick="window.location.href='@Url.Action("AdicionarMedicamento", "Medicamento")'">
-                        + Adicionar Novo Medicamento
+
+                        + Novo medicamento
+
                     </button>
 
                     <button type="submit" class="btn-padrao">
-                        Adicionar Lembrete
+                        Adicionar
                     </button>
+
                 </div>
+
             </form>
+
         </div>
 
     </div>
 </div>
 
+<audio id="notificationSound">
+    <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">
+</audio>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+
 <style>
+
     body {
-        background-color: #f0f8ff;
-        font-family: Arial, sans-serif;
+        background: #f0f8ff;
+        font-family: Arial;
     }
 
     .cadastro-container {
         display: flex;
         justify-content: center;
-        align-items: center;
         padding: 40px;
     }
 
     .cadastro-card {
-        background-color: white;
+        background: white;
         padding: 30px;
         border-radius: 12px;
-        width: 100%;
-        max-width: 850px;
+        width: 850px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     .cadastro-titulo {
         text-align: center;
         color: #5a9fa8;
-        margin-bottom: 20px;
     }
 
     .input-padrao {
@@ -124,11 +133,10 @@
         padding: 10px;
         border-radius: 8px;
         border: 1px solid #a8dadc;
-        margin-bottom: 10px;
     }
 
     .btn-padrao {
-        background-color: #a8dadc;
+        background: #a8dadc;
         color: white;
         border: none;
         padding: 10px 15px;
@@ -137,36 +145,26 @@
     }
 
         .btn-padrao:hover {
-            background-color: #5a9fa8;
+            background: #5a9fa8;
         }
 
-    .top-bar {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
     .calendar-card {
-        background: #ffffff;
-        border-radius: 10px;
+        margin-top: 20px;
         padding: 20px;
         border: 1px solid #a8dadc;
-        margin-bottom: 20px;
+        border-radius: 10px;
     }
 
     .calendar-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 15px;
     }
 
     .calendar-grid {
         display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 6px;
-        text-align: center;
+        grid-template-columns: repeat(7,1fr);
+        gap: 5px;
     }
 
     .day {
@@ -178,99 +176,320 @@
     }
 
         .day.selected {
-            background-color: #a8dadc;
+            background: #5a9fa8;
             color: white;
-            font-weight: bold;
         }
 
-    .campo {
-        margin-bottom: 15px;
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #4CAF50;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: 0.3s;
     }
 
-    .acoes {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 20px;
-    }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-    .btn-link {
-        background: none;
-        border: none;
-        color: #5a9fa8;
-        cursor: pointer;
-        text-decoration: underline;
-    }
+        .toast.error {
+            background: #e74c3c;
+        }
 </style>
+
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+
 <script>
+
+    let today = new Date();
+
+    let selectedDate =
+        today.getFullYear() + "-" +
+        String(today.getMonth() + 1).padStart(2, '0') + "-" +
+        String(today.getDate()).padStart(2, '0');
+
+    function showToast(message, error = false) {
+
+        let toast = document.getElementById("toast");
+
+        toast.innerText = message;
+
+        toast.classList.remove("error");
+
+        if (error)
+            toast.classList.add("error");
+
+        toast.classList.add("show");
+
+        setTimeout(() => {
+
+            toast.classList.remove("show");
+
+        }, 3000);
+
+    }
+
+
+    function loadReminders(date) {
+
+        selectedDate = date;
+
+        $("#ListaLembretesContainer")
+            .load("/Lembrete/GetReminders?date=" + date);
+
+    }
+
+
+
+    function excluirLembrete(id) {
+
+        fetch("/Lembrete/Excluir", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({ id: id })
+
+        })
+            .then(r => r.json())
+            .then(res => {
+
+                if (res.success) {
+
+                    showToast("Excluído com sucesso");
+
+                    loadReminders(selectedDate);
+
+                }
+                else {
+
+                    showToast("Erro ao excluir", true);
+
+                }
+
+            });
+
+    }
+
+
     $(document).ready(function () {
 
+        if ("Notification" in window) {
+
+            if (Notification.permission !== "granted") {
+
+                Notification.requestPermission()
+                    .then(permission => {
+
+                        console.log("Permissão:", permission);
+
+                    });
+
+            }
+
+        }
+
         let currentMonth = new Date();
-        let selectedDate = '';
-        const monthYear = $('#monthYear');
-        const calendarGrid = $('#calendarGrid');
 
         function renderCalendar() {
-            monthYear.text(currentMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }));
-            calendarGrid.html('');
 
-            const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
-            const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+            $("#monthYear").text(
 
-            for (let i = 0; i < firstDay.getDay(); i++) {
-                calendarGrid.append('<div></div>');
-            }
+                currentMonth.toLocaleDateString("pt-BR", {
 
-            for (let day = 1; day <= lastDay.getDate(); day++) {
-                const date = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const div = $(`<div class="day">${day}</div>`);
+                    month: "long",
+                    year: "numeric"
+
+                })
+
+            );
+
+            $("#calendarGrid").html("");
+
+            let firstDay = new Date(
+                currentMonth.getFullYear(),
+                currentMonth.getMonth(),
+                1
+            );
+
+            let lastDay = new Date(
+                currentMonth.getFullYear(),
+                currentMonth.getMonth() + 1,
+                0
+            );
+
+            for (let i = 0; i < firstDay.getDay(); i++)
+                $("#calendarGrid").append("<div></div>");
+
+            for (let d = 1; d <= lastDay.getDate(); d++) {
+
+                let date =
+                    currentMonth.getFullYear() + "-" +
+                    String(currentMonth.getMonth() + 1).padStart(2, '0') + "-" +
+                    String(d).padStart(2, '0');
+
+                let div = $("<div class='day'>" + d + "</div>");
+
+                if (date == selectedDate)
+                    div.addClass("selected");
 
                 div.click(function () {
-                    $('.day').removeClass('selected');
-                    $(this).addClass('selected');
-                    selectedDate = date;
+
+                    $(".day").removeClass("selected");
+
+                    $(this).addClass("selected");
+
                     loadReminders(date);
+
                 });
 
-                calendarGrid.append(div);
+                $("#calendarGrid").append(div);
+
             }
+
+            loadReminders(selectedDate);
+
         }
 
-        $('#prevMonth').click(() => {
+
+        $("#prevMonth").click(() => {
+
             currentMonth.setMonth(currentMonth.getMonth() - 1);
+
             renderCalendar();
+
         });
 
-        $('#nextMonth').click(() => {
+
+        $("#nextMonth").click(() => {
+
             currentMonth.setMonth(currentMonth.getMonth() + 1);
+
             renderCalendar();
+
         });
 
-        function loadReminders(date) {
-            $('#ListaLembretesContainer').load(`/Lembrete/GetReminders?date=${date}`);
-        }
 
-        $('#addReminderForm').submit(function (e) {
+
+        $("#addReminderForm").submit(function (e) {
+
             e.preventDefault();
 
-            fetch('/Lembrete/Create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+            fetch("/Lembrete/Create", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
                 body: JSON.stringify({
-                    Descricao: $('#descricao').val(),
-                    DataHora: selectedDate + 'T' + $('#dataHora').val(),
-                    MedicamentoId: $('#MedicamentoId').val() || null,
-                    DosagemId: $('#DosagemId').val() || null
+
+                    Descricao: $("#descricao").val(),
+
+                    DataHora: selectedDate + "T" + $("#dataHora").val(),
+
+                    MedicamentoId: $("#MedicamentoId").val() || null
+
                 })
-            }).then(() => {
-                this.reset();
-                renderCalendar();
-            });
+
+            })
+                .then(r => r.json())
+                .then(res => {
+
+                    if (res.success) {
+
+                        showToast("Criado com sucesso");
+
+                        this.reset();
+
+                        loadReminders(selectedDate);
+
+                    }
+                    else {
+
+                        showToast("Erro ao criar", true);
+
+                    }
+
+                });
+
         });
 
+
         renderCalendar();
+
     });
+
+    function dispararNotificacao(descricao) {
+
+        if (!window.lembretesDisparados)
+            window.lembretesDisparados = {};
+
+        if (window.lembretesDisparados[descricao])
+            return;
+
+        window.lembretesDisparados[descricao] = true;
+
+        let audio = document.getElementById("notificationSound");
+
+        if (audio) {
+
+            audio.currentTime = 0;
+
+            audio.play().catch(() => { });
+
+        }
+
+        showToast("🔔 Lembrete: " + descricao);
+
+        if ("Notification" in window && Notification.permission === "granted") {
+
+            new Notification("🔔 Lembrete", {
+                body: descricao,
+                icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
+            });
+
+        }
+
+    }
+
+    function verificarLembretes() {
+
+        let agora = new Date();
+
+        document.querySelectorAll(".lembrete-item")
+            .forEach(item => {
+
+                let dataStr = item.dataset.datetime;
+
+                if (!dataStr) return;
+
+                let data = new Date(dataStr);
+
+                let diff = Math.abs(agora.getTime() - data.getTime());
+
+                if (diff <= 1000) {
+
+                    dispararNotificacao(item.dataset.descricao);
+
+                }
+
+            });
+
+    }
+
+    setInterval(verificarLembretes, 1000);
 </script>

@@ -1,101 +1,93 @@
 ﻿@model IList<meuCuidado.Dominio.Models.Lembrete>
 
-@if (Model != null && Model.Count() != 0)
-{
-    <div class="table-responsive card shadow-sm p-3">
-        <table class="table table-borderless align-middle mb-0">
-            <thead class="border-bottom">
-                <tr class="text-muted">
-                    <th>Descrição</th>
-                    <th>Data e Hora</th>
-                    <th>Medicamento</th>
-                    <th class="text-center">Ações</th>
+<table class="table-lembretes">
+
+    <thead>
+        <tr>
+            <th>Descrição</th>
+            <th>Data e Hora</th>
+            <th>Medicamento</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="4">Nenhum lembrete</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <tr class="lembrete-item"
+                    data-id="@item.Id"
+                    data-datetime="@item.DataHora.ToString("yyyy-MM-ddTHH:mm:ss")"
+                    data-descricao="@item.Descricao">
+
+                    <td>@item.Descricao</td>
+
+                    <td>
+                        @item.DataHora.ToString("dd/MM/yyyy HH:mm")
+                    </td>
+
+                    <td>
+                        @(item.Medicamento != null
+                        ? item.Medicamento.Nome + " " + item.Medicamento.Dosagem
+                        : "-")
+                    </td>
+
+                    <td>
+                        <button class="btn-delete"
+                                onclick="excluirLembrete(@item.Id)">
+                            🗑️
+                        </button>
+                    </td>
+
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr class="table-row">
-                        <td class="fw-medium">
-                            @Html.DisplayFor(modelItem => item.Descricao)
-                        </td>
-                        <td class="text-muted">
-                            @Html.DisplayFor(modelItem => item.DataHora)
-                        </td>
-                        <td>
-                            @if (item.Medicamento != null)
-                            {
-                                <span class="badge rounded-pill bg-info-subtle text-info px-3 py-2"
-                                      data-toggle="tooltip"
-                                      title="@item.Medicamento.Nome - Dosagem: @item.Medicamento.Dosagem">
-                                    💊 @item.Medicamento.Nome
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="text-muted">—</span>
-                            }
-                        </td>
-                        <td class="text-center">
-                            <a href="@Url.Action("Editar", "Lembrete", new { id = item.Id })"
-                               class="btn btn-sm btn-outline-primary me-1">
-                                <i class="fa fa-pencil"></i>
-                            </a>
-                            <a href="@Url.Action("Excluir", "Lembrete", new { id = item.Id })"
-                               class="btn btn-sm btn-outline-danger">
-                                <i class="fa fa-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
-else
-{
-    <div class="text-center text-muted mt-4">
-        <i class="fa fa-calendar-times fa-2x mb-2"></i>
-        <p>Não existem lembretes para exibir na data selecionada.</p>
-    </div>
-}
+            }
+        }
+
+    </tbody>
+
+</table>
+
 
 <style>
-    .table-row:hover {
-        background-color: #f8f9fa;
-        transition: background-color 0.2s ease;
+
+    .table-lembretes {
+        width: 100%;
+        border-collapse: collapse;
     }
 
-    .fw-medium {
-        font-weight: 500;
-    }
+        .table-lembretes th {
+            background: #f0f8ff;
+            padding: 10px;
+        }
 
-    .badge.bg-info-subtle {
-        background-color: #e7f6f8;
-        cursor: pointer;
-    }
+        .table-lembretes td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
 
-    .btn-outline-primary,
-    .btn-outline-danger {
+    .btn-delete {
+        background: white;
+        border: 2px solid #ff4d4d;
+        color: #ff4d4d;
         border-radius: 50%;
-        width: 36px;
-        height: 36px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
+        width: 38px;
+        height: 38px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: 0.2s;
     }
 
-        .btn-outline-primary:hover,
-        .btn-outline-danger:hover {
-            transform: scale(1.05);
+        .btn-delete:hover {
+            background: #ff4d4d;
+            color: white;
+            transform: scale(1.1);
         }
 </style>
-
-
-<!-- Script para tooltip -->
-<script>
-    $(document).ready(function () {
-        $('[data-toggle="tooltip"]').tooltip();
-    });
-</script>
