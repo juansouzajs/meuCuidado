@@ -8,6 +8,8 @@ namespace meuCuidado.Dominio.ViewModels
     {
         public Usuario Usuario { get; set; }
 
+        public string ConfirmarSenha { get; set; }
+
         [Required(ErrorMessage = "O tipo de usuário é obrigatório.")]
         public TipoUsuario TipoUsuario {  get; set; }
     }

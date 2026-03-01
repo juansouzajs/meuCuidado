@@ -1,101 +1,506 @@
 ﻿@model IList<meuCuidado.Dominio.Models.Lembrete>
 
-@if (Model != null && Model.Count() != 0)
-{
-    <div class="table-responsive card shadow-sm p-3">
-        <table class="table table-borderless align-middle mb-0">
-            <thead class="border-bottom">
-                <tr class="text-muted">
-                    <th>Descrição</th>
-                    <th>Data e Hora</th>
-                    <th>Medicamento</th>
-                    <th class="text-center">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr class="table-row">
-                        <td class="fw-medium">
-                            @Html.DisplayFor(modelItem => item.Descricao)
-                        </td>
-                        <td class="text-muted">
-                            @Html.DisplayFor(modelItem => item.DataHora)
-                        </td>
-                        <td>
-                            @if (item.Medicamento != null)
-                            {
-                                <span class="badge rounded-pill bg-info-subtle text-info px-3 py-2"
-                                      data-toggle="tooltip"
-                                      title="@item.Medicamento.Nome - Dosagem: @item.Medicamento.Dosagem">
-                                    💊 @item.Medicamento.Nome
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="text-muted">—</span>
-                            }
-                        </td>
-                        <td class="text-center">
-                            <a href="@Url.Action("Editar", "Lembrete", new { id = item.Id })"
-                               class="btn btn-sm btn-outline-primary me-1">
-                                <i class="fa fa-pencil"></i>
-                            </a>
-                            <a href="@Url.Action("Excluir", "Lembrete", new { id = item.Id })"
-                               class="btn btn-sm btn-outline-danger">
-                                <i class="fa fa-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+<table class="table-lembretes">
+
+    <thead>
+        <tr>
+            <th>Descrição</th>
+            <th>Hora</th>
+            <th>Medicamento</th>
+            <th class="col-acoes">Ações</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="4" class="empty">
+                    Nenhum lembrete encontrado
+                </td>
+            </tr>
+        }
+
+        @foreach (var item in Model)
+        {
+            <tr class="lembrete-item"
+                data-datetime="@item.DataHora.ToString("yyyy-MM-ddTHH:mm:ss")"
+                data-descricao="@item.Descricao">
+
+                <!-- DESCRIÇÃO -->
+                <td class="col-descricao">
+                    @item.Descricao
+                </td>
+
+                <!-- HORA -->
+                <td class="col-hora">
+                    @item.DataHora.ToString("HH:mm")
+                </td>
+
+                <!-- MEDICAMENTO -->
+                <td class="col-medicamento">
+
+                    @if (item.Medicamento != null)
+                    {
+                        <div class="med-cell">
+
+                            <span class="med-nome">
+                                @item.Medicamento.Nome @item.Medicamento.Dosagem
+                            </span>
+
+                            <button type="button"
+                                    class="btn-lupa"
+                                    title="Ver detalhes"
+                                    onclick="abrirModalMedicamento(
+                                        '@item.Medicamento.Nome',
+                                        '@item.Medicamento.Dosagem',
+                                        '@item.Medicamento.FormaFarmaceutica',
+                                        '@item.Medicamento.DuracaoEmDias',
+                                        '@item.Medicamento.Observacoes'
+                                    )">
+
+                                <!-- SVG lupa -->
+                                <svg width="16" height="16" viewBox="0 0 24 24">
+                                    <circle cx="11" cy="11" r="7"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            fill="none" />
+                                    <line x1="16.65" y1="16.65"
+                                          x2="21" y2="21"
+                                          stroke="currentColor"
+                                          stroke-width="2" />
+                                </svg>
+
+                            </button>
+
+                        </div>
+                    }
+
+                </td>
+                <td class="col-acoes">
+
+                    <div class="acoes-botoes">
+
+                        <button onclick="abrirModalDuplicar(@item.Id)"
+                                class="btn-icon btn-duplicar"
+                                title="Duplicar lembrete">
+
+                            📄
+
+                        </button>
+
+                        <button onclick="excluirLembrete(@item.Id)"
+                                class="btn-icon btn-excluir"
+                                title="Excluir lembrete">
+
+                            🗑
+
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+
+<!-- MODAL DETALHES MEDICAMENTO -->
+
+<div id="modalMedicamento" class="modal-overlay">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <span class="modal-title">
+                💊 Detalhes do medicamento
+            </span>
+
+            <button onclick="fecharModalMedicamento()" class="btn-close">
+                ×
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            <div class="modal-item">
+                <label>Nome</label>
+                <span id="modalNome"></span>
+            </div>
+
+            <div class="modal-item">
+                <label>Dosagem</label>
+                <span id="modalDosagem"></span>
+            </div>
+
+            <div class="modal-item">
+                <label>Forma farmacêutica</label>
+                <span id="modalForma"></span>
+            </div>
+
+            <div class="modal-item">
+                <label>Duração</label>
+                <span id="modalDuracao"></span>
+            </div>
+
+            <div class="modal-item">
+                <label>Observações</label>
+                <span id="modalObs"></span>
+            </div>
+
+        </div>
+
     </div>
-}
-else
-{
-    <div class="text-center text-muted mt-4">
-        <i class="fa fa-calendar-times fa-2x mb-2"></i>
-        <p>Não existem lembretes para exibir na data selecionada.</p>
+
+</div>
+
+<div id="modalDuplicar" class="modal-overlay">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+            <span class="modal-title">Duplicar lembrete</span>
+
+            <button onclick="fecharModalDuplicar()" class="btn-close">
+                ×
+            </button>
+        </div>
+
+        <div class="modal-item">
+            <label>Data</label>
+            <input type="date" id="dupData" class="input-padrao">
+        </div>
+
+        <div class="modal-item">
+            <label>Hora</label>
+            <input type="time" id="dupHora" class="input-padrao">
+        </div>
+
+        <br>
+
+        <button onclick="confirmarDuplicar()"
+                class="btn-padrao"
+                style="width:100%">
+            Duplicar
+        </button>
+
     </div>
-}
+
+</div>
+
 
 <style>
-    .table-row:hover {
-        background-color: #f8f9fa;
-        transition: background-color 0.2s ease;
+
+    .col-acoes {
+        width: 90px;
+        text-align: center;
     }
 
-    .fw-medium {
+    .acoes-botoes {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        background: #f1f8fb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        transition: 0.2s;
+    }
+
+        .btn-icon:hover {
+            transform: scale(1.1);
+        }
+
+    .btn-duplicar:hover {
+        background: #d8f3dc;
+    }
+
+    .btn-excluir:hover {
+        background: #f8d7da;
+    }
+
+    /* estilo base */
+    .btn-acao {
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 6px;
+        border-radius: 6px;
+        transition: 0.15s;
+    }
+
+    /* duplicar */
+    .btn-duplicar:hover {
+        background: #d8f3dc;
+        transform: scale(1.15);
+    }
+
+    /* excluir */
+    .btn-excluir:hover {
+        background: #f8d7da;
+        transform: scale(1.15);
+    }
+    
+    .table-lembretes {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+        .table-lembretes thead {
+            background: #f1f8fb;
+        }
+
+        .table-lembretes th {
+            padding: 14px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #5a9fa8;
+        }
+
+        .table-lembretes td {
+            padding: 14px;
+            border-top: 1px solid #eef3f6;
+        }
+
+        .table-lembretes tbody tr {
+            transition: 0.15s;
+        }
+
+            .table-lembretes tbody tr:hover {
+                background: #f8fcfe;
+            }
+
+    .empty {
+        text-align: center;
+        padding: 20px;
+        color: #999;
+    }
+
+
+    /* COLUNAS */
+
+    .col-acoes {
+        width: 60px;
+        text-align: right;
+    }
+
+    .col-hora {
+        width: 80px;
+    }
+
+    .col-medicamento {
+        width: 260px;
+    }
+
+
+    /* MEDICAMENTO */
+
+    .med-cell {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .med-nome {
         font-weight: 500;
     }
 
-    .badge.bg-info-subtle {
-        background-color: #e7f6f8;
+
+    /* LUPA */
+
+    .btn-lupa {
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: #5a9fa8;
+        opacity: 0.6;
+    }
+
+        .btn-lupa:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+
+    /* LIXEIRA */
+
+    .btn-excluir {
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: #e58f8f;
+        opacity: 0.7;
+    }
+
+        .btn-excluir:hover {
+            opacity: 1;
+            transform: scale(1.15);
+        }
+
+
+    /* MODAL */
+
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.2);
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-box {
+        background: white;
+        padding: 22px;
+        border-radius: 12px;
+        width: 340px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        animation: fadeIn 0.15s;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-weight: 600;
+    }
+
+    .btn-close {
+        border: none;
+        background: none;
+        font-size: 20px;
         cursor: pointer;
     }
 
-    .btn-outline-primary,
-    .btn-outline-danger {
-        border-radius: 50%;
-        width: 36px;
-        height: 36px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
+    .modal-item {
+        margin-top: 12px;
     }
 
-        .btn-outline-primary:hover,
-        .btn-outline-danger:hover {
-            transform: scale(1.05);
+        .modal-item label {
+            font-size: 12px;
+            color: #5a9fa8;
         }
+
+        .modal-item span {
+            font-size: 14px;
+        }
+
+
+    @@keyframes fadeIn {
+
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 </style>
 
 
-<!-- Script para tooltip -->
 <script>
-    $(document).ready(function () {
-        $('[data-toggle="tooltip"]').tooltip();
-    });
+
+    function abrirModalMedicamento(nome, dosagem, forma, duracao, obs) {
+
+        modalNome.innerText = nome || "-";
+        modalDosagem.innerText = dosagem || "-";
+        modalForma.innerText = forma || "-";
+        modalDuracao.innerText = duracao ? duracao + " dias" : "-";
+        modalObs.innerText = obs || "-";
+
+        modalMedicamento.style.display = "flex";
+    }
+
+    function fecharModalMedicamento() {
+
+        modalMedicamento.style.display = "none";
+    }
+
+    var duplicarId = null;
+
+    function abrirModalDuplicar(id) {
+        duplicarId = id;
+
+        let agora = new Date();
+
+        dupData.value = agora.toISOString().split('T')[0];
+        dupHora.value = agora.toTimeString().slice(0, 5);
+
+        modalDuplicar.style.display = "flex";
+    }
+
+    function fecharModalDuplicar() {
+        modalDuplicar.style.display = "none";
+    }
+
+    function confirmarDuplicar() {
+
+        var data = dupData.value;
+        var hora = dupHora.value;
+
+        if (!data || !hora) {
+            alert("Selecione data e hora");
+            return;
+        }
+
+        var novaDataHora = data + " " + hora;
+
+        fetch('/Lembrete/Duplicar', {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+
+            body:
+                'id=' + duplicarId +
+                '&novaDataHora=' + encodeURIComponent(novaDataHora)
+
+        })
+            .then(r => r.json())
+            .then(res => {
+
+                if (res.success) {
+
+                    fecharModalDuplicar();
+                    location.reload();
+
+                } else {
+
+                    alert("Erro ao duplicar");
+
+                }
+
+            })
+            .catch(() => alert("Erro ao duplicar"));
+    }
 </script>

@@ -3,127 +3,200 @@
     ViewBag.Title = "Adicionar Medicamento";
 }
 
-<div class="med-container">
-    <h2>Adicionar Medicamento</h2>
+<div class="cadastro-container">
 
-    @using (Html.BeginForm())
-    {
-        <div class="form-group">
-            @Html.LabelFor(model => model.Nome)
-            @Html.TextBoxFor(model => model.Nome, new { @class = "form-control" })
-        </div>
+    <div class="cadastro-card">
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Dosagem)
-            @Html.TextBoxFor(model => model.Dosagem, new { @class = "form-control" })
-        </div>
+        <h2 class="cadastro-titulo">
+            💊 Adicionar Medicamento
+        </h2>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.DataHoraPrimeiroAlerta)
-            @Html.TextBoxFor(model => model.DataHoraPrimeiroAlerta, new { @class = "form-control", type = "datetime-local" })
-        </div>
+        @using (Html.BeginForm())
+        {
+            <div class="form-grid">
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.FormaFarmaceutica)
-            @Html.TextBoxFor(model => model.FormaFarmaceutica, new { @class = "form-control" })
-        </div>
+                <div class="campo">
+                    <label>Nome do medicamento</label>
+                    @Html.TextBoxFor(model => model.Nome, new { @class = "input-padrao", placeholder = "Ex: Dipirona" })
+                </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.DuracaoEmDias)
-            @Html.TextBoxFor(model => model.DuracaoEmDias, new { @class = "form-control", type = "number" })
-        </div>
+                <div class="campo">
+                    <label>Dosagem</label>
+                    @Html.TextBoxFor(model => model.Dosagem, new { @class = "input-padrao", placeholder = "Ex: 500mg" })
+                </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Observacoes)
-            @Html.TextAreaFor(model => model.Observacoes, new { @class = "form-control", rows = 3 })
-        </div>
+                <div class="campo">
+                    <label>Forma farmacêutica</label>
+                    @Html.TextBoxFor(model => model.FormaFarmaceutica, new { @class = "input-padrao", placeholder = "Ex: Comprimido, cápsula..." })
+                </div>
 
-        <button type="submit" class="btn-primary">
-            Salvar Medicamento
-        </button>
-    }
+                <div class="campo">
+                    <label>Duração (dias)</label>
+                    @Html.TextBoxFor(model => model.DuracaoEmDias, new
+                    {
+                        @class = "input-padrao",
+                        type = "number",
+                        min = "1",
+                        placeholder = "Ex: 7"
+                    })
+                </div>
+
+                <div class="campo campo-full">
+                    <label>Observações</label>
+                    @Html.TextAreaFor(model => model.Observacoes, new
+                    {
+                        @class = "input-padrao",
+                        rows = "3",
+                        placeholder = "Informações adicionais..."
+                    })
+                </div>
+
+            </div>
+
+            <div class="acoes">
+
+                <a href="@Url.Action("Index")" class="btn-secundario">
+                    ← Voltar
+                </a>
+
+                <button type="submit" class="btn-padrao btn-salvar">
+                    ✔ Salvar Medicamento
+                </button>
+
+            </div>
+        }
+
+    </div>
+
 </div>
 
+
 <style>
+
     body {
-        background-color: #f4f6f8;
-        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: linear-gradient(135deg, #eef7fb, #fafdfe);
+        font-family: 'Segoe UI', Arial, sans-serif;
     }
 
-    .med-container {
-        max-width: 520px;
-        margin: 60px auto;
-        padding: 28px;
-        background-color: #ffffff;
+    .cadastro-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+    }
+
+    .cadastro-card {
+
+        background: white;
+        padding: 30px 35px;
         border-radius: 16px;
-        box-shadow: 0 10px 28px rgba(0,0,0,0.08);
-        animation: fadeIn 0.3s ease;
+        width: 600px;
+
+        box-shadow:
+            0 10px 25px rgba(90,159,168,0.12),
+            0 2px 6px rgba(0,0,0,0.05);
+
+        border: 1px solid #e3f2f4;
+
+        animation: fadeIn 0.25s ease;
     }
 
-        .med-container h2 {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 24px;
-            color: #1f2937;
-            text-align: center;
-        }
+    .cadastro-titulo {
 
-    .form-group {
-        margin-bottom: 16px;
+        text-align: center;
+        color: #5a9fa8;
+        font-weight: 600;
+        margin-bottom: 25px;
+        font-size: 22px;
     }
 
-        .form-group label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 6px;
-            display: block;
-        }
+    .form-grid {
 
-    .form-control {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .campo-full {
+        grid-column: span 2;
+    }
+
+    .campo label {
+
+        display: block;
+        font-size: 14px;
+        color: #5a9fa8;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+
+    .input-padrao {
+
         width: 100%;
         padding: 10px 12px;
-        border-radius: 10px;
-        border: 1px solid #d1d5db;
-        background-color: #f9fafb;
+        border-radius: 8px;
+        border: 1px solid #cfe8ec;
+        background: #fafdfe;
+        transition: all 0.2s;
         font-size: 14px;
-        transition: all 0.2s ease;
     }
 
-        .form-control:focus {
-            border-color: #3b82f6;
-            background-color: #ffffff;
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
-            outline: none;
-        }
+    .input-padrao:focus {
 
-    textarea.form-control {
-        resize: vertical;
+        outline: none;
+        border-color: #5a9fa8;
+        background: white;
+
+        box-shadow:
+            0 0 0 3px rgba(168,218,220,0.25);
     }
 
-    .btn-primary {
-        width: 100%;
-        margin-top: 10px;
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-        border: none;
+    .acoes {
+
+        margin-top: 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-padrao {
+
+        background: linear-gradient(135deg, #a8dadc, #5a9fa8);
         color: white;
-        padding: 12px;
-        border-radius: 12px;
-        font-size: 15px;
-        font-weight: 600;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 8px;
         cursor: pointer;
-        transition: all 0.25s ease;
+        font-weight: 500;
+        transition: 0.2s;
+        box-shadow: 0 4px 10px rgba(90,159,168,0.2);
     }
 
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 20px rgba(37,99,235,0.4);
-        }
+    .btn-padrao:hover {
+
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(90,159,168,0.25);
+    }
+
+    .btn-secundario {
+
+        text-decoration: none;
+        color: #5a9fa8;
+        font-weight: 500;
+        transition: 0.2s;
+    }
+
+    .btn-secundario:hover {
+
+        color: #3d7f87;
+        text-decoration: underline;
+    }
 
     @@keyframes fadeIn {
+
         from {
             opacity: 0;
-            transform: translateY(6px);
+            transform: translateY(10px);
         }
 
         to {
@@ -132,10 +205,4 @@
         }
     }
 
-    @@media (max-width: 480px) {
-        .med-container {
-            margin: 30px 16px;
-            padding: 22px;
-        }
-    }
 </style>

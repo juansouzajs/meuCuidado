@@ -19,67 +19,73 @@ namespace meuCuidado.Controllers
         public ActionResult Lembrete()
         {
             var medicamentos = _context.Medicamentos.ToList();
-            ViewBag.Medicamentos = medicamentos; // Envia lista de medicamentos para a view
-            var lembretes = new List<Lembrete>();
+            ViewBag.Medicamentos = medicamentos;
+
+            var hoje = DateTime.Today;
+
+            var lembretes = _context.Lembretes
+                .Include(l => l.Medicamento)
+                .Where(l => DbFunctions.TruncateTime(l.DataHora) == hoje)
+                .ToList();
+
             return View(lembretes);
         }
 
         [HttpPost]
-        public JsonResult Create(Lembrete lembrete) // TODO: Pegar a Dosagem do Medicamento
+        public JsonResult Create(Lembrete lembrete)
         {
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    lembrete.IdentificadorUnico = Guid.NewGuid();
-                    lembrete.RelacionamentoIdosoProfissional = new RelacionamentoIdosoProfissional();
-                    lembrete.RelacionamentoIdosoProfissionalId = 1; // Definir de acordo com a lógica do projeto
+                lembrete.IdentificadorUnico = Guid.NewGuid();
+                lembrete.RelacionamentoIdosoProfissionalId = 1;
 
-                    _context.Lembretes.Add(lembrete);
-                    _context.SaveChanges();
+                _context.Lembretes.Add(lembrete);
+                _context.SaveChanges();
 
-                    return Json(new { success = true });
-                }
-                catch (Exception)
-                {
-                    return Json(new { success = false });
-                }
+                return Json(new { success = true });
             }
-            return Json(new { success = false });
+            catch
+            {
+                return Json(new { success = false });
+            }
         }
 
         public ActionResult GetReminders(string date)
         {
             DateTime selectedDate;
+
             if (!DateTime.TryParse(date, out selectedDate))
-            {
-                return Json(new { success = false, message = "Data inválida." }, JsonRequestBehavior.AllowGet);
-            }
+                return PartialView("ListaLembretes", new List<Lembrete>());
 
             var lembretes = _context.Lembretes
-                        .Where(l => DbFunctions.TruncateTime(l.DataHora) == selectedDate.Date).Include(l => l.Medicamento) // Incluir o medicamento, se houver
-                        .ToList();
+                .Include(l => l.Medicamento)
+                .Where(l => DbFunctions.TruncateTime(l.DataHora) == selectedDate.Date)
+                .ToList();
 
             return PartialView("ListaLembretes", lembretes);
         }
 
-        public ActionResult Excluir(int id)
+        [HttpPost]
+        public JsonResult Excluir(int id)
         {
-            var lembrete = _context.Lembretes.Find(id);
-
-            // Verifica se o lembrete existe
-            if (lembrete == null)
+            try
             {
-                return HttpNotFound(); // Retorna erro 404 se não encontrar
+                var lembrete = _context.Lembretes.Find(id);
+
+                if (lembrete == null)
+                {
+                    return Json(new { success = false });
+                }
+
+                _context.Lembretes.Remove(lembrete);
+                _context.SaveChanges();
+
+                return Json(new { success = true });
             }
-
-            // Remove o lembrete
-            _context.Lembretes.Remove(lembrete);
-
-            // Salva as alterações no banco
-            _context.SaveChanges();
-
-            return RedirectToAction("Dashboard", "Dashboard");
+            catch
+            {
+                return Json(new { success = false });
+            }
         }
 
         [HttpPost, ActionName("Delete")]
@@ -89,6 +95,37 @@ namespace meuCuidado.Controllers
             _context.Lembretes.Remove(lembrete);
             _context.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public JsonResult Duplicar(int id, DateTime novaDataHora)
+        {
+            try
+            {
+                var original = _context.Lembretes
+                    .FirstOrDefault(l => l.Id == id);
+
+                if (original == null)
+                    return Json(new { success = false });
+
+                var novo = new Lembrete
+                {
+                    Descricao = original.Descricao,
+                    DataHora = novaDataHora,
+                    MedicamentoId = original.MedicamentoId,
+                    RelacionamentoIdosoProfissionalId = original.RelacionamentoIdosoProfissionalId,
+                    IdentificadorUnico = Guid.NewGuid()
+                };
+
+                _context.Lembretes.Add(novo);
+                _context.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
         }
     }
 }

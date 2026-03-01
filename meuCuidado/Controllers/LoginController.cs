@@ -24,7 +24,7 @@ namespace meuCuidado.Controllers
 
         // Método para realizar login e autenticação
         [HttpPost]
-        public ActionResult Login(string email, string senha, string returnUrl)
+        public ActionResult RealizarLogin(string email, string senha, string returnUrl)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace meuCuidado.Controllers
         public ActionResult ReenviarCodigoAutenticacao(string email, string senha, string returnUrl)
         {
             senha = Session["SenhaCodificada"].ToString();
-            return Login(email, senha, returnUrl);
+            return RealizarLogin(email, senha, returnUrl);
         }
 
         // Métodos para login com Google

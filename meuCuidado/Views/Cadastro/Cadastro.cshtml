@@ -46,7 +46,24 @@
 
             <div class="form-group">
                 @Html.LabelFor(m => m.Usuario.Senha)
-                @Html.PasswordFor(m => m.Usuario.Senha, new { @class = "form-control", placeholder = "Crie uma senha segura" })
+                @Html.PasswordFor(m => m.Usuario.Senha, new
+                {
+                    @class = "form-control",
+                    id = "senha",
+                    placeholder = "Crie uma senha segura"
+                })
+                <span id="senhaMensagem" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Confirmar Senha")
+                @Html.PasswordFor(m => m.ConfirmarSenha, new
+                {
+                    @class = "form-control",
+                    id = "confirmarSenha",
+                    placeholder = "Repita sua senha"
+                })
+                <span id="confirmarMensagem" class="text-danger"></span>
             </div>
 
             <div class="form-group">
@@ -59,7 +76,7 @@
                 )
             </div>
 
-            <button type="submit" class="btn-primary-auth">
+            <button type="submit" id="btnCadastrar" class="btn-primary-auth">
                 Criar conta
             </button>
         }
@@ -87,60 +104,100 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+
+        // ======== MÁSCARA DE TELEFONE (SEU CÓDIGO ORIGINAL) ========
         const input = document.getElementById("telefone");
-        if (!input) return;
+        if (input) {
+            const PREFIX = "+55 ";
 
-        const PREFIX = "+55 ";
-
-        // Garante que o prefixo sempre exista
-        if (!input.value.startsWith(PREFIX)) {
-            input.value = PREFIX;
-        }
-
-        input.addEventListener("input", function () {
-            // Se tentar apagar o +55, restaura
             if (!input.value.startsWith(PREFIX)) {
                 input.value = PREFIX;
             }
 
-            // Só trabalha com o que vem depois do +55
-            let digits = input.value.substring(PREFIX.length).replace(/\D/g, "");
+            input.addEventListener("input", function () {
+                if (!input.value.startsWith(PREFIX)) {
+                    input.value = PREFIX;
+                }
 
-            // Limite: DDD + número (11 dígitos)
-            if (digits.length > 11) {
-                digits = digits.substring(0, 11);
-            }
+                let digits = input.value.substring(PREFIX.length).replace(/\D/g, "");
 
-            let result = PREFIX;
+                if (digits.length > 11) {
+                    digits = digits.substring(0, 11);
+                }
 
-            // DDD
-            if (digits.length > 2) {
-                result += "(" + digits.substring(0, 2) + ") ";
-                digits = digits.substring(2);
-            } else {
-                result += digits;
+                let result = PREFIX;
+
+                if (digits.length > 2) {
+                    result += "(" + digits.substring(0, 2) + ") ";
+                    digits = digits.substring(2);
+                } else {
+                    result += digits;
+                    input.value = result;
+                    return;
+                }
+
+                if (digits.length <= 4) {
+                    result += digits;
+                } else if (digits.length <= 8) {
+                    result += digits.substring(0, 4) + "-" + digits.substring(4);
+                } else {
+                    result += digits.substring(0, 5) + "-" + digits.substring(5);
+                }
+
                 input.value = result;
-                return;
-            }
+            });
 
-            // Número
-            if (digits.length <= 4) {
-                result += digits;
-            } else if (digits.length <= 8) {
-                result += digits.substring(0, 4) + "-" + digits.substring(4);
+            input.addEventListener("keydown", function (e) {
+                if (input.selectionStart < PREFIX.length) {
+                    input.setSelectionRange(PREFIX.length, PREFIX.length);
+                }
+            });
+        }
+
+        // ======== VALIDAÇÃO DE SENHA EM TEMPO REAL ========
+
+        const senha = document.getElementById("senha");
+        const confirmar = document.getElementById("confirmarSenha");
+
+        const msgSenha = document.getElementById("senhaMensagem");
+        const msgConfirmar = document.getElementById("confirmarMensagem");
+
+        const botao = document.getElementById("btnCadastrar");
+
+        function validarSenhaForte(valor) {
+            const min = valor.length >= 6;
+            const letra = /[A-Za-z]/.test(valor);
+            const numero = /[0-9]/.test(valor);
+
+            return min && letra && numero;
+        }
+
+        function validarFormulario() {
+            const s = senha.value;
+            const c = confirmar.value;
+
+            let senhaValida = validarSenhaForte(s);
+            let senhasIguais = s === c && s.length > 0;
+
+            if (!senhaValida) {
+                msgSenha.textContent = "A senha deve ter pelo menos 6 caracteres, letras e números.";
             } else {
-                result += digits.substring(0, 5) + "-" + digits.substring(5);
+                msgSenha.textContent = "";
             }
 
-            input.value = result;
-        });
-
-        // Impede cursor antes do +55
-        input.addEventListener("keydown", function (e) {
-            if (input.selectionStart < PREFIX.length) {
-                input.setSelectionRange(PREFIX.length, PREFIX.length);
+            if (!senhasIguais) {
+                msgConfirmar.textContent = "As senhas não conferem.";
+            } else {
+                msgConfirmar.textContent = "";
             }
-        });
+
+            botao.disabled = !(senhaValida && senhasIguais);
+        }
+
+        senha.addEventListener("input", validarFormulario);
+        confirmar.addEventListener("input", validarFormulario);
+
+        validarFormulario();
     });
 </script>
 
@@ -221,6 +278,11 @@
             background: #3da59b;
         }
 
+        .btn-primary-auth:disabled {
+            background: #a0cfc9;
+            cursor: not-allowed;
+        }
+
     .divider {
         text-align: center;
         margin: 20px 0;
@@ -288,4 +350,3 @@
             text-decoration: none;
         }
 </style>
-
