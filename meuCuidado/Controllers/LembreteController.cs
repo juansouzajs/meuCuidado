@@ -96,5 +96,36 @@ namespace meuCuidado.Controllers
             _context.SaveChanges();
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public JsonResult Duplicar(int id, DateTime novaDataHora)
+        {
+            try
+            {
+                var original = _context.Lembretes
+                    .FirstOrDefault(l => l.Id == id);
+
+                if (original == null)
+                    return Json(new { success = false });
+
+                var novo = new Lembrete
+                {
+                    Descricao = original.Descricao,
+                    DataHora = novaDataHora,
+                    MedicamentoId = original.MedicamentoId,
+                    RelacionamentoIdosoProfissionalId = original.RelacionamentoIdosoProfissionalId,
+                    IdentificadorUnico = Guid.NewGuid()
+                };
+
+                _context.Lembretes.Add(novo);
+                _context.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
     }
 }

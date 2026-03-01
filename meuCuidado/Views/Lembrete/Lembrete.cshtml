@@ -25,9 +25,9 @@
         <!-- Calendário -->
         <div id="calendar" class="calendar-card">
             <div class="calendar-header">
-                <button id="prevMonth" class="btn-padrao">&lt;</button>
+                <button id="prevMonth" class="btn-padrao" style="border-radius: 50%">&lt;</button>
                 <h4 id="monthYear"></h4>
-                <button id="nextMonth" class="btn-padrao">&gt;</button>
+                <button id="nextMonth" class="btn-padrao" style="border-radius: 50%">&gt;</button>
             </div>
 
             <div class="calendar-grid" id="calendarGrid"></div>
@@ -64,7 +64,7 @@
                         @foreach (var medicamento in ViewBag.Medicamentos)
                         {
                             <option value="@medicamento.Id">
-                                @medicamento.Nome
+                                @medicamento.Nome @medicamento.Dosagem
                             </option>
                         }
 
@@ -98,108 +98,212 @@
     <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">
 </audio>
 
-<!-- TOAST -->
 <div id="toast" class="toast"></div>
 
 
 <style>
-
     body {
-        background: #f0f8ff;
-        font-family: Arial;
+        background: #eef7fb;
+        font-family: Arial, sans-serif;
     }
 
     .cadastro-container {
         display: flex;
         justify-content: center;
-        padding: 40px;
+        padding: 40px 20px;
     }
 
     .cadastro-card {
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        width: 850px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        background: #ffffff;
+        padding: 28px 32px;
+        border-radius: 14px;
+        width: 880px;
+        box-shadow: 0 6px 18px rgba(90,159,168,0.15);
+        border: 1px solid #e3f2f4;
     }
 
     .cadastro-titulo {
         text-align: center;
         color: #5a9fa8;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .top-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .selectPessoa {
+        flex: 1;
     }
 
     .input-padrao {
         width: 100%;
-        padding: 10px;
+        padding: 10px 12px;
         border-radius: 8px;
         border: 1px solid #a8dadc;
+        background: #fafdfe;
+        transition: 0.2s;
     }
+
+        .input-padrao:focus {
+            outline: none;
+            border-color: #5a9fa8;
+            box-shadow: 0 0 0 2px rgba(168,218,220,0.3);
+        }
 
     .btn-padrao {
         background: #a8dadc;
         color: white;
         border: none;
-        padding: 10px 15px;
+        padding: 9px 16px;
         border-radius: 8px;
         cursor: pointer;
+        transition: 0.2s;
+        font-weight: 500;
     }
 
         .btn-padrao:hover {
             background: #5a9fa8;
         }
 
+    .btn-add {
+        width: 40px;
+        font-size: 18px;
+        border-radius: 50%;
+    }
+
+    .btn-link {
+        background: none;
+        border: none;
+        color: #5a9fa8;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
     .calendar-card {
-        margin-top: 20px;
-        padding: 20px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        padding: 18px;
         border: 1px solid #a8dadc;
         border-radius: 10px;
+        background: #fafdfe;
     }
 
     .calendar-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 10px;
+    }
+
+    #monthYear {
+        color: #5a9fa8;
+        font-weight: 600;
     }
 
     .calendar-grid {
         display: grid;
-        grid-template-columns: repeat(7,1fr);
-        gap: 5px;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
     }
 
     .day {
         padding: 10px;
+        text-align: center;
         background: #f0f8ff;
-        border-radius: 6px;
+        border-radius: 8px;
         cursor: pointer;
-        border: 1px solid #a8dadc;
+        border: 1px solid #d6eef2;
+        transition: 0.15s;
+        font-weight: 500;
     }
+
+        .day:hover {
+            background: #e3f4f6;
+        }
 
         .day.selected {
             background: #5a9fa8;
             color: white;
+            border: none;
         }
+
+    #ListaLembretesContainer {
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .form-area {
+        border-top: 1px solid #e3f2f4;
+        padding-top: 15px;
+    }
+
+        .form-area h3 {
+            color: #5a9fa8;
+            margin-bottom: 12px;
+        }
+
+    .campo {
+        margin-bottom: 12px;
+    }
+
+        .campo label {
+            display: block;
+            font-size: 14px;
+            color: #5a9fa8;
+            margin-bottom: 4px;
+        }
+
+    .acoes {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+    }
 
     .toast {
         position: fixed;
         bottom: 20px;
         right: 20px;
-        background: #4CAF50;
+        background: #a8dadc;
         color: white;
-        padding: 15px 20px;
-        border-radius: 8px;
+        padding: 14px 20px;
+        border-radius: 10px;
         opacity: 0;
         transform: translateY(20px);
         transition: 0.3s;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
+
+        /* vermelho pastel */
+        .toast.error {
+            background: #f4a3a3;
+        }
 
         .toast.show {
             opacity: 1;
             transform: translateY(0);
         }
 
-        .toast.error {
-            background: #e74c3c;
+    .btn-excluir {
+        background: #f4a3a3;
+        border: none;
+        color: white;
+        border-radius: 8px;
+        padding: 6px 10px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+        .btn-excluir:hover {
+            background: #e58f8f;
         }
 </style>
 
