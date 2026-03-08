@@ -1,4 +1,5 @@
-﻿using meuCuidado.Dominio.ViewModels;
+﻿using meuCuidado.Dominio.Models;
+using meuCuidado.Dominio.ViewModels;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using System;
@@ -35,6 +36,9 @@ namespace meuCuidado.Controllers
 
                 if (cuidadorDeIdoso != null || fisioterapeuta != null || idoso != null || tutor != null)
                 {
+                    if (cuidadorDeIdoso?.EtapaAcesso != EtapaAcesso.AcessoLiberado && fisioterapeuta?.EtapaAcesso != EtapaAcesso.AcessoLiberado && idoso?.EtapaAcesso != EtapaAcesso.AcessoLiberado && tutor?.EtapaAcesso != EtapaAcesso.AcessoLiberado)
+                        return Json(new { success = false, message = "Acesso negado! Aguarde a liberação." });
+
                     var claims = new[] { new Claim(ClaimTypes.Name, email) };
                     var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
 
@@ -144,12 +148,19 @@ namespace meuCuidado.Controllers
 
             if (codigoInserido == codigoCorreto)
             {
-                ViewBag.SuccessMessage = "Login realizado com sucesso.";
-                return Json(new { redirectUrl = Url.Action("Dashboard", "Dashboard") });
+                return Json(new
+                {
+                    success = true,
+                    redirectUrl = Url.Action("Dashboard", "Dashboard")
+                });
             }
             else
             {
-                return Json(new { success = false, message = "Código de autenticação inválido." });
+                return Json(new
+                {
+                    success = false,
+                    message = "Código de autenticação inválido."
+                });
             }
         }
 
@@ -158,6 +169,14 @@ namespace meuCuidado.Controllers
         {
             ViewBag.ShowPopup = false;
             return View("Login");
+        }
+
+        public ActionResult Logout()
+        {
+            Session.Clear();
+            Session.Abandon();
+
+            return RedirectToAction("Login", "Login");
         }
 
         // Método para redirecionar após o login

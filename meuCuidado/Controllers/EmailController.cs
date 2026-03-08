@@ -35,7 +35,7 @@ namespace meuCuidado.Controllers
             var mensagem = new MailMessage();
             var codigoAutenticacao = new Random().Next(10000, 99999);
 
-            mensagem.From = new MailAddress("72000953@aluno.faculdadecotemig.br");
+            mensagem.From = new MailAddress("no-reply@gmail.com");
             mensagem.To.Add(email);
             mensagem.Subject = "Código de Autenticação";
             mensagem.Body = $"Seu código de autenticação é: {codigoAutenticacao}";
@@ -46,7 +46,7 @@ namespace meuCuidado.Controllers
                 smtp.Host = "smtp.gmail.com"; // mesmo host configurado no web.config
                 smtp.Port = 587; // mesmo port configurado no web.config
                 smtp.EnableSsl = true; // mesmo enableSsl configurado no web.config
-                smtp.Credentials = new NetworkCredential("diovan.taylor@gmail.com", "jdit yrav nsjw qjwj");
+                smtp.Credentials = new NetworkCredential("juan.live45@gmail.com", "wcpk jfdi pmda ltmt");
                 smtp.Send(mensagem);
             }
 

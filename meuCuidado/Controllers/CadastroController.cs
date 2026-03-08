@@ -140,7 +140,7 @@ namespace meuCuidado.Controllers
 
                 _context.SaveChanges();
 
-                return RedirectToAction("Login", "Login"); // Redireciona para a tela de login
+                return RedirectToAction("Login", "Login");
             }
             catch (Exception ex)
             {
@@ -148,7 +148,6 @@ namespace meuCuidado.Controllers
             }
         }
 
-        // Tela de Cadastro do Profissional
         public ActionResult CadastroProfissional(CadastroViewModel pessoa)
         {
             return View("CadastroProfissional", pessoa);
@@ -163,7 +162,6 @@ namespace meuCuidado.Controllers
 
                 if (cadastroProfissionalViewModel.TipoUsuario == TipoUsuario.Cuidador)
                 {
-                    // MODEL PARA CADASTRO DE IDOSO
                     CuidadorDeIdoso cuidadorDeIdoso = new CuidadorDeIdoso
                     {
                         IdentificadorUnico = Guid.NewGuid(),
@@ -173,6 +171,7 @@ namespace meuCuidado.Controllers
                         Endereco = cadastroProfissionalViewModel.Usuario.Endereco,
                         Telefone = cadastroProfissionalViewModel.Usuario.Telefone,
                         Senha = cadastroProfissionalViewModel.Usuario.Senha,
+                        EtapaAcesso = EtapaAcesso.AguardandoAprovacao,
                         DataCadasto = DateTime.Now
                     };
 
@@ -182,7 +181,6 @@ namespace meuCuidado.Controllers
                 }
                 else if (cadastroProfissionalViewModel.TipoUsuario == TipoUsuario.Fisioterapeuta)
                 {
-                    // MODEL PARA CADASTRO DE TUTOR
                     Fisioterapeuta fisioterapeuta = new Fisioterapeuta
                     {
                         IdentificadorUnico = new Guid(),
@@ -192,6 +190,7 @@ namespace meuCuidado.Controllers
                         Endereco = cadastroProfissionalViewModel.Usuario.Endereco,
                         Telefone = cadastroProfissionalViewModel.Usuario.Telefone,
                         Senha = cadastroProfissionalViewModel.Usuario.Senha,
+                        EtapaAcesso = EtapaAcesso.AguardandoAprovacao,
                         DataCadasto = DateTime.Now
                     };
 

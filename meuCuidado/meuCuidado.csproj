@@ -170,6 +170,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AdministradorController.cs" />
     <Compile Include="Controllers\AjudaController.cs" />
     <Compile Include="Controllers\CadastroController.cs" />
     <Compile Include="Controllers\ChallengeResult.cs" />
@@ -191,6 +192,10 @@
     <Compile Include="Migrations\202602282223500_Inicial.cs" />
     <Compile Include="Migrations\202602282223500_Inicial.Designer.cs">
       <DependentUpon>202602282223500_Inicial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202603082149400_AddEtapaAcessoUsuario.cs" />
+    <Compile Include="Migrations\202603082149400_AddEtapaAcessoUsuario.Designer.cs">
+      <DependentUpon>202603082149400_AddEtapaAcessoUsuario.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -321,6 +326,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202602282223500_Inicial.resx">
       <DependentUpon>202602282223500_Inicial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202603082149400_AddEtapaAcessoUsuario.resx">
+      <DependentUpon>202603082149400_AddEtapaAcessoUsuario.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
