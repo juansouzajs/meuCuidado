@@ -23,20 +23,36 @@ namespace meuCuidado.Controllers
             return View();
         }
 
-        // Método para realizar login e autenticação
         [HttpPost]
         public ActionResult RealizarLogin(string email, string senha, string returnUrl)
         {
             try
             {
-                var cuidadorDeIdoso = _context.CuidadoresDeIdoso.FirstOrDefault(p => p.Email == email && p.Senha == senha);
-                var fisioterapeuta = _context.Fisioterapeutas.FirstOrDefault(p => p.Email == email && p.Senha == senha);
-                var idoso = _context.Idosos.FirstOrDefault(p => p.Email == email && p.Senha == senha);
-                var tutor = _context.Tutores.FirstOrDefault(p => p.Email == email && p.Senha == senha);
+                var cuidadorDeIdoso = _context.CuidadoresDeIdoso.FirstOrDefault(p => p.Email == email);
+                var fisioterapeuta = _context.Fisioterapeutas.FirstOrDefault(p => p.Email == email);
+                var idoso = _context.Idosos.FirstOrDefault(p => p.Email == email);
+                var tutor = _context.Tutores.FirstOrDefault(p => p.Email == email);
 
-                if (cuidadorDeIdoso != null || fisioterapeuta != null || idoso != null || tutor != null)
+                bool senhaValida = false;
+
+                if (cuidadorDeIdoso != null)
+                    senhaValida = SenhaHelper.VerificarSenha(senha, cuidadorDeIdoso.Senha);
+
+                else if (fisioterapeuta != null)
+                    senhaValida = SenhaHelper.VerificarSenha(senha, fisioterapeuta.Senha);
+
+                else if (idoso != null)
+                    senhaValida = SenhaHelper.VerificarSenha(senha, idoso.Senha);
+
+                else if (tutor != null)
+                    senhaValida = SenhaHelper.VerificarSenha(senha, tutor.Senha);
+
+                if (senhaValida)
                 {
-                    if (cuidadorDeIdoso?.EtapaAcesso != EtapaAcesso.AcessoLiberado && fisioterapeuta?.EtapaAcesso != EtapaAcesso.AcessoLiberado && idoso?.EtapaAcesso != EtapaAcesso.AcessoLiberado && tutor?.EtapaAcesso != EtapaAcesso.AcessoLiberado)
+                    if (cuidadorDeIdoso?.EtapaAcesso != EtapaAcesso.AcessoLiberado &&
+                        fisioterapeuta?.EtapaAcesso != EtapaAcesso.AcessoLiberado &&
+                        idoso?.EtapaAcesso != EtapaAcesso.AcessoLiberado &&
+                        tutor?.EtapaAcesso != EtapaAcesso.AcessoLiberado)
                         return Json(new { success = false, message = "Acesso negado! Aguarde a liberação." });
 
                     var claims = new[] { new Claim(ClaimTypes.Name, email) };
@@ -79,6 +95,7 @@ namespace meuCuidado.Controllers
                 return Json(new { success = false, message = "Erro interno: " + ex.Message });
             }
         }
+
 
         public ActionResult Autenticacao(AutenticacaoViewModel autenticacaoViewModel)
         {

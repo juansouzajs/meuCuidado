@@ -38,7 +38,7 @@ namespace meuCuidado.Controllers
                         CPF = pessoa.Usuario.CPF,
                         Endereco = pessoa.Usuario.Endereco,
                         Telefone = pessoa.Usuario.Telefone,
-                        Senha = pessoa.Usuario.Senha,
+                        Senha = SenhaHelper.HashSenha(pessoa.Usuario.Senha),
                         DataCadasto = DateTime.Now,
                         DataNascimento = DateTime.Now,
                         NecessidadesEspeciais = false
@@ -59,7 +59,7 @@ namespace meuCuidado.Controllers
                         CPF = pessoa.Usuario.CPF,
                         Endereco = pessoa.Usuario.Endereco,
                         Telefone = pessoa.Usuario.Telefone,
-                        Senha = pessoa.Usuario.Senha,
+                        Senha = SenhaHelper.HashSenha(pessoa.Usuario.Senha),
                         DataCadasto = DateTime.Now,
                         RelacaoComIdoso = "Tutor",
                         NecessidadesEspeciais = false
@@ -171,7 +171,7 @@ namespace meuCuidado.Controllers
                         CPF = cadastroProfissionalViewModel.Usuario.CPF,
                         Endereco = cadastroProfissionalViewModel.Usuario.Endereco,
                         Telefone = cadastroProfissionalViewModel.Usuario.Telefone,
-                        Senha = cadastroProfissionalViewModel.Usuario.Senha,
+                        Senha = SenhaHelper.HashSenha(cadastroProfissionalViewModel.Usuario.Senha),
                         EtapaAcesso = EtapaAcesso.AguardandoAprovacao,
                         DataCadasto = DateTime.Now
                     };
@@ -190,7 +190,7 @@ namespace meuCuidado.Controllers
                         CPF = cadastroProfissionalViewModel.Usuario.CPF,
                         Endereco = cadastroProfissionalViewModel.Usuario.Endereco,
                         Telefone = cadastroProfissionalViewModel.Usuario.Telefone,
-                        Senha = cadastroProfissionalViewModel.Usuario.Senha,
+                        Senha = SenhaHelper.HashSenha(cadastroProfissionalViewModel.Usuario.Senha),
                         EtapaAcesso = EtapaAcesso.AguardandoAprovacao,
                         DataCadasto = DateTime.Now
                     };
