@@ -285,6 +285,7 @@
     <Content Include="Views\Administrador\Administrador.cshtml" />
     <Content Include="Views\Administrador\SolicitacoesDetalhadas.cshtml" />
     <Content Include="Views\Cadastro\AguardandoAprovacao.cshtml" />
+    <Content Include="Views\Administrador\Solicitacoes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

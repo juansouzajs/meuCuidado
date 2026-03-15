@@ -1,0 +1,173 @@
+﻿@model IEnumerable<meuCuidado.Dominio.ViewModels.SolicitacaoProfissionalViewModel>
+
+@{
+    ViewBag.Title = "Solicitações de Profissionais";
+    Layout = null;
+}
+
+<div class="admin-wrapper">
+
+    <div class="admin-container">
+
+        <h1 class="admin-title">
+            Solicitações de Profissionais
+        </h1>
+
+        <p class="admin-subtitle">
+            Cadastros aguardando análise do administrador
+        </p>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="cards-grid">
+
+                @foreach (var solicitacao in Model)
+                {
+                    <div class="card solicitacao-card">
+
+                        <div class="card-header">
+                            <h3>@solicitacao.Nome</h3>
+                            <span class="badge pendente">Pendente</span>
+                        </div>
+
+                        <div class="card-body">
+                            <p><strong>Email:</strong> @solicitacao.Email</p>
+                            <p><strong>Tipo:</strong> @solicitacao.TipoProfissional</p>
+                            <p><strong>Solicitado em:</strong> @solicitacao.DataSolicitacao.ToString("dd/MM/yyyy")</p>
+                        </div>
+
+                        <div class="card-footer">
+                            <a href="@Url.Action("DetalheSolicitacao", "Administrador", new { id = solicitacao.Id })"
+                               class="btn-primary-auth">
+                                Ver Cadastro
+                            </a>
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="vazio-box">
+                Nenhuma solicitação pendente.
+            </div>
+        }
+
+    </div>
+
+</div>
+
+<style>
+
+    body {
+        background: linear-gradient(135deg,#e6f4f1,#f8fbff);
+        font-family: 'Segoe UI',sans-serif;
+    }
+
+    .admin-wrapper {
+        min-height: 100vh;
+        padding: 40px 20px;
+    }
+
+    .admin-container {
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    .admin-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #2f6f68;
+    }
+
+    .admin-subtitle {
+        color: #6c8f8b;
+        margin-bottom: 30px;
+    }
+
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill,minmax(280px,1fr));
+        gap: 24px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 16px;
+        padding: 22px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: 0.2s;
+    }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 40px rgba(0,0,0,0.12);
+        }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #344;
+        }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+        .badge.pendente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+    .card-body p {
+        margin: 6px 0;
+        font-size: 14px;
+        color: #556;
+    }
+
+    .card-footer {
+        margin-top: 18px;
+    }
+
+    .btn-primary-auth {
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+        height: 42px;
+        line-height: 42px;
+        background: #4db6ac;
+        border-radius: 10px;
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .btn-primary-auth:hover {
+            background: #3da59b;
+        }
+
+    .vazio-box {
+        margin-top: 30px;
+        padding: 30px;
+        background: white;
+        border-radius: 12px;
+        text-align: center;
+        color: #6c8f8b;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+</style>

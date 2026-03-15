@@ -201,10 +201,10 @@ namespace meuCuidado.Controllers
 
                 if (idUsuario != null && idUsuario != 0)
                 {
-                    SalvarDocumento(FotoDocumento, TipoDocumento.FotoDocumento, cadastroProfissionalViewModel.Usuario.Id);
-                    SalvarDocumento(Documento, TipoDocumento.Documento, cadastroProfissionalViewModel.Usuario.Id);
-                    SalvarDocumento(CertificadoBonsAntecedentes, TipoDocumento.CertificadoBonsAntecedentes, cadastroProfissionalViewModel.Usuario.Id);
-                    SalvarDocumento(CertificadoDispensa, TipoDocumento.CertificadoDispensa, cadastroProfissionalViewModel.Usuario.Id);
+                    SalvarDocumento(FotoDocumento, TipoDocumento.FotoDocumento, idUsuario.Value);
+                    SalvarDocumento(Documento, TipoDocumento.Documento, idUsuario.Value);
+                    SalvarDocumento(CertificadoBonsAntecedentes, TipoDocumento.CertificadoBonsAntecedentes, idUsuario.Value);
+                    SalvarDocumento(CertificadoDispensa, TipoDocumento.CertificadoDispensa, idUsuario.Value);
                 }
 
                 return RedirectToAction("AguardandoAprovacao");
@@ -272,7 +272,7 @@ namespace meuCuidado.Controllers
                     UsuarioId = usuarioId
                 };
 
-                //_context.Documentos.Add(documento);
+                _context.Documentos.Add(documento);
                 _context.SaveChanges();
             }
         }

@@ -14,6 +14,8 @@ namespace meuCuidado.Dominio.ViewModels
 
         public string TipoProfissional { get; set; }
 
+        public string CPF { get; set; }
+
         public List<DocumentoViewModel> Documentos { get; set; } = new List<DocumentoViewModel>();
     }
 }

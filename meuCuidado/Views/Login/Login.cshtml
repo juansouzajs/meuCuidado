@@ -13,6 +13,7 @@
         <div class="form-group">
             <label>Email</label>
             <input type="email" id="email" class="form-control" placeholder="seu@email.com" />
+            <small id="emailErro" class="email-erro"></small>
         </div>
 
         <div class="form-group">
@@ -58,41 +59,78 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-    $("#btnLogin").click(function(){
 
-        let email = $("#email").val();
-        let senha = $("#senha").val();
+function validarEmail(email){
 
-        $.ajax({
-            url: '@Url.Action("RealizarLogin","Login")',
-            type: 'POST',
-            data: {
-                email: email,
-                senha: senha
-            },
+    const regex = /^[^\s@]+@[^\s@]+\.(com|com\.br|gov)$/;
 
-            success: function(response){
+    return regex.test(email);
+}
 
-                if(response.success === false){
-                    showToaster(response.message,'error');
-                }
-                else{
-                    // quando sucesso ele retorna a view de autenticação
-                    document.open();
-                    document.write(response);
-                    document.close();
-                }
+$("#email").on("input", function(){
 
-            },
+    let email = $(this).val();
 
-            error:function(){
-                showToaster("Erro ao tentar realizar login",'error');
+    if(email.length === 0){
+        $("#emailErro").text("");
+        $(this).removeClass("input-invalido input-valido");
+        return;
+    }
+
+    if(validarEmail(email)){
+        $("#emailErro").text("Email válido").css("color","#2e7d32");
+        $(this).removeClass("input-invalido").addClass("input-valido");
+    }
+    else{
+        $("#emailErro").text("Digite um email válido (.com, .com.br ou .gov)").css("color","#dc3545");
+        $(this).removeClass("input-valido").addClass("input-invalido");
+    }
+
+});
+
+
+$("#btnLogin").click(function(){
+
+    let email = $("#email").val();
+    let senha = $("#senha").val();
+
+    if(!validarEmail(email)){
+        showToaster("Digite um email válido",'error');
+        return;
+    }
+
+    $.ajax({
+        url: '@Url.Action("RealizarLogin","Login")',
+        type: 'POST',
+        data: {
+            email: email,
+            senha: senha
+        },
+
+        success: function(response){
+
+            if(response.success === false){
+                showToaster(response.message,'error');
             }
-        });
+            else{
+                document.open();
+                document.write(response);
+                document.close();
+            }
+
+        },
+
+        error:function(){
+            showToaster("Erro ao tentar realizar login",'error');
+        }
     });
+
+});
+
 </script>
 
 <style>
+
     body {
         background: linear-gradient(135deg, #e6f4f1, #f8fbff);
         font-family: 'Segoe UI', sans-serif;
@@ -151,6 +189,20 @@
             border-color: #4db6ac;
             box-shadow: 0 0 0 2px rgba(77,182,172,0.2);
         }
+
+    .input-invalido {
+        border-color: #dc3545 !important;
+    }
+
+    .input-valido {
+        border-color: #2e7d32 !important;
+    }
+
+    .email-erro {
+        font-size: 12px;
+        display: block;
+        margin-top: 4px;
+    }
 
     .btn-primary-auth {
         width: 100%;

@@ -4,108 +4,275 @@
     Layout = null;
 }
 
-<div class="detalhe-container">
-    <h2>Cadastro do Profissional</h2>
+<div class="admin-wrapper">
 
-    <div class="card info">
-        <h3>Informações Pessoais</h3>
-        <p><strong>Nome:</strong> @Model.Nome</p>
-        <p><strong>Email:</strong> @Model.Email</p>
-        <p><strong>Tipo:</strong> @Model.TipoProfissional</p>
-        <p><strong>Telefone:</strong> @Model.Telefone</p>
-    </div>
+    <div class="detalhe-container">
 
-    <div class="card info">
-        <h3>Documentos Anexados</h3>
-        <ul>
-            @foreach (var doc in Model.Documentos)
+        <h1 class="admin-title">
+            Cadastro do Profissional
+        </h1>
+
+        <p class="admin-subtitle">
+            Analise as informações antes de aprovar ou reprovar
+        </p>
+
+        <div class="card info">
+            <h3>Informações Pessoais</h3>
+
+            <div class="info-grid">
+                <p><strong>Nome</strong><span>@Model.Nome</span></p>
+                <p><strong>Email</strong><span>@Model.Email</span></p>
+                <p><strong>Tipo</strong><span>@Model.TipoProfissional</span></p>
+                <p><strong>Telefone</strong><span>@Model.Telefone</span></p>
+                <p><strong>CPF</strong><span>@Model.CPF</span></p>
+            </div>
+        </div>
+
+        <div class="card info">
+            <h3>Documentos Enviados</h3>
+
+            <ul class="lista-documentos">
+                @foreach (var doc in Model.Documentos)
+                {
+                    <li>
+                        <a href="@doc.Url" target="_blank">
+                            @doc.Nome
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="acoes">
+
+            @using (Html.BeginForm("AprovarSolicitacao", "Administrador", FormMethod.Post))
             {
-                <li>
-                    <a href="@doc.Url" target="_blank">@doc.Nome</a>
-                </li>
+                @Html.HiddenFor(m => m.Id)
+
+                <button type="submit" class="btn-aprovar">
+                    Aprovar Cadastro
+                </button>
             }
-        </ul>
+
+            <button type="button" class="btn-reprovar" onclick="abrirModal()">
+                Reprovar Cadastro
+            </button>
+
+        </div>
+
     </div>
 
-    <div class="acoes">
-        <button class="btn aprovar">Aprovar</button>
-        <button class="btn reprovar">Reprovar</button>
-    </div>
 </div>
 
+
+<!-- MODAL REPROVAÇÃO -->
+
+<div id="modalReprovacao" class="modal">
+
+    <div class="modal-content">
+
+        <h3>Motivo da Reprovação</h3>
+
+        @using (Html.BeginForm("ReprovarSolicitacao", "Administrador", FormMethod.Post))
+        {
+            @Html.HiddenFor(m => m.Id)
+
+            <textarea name="motivo" required
+                      placeholder="Explique o motivo da reprovação do cadastro...">
+            </textarea>
+
+            <div class="modal-acoes">
+
+                <button type="button" class="btn-cancelar" onclick="fecharModal()">
+                    Cancelar
+                </button>
+
+                <button type="submit" class="btn-reprovar">
+                    Confirmar Reprovação
+                </button>
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+
 <style>
+
+    body {
+        background: linear-gradient(135deg,#e6f4f1,#f8fbff);
+        font-family: 'Segoe UI',sans-serif;
+    }
+
+    .admin-wrapper {
+        min-height: 100vh;
+        padding: 40px 20px;
+    }
+
     .detalhe-container {
         max-width: 900px;
-        margin: 40px auto;
-        padding: 0 20px;
+        margin: auto;
     }
 
-    .info {
-        margin-bottom: 24px;
+    .admin-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #2f6f68;
     }
 
-        .info h3 {
-            font-size: 1.3rem;
-            margin-bottom: 14px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 8px;
+    .admin-subtitle {
+        color: #6c8f8b;
+        margin-bottom: 30px;
+    }
+
+    /* CARD */
+
+    .card {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+        .card h3 {
+            margin-bottom: 20px;
+            color: #344;
         }
 
-        .info p {
-            font-size: 0.95rem;
-            margin-bottom: 6px;
-            color: #495057;
+    /* GRID INFO */
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+        .info-grid p {
+            margin: 0;
+            font-size: 14px;
         }
 
-    ul {
+        .info-grid strong {
+            display: block;
+            color: #6c8f8b;
+            font-size: 12px;
+        }
+
+        .info-grid span {
+            font-size: 15px;
+        }
+
+    /* DOCUMENTOS */
+
+    .lista-documentos {
         list-style: none;
         padding: 0;
     }
 
-        ul li {
-            background-color: #f8f9fa;
-            padding: 10px 14px;
+        .lista-documentos li {
+            background: #f8f9fa;
+            padding: 12px;
             border-radius: 8px;
             margin-bottom: 8px;
         }
 
-            ul li a {
-                text-decoration: none;
-                color: #0d6efd;
-                font-weight: 500;
-            }
+        .lista-documentos a {
+            text-decoration: none;
+            color: #4db6ac;
+            font-weight: 600;
+        }
+
+    /* BOTÕES */
 
     .acoes {
         display: flex;
         justify-content: flex-end;
-        gap: 16px;
-        margin-top: 30px;
+        gap: 15px;
     }
 
-    .btn {
-        padding: 12px 20px;
-        border-radius: 10px;
+    .btn-aprovar {
+        height: 45px;
+        padding: 0 20px;
         border: none;
+        border-radius: 10px;
+        background: #4db6ac;
+        color: white;
+        font-weight: 600;
         cursor: pointer;
-        font-size: 0.95rem;
-        font-weight: bold;
     }
 
-        .btn.aprovar {
-            background-color: #198754;
-            color: #fff;
+        .btn-aprovar:hover {
+            background: #3da59b;
         }
 
-            .btn.aprovar:hover {
-                background-color: #146c43;
-            }
+    .btn-reprovar {
+        height: 45px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 10px;
+        background: #dc3545;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+    }
 
-        .btn.reprovar {
-            background-color: #dc3545;
-            color: #fff;
-        }
+    .btn-cancelar {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 8px;
+    }
 
-            .btn.reprovar:hover {
-                background-color: #b02a37;
-            }
+    /* MODAL */
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 14px;
+        width: 420px;
+    }
+
+    textarea {
+        width: 100%;
+        height: 110px;
+        border-radius: 8px;
+        border: 1px solid #cfe3df;
+        padding: 10px;
+        margin: 15px 0;
+    }
+
+    .modal-acoes {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
 </style>
+
+
+<script>
+
+    function abrirModal() {
+        document.getElementById("modalReprovacao").style.display = "flex";
+    }
+
+    function fecharModal() {
+        document.getElementById("modalReprovacao").style.display = "none";
+    }
+
+</script>

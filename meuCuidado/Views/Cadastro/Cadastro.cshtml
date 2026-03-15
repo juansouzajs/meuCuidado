@@ -32,7 +32,7 @@
                     new
                     {
                         @class = "form-control",
-                        @id = "telefone",
+                        id = "telefone",
                         value = "+55 ",
                         placeholder = "+55 (XX) XXXXX-XXXX",
                         type = "tel"
@@ -41,7 +41,13 @@
 
             <div class="form-group">
                 @Html.LabelFor(m => m.Usuario.Email)
-                @Html.TextBoxFor(m => m.Usuario.Email, new { @class = "form-control", placeholder = "email@exemplo.com" })
+                @Html.TextBoxFor(m => m.Usuario.Email, new
+                {
+                    @class = "form-control",
+                    id = "email",
+                    placeholder = "email@exemplo.com"
+                })
+                <span id="emailMensagem" class="text-danger"></span>
             </div>
 
             <div class="form-group">
@@ -103,105 +109,122 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-        // ======== MÁSCARA DE TELEFONE (SEU CÓDIGO ORIGINAL) ========
-        const input = document.getElementById("telefone");
-        if (input) {
-            const PREFIX = "+55 ";
+    const input = document.getElementById("telefone");
+    const PREFIX = "+55 ";
+
+    if (input && !input.value.startsWith(PREFIX)) {
+        input.value = PREFIX;
+    }
+
+    if (input) {
+        input.addEventListener("input", function () {
 
             if (!input.value.startsWith(PREFIX)) {
                 input.value = PREFIX;
             }
 
-            input.addEventListener("input", function () {
-                if (!input.value.startsWith(PREFIX)) {
-                    input.value = PREFIX;
-                }
+            let digits = input.value.substring(PREFIX.length).replace(/\D/g, "");
 
-                let digits = input.value.substring(PREFIX.length).replace(/\D/g, "");
+            if (digits.length > 11) {
+                digits = digits.substring(0, 11);
+            }
 
-                if (digits.length > 11) {
-                    digits = digits.substring(0, 11);
-                }
+            let result = PREFIX;
 
-                let result = PREFIX;
-
-                if (digits.length > 2) {
-                    result += "(" + digits.substring(0, 2) + ") ";
-                    digits = digits.substring(2);
-                } else {
-                    result += digits;
-                    input.value = result;
-                    return;
-                }
-
-                if (digits.length <= 4) {
-                    result += digits;
-                } else if (digits.length <= 8) {
-                    result += digits.substring(0, 4) + "-" + digits.substring(4);
-                } else {
-                    result += digits.substring(0, 5) + "-" + digits.substring(5);
-                }
-
+            if (digits.length > 2) {
+                result += "(" + digits.substring(0, 2) + ") ";
+                digits = digits.substring(2);
+            } else {
+                result += digits;
                 input.value = result;
-            });
-
-            input.addEventListener("keydown", function (e) {
-                if (input.selectionStart < PREFIX.length) {
-                    input.setSelectionRange(PREFIX.length, PREFIX.length);
-                }
-            });
-        }
-
-        // ======== VALIDAÇÃO DE SENHA EM TEMPO REAL ========
-
-        const senha = document.getElementById("senha");
-        const confirmar = document.getElementById("confirmarSenha");
-
-        const msgSenha = document.getElementById("senhaMensagem");
-        const msgConfirmar = document.getElementById("confirmarMensagem");
-
-        const botao = document.getElementById("btnCadastrar");
-
-        function validarSenhaForte(valor) {
-            const min = valor.length >= 6;
-            const letra = /[A-Za-z]/.test(valor);
-            const numero = /[0-9]/.test(valor);
-
-            return min && letra && numero;
-        }
-
-        function validarFormulario() {
-            const s = senha.value;
-            const c = confirmar.value;
-
-            let senhaValida = validarSenhaForte(s);
-            let senhasIguais = s === c && s.length > 0;
-
-            if (!senhaValida) {
-                msgSenha.textContent = "A senha deve ter pelo menos 6 caracteres, letras e números.";
-            } else {
-                msgSenha.textContent = "";
+                return;
             }
 
-            if (!senhasIguais) {
-                msgConfirmar.textContent = "As senhas não conferem.";
+            if (digits.length <= 4) {
+                result += digits;
+            } else if (digits.length <= 8) {
+                result += digits.substring(0, 4) + "-" + digits.substring(4);
             } else {
-                msgConfirmar.textContent = "";
+                result += digits.substring(0, 5) + "-" + digits.substring(5);
             }
 
-            botao.disabled = !(senhaValida && senhasIguais);
+            input.value = result;
+        });
+    }
+
+    const senha = document.getElementById("senha");
+    const confirmar = document.getElementById("confirmarSenha");
+    const email = document.getElementById("email");
+
+    const msgSenha = document.getElementById("senhaMensagem");
+    const msgConfirmar = document.getElementById("confirmarMensagem");
+    const msgEmail = document.getElementById("emailMensagem");
+
+    const botao = document.getElementById("btnCadastrar");
+
+    function validarSenhaForte(valor) {
+        const min = valor.length >= 6;
+        const letra = /[A-Za-z]/.test(valor);
+        const numero = /[0-9]/.test(valor);
+
+        return min && letra && numero;
+    }
+
+    function validarEmail(valor) {
+
+        const regex = /^[^\s@]+@[^\s@]+\.(com|com\.br|gov)$/;
+
+        return regex.test(valor);
+    }
+
+    function validarFormulario() {
+
+        const s = senha.value;
+        const c = confirmar.value;
+        const e = email.value;
+
+        let senhaValida = validarSenhaForte(s);
+        let senhasIguais = s === c && s.length > 0;
+        let emailValido = validarEmail(e);
+
+        if (!senhaValida) {
+            msgSenha.textContent = "A senha deve ter pelo menos 6 caracteres, letras e números.";
+        } else {
+            msgSenha.textContent = "";
         }
 
-        senha.addEventListener("input", validarFormulario);
-        confirmar.addEventListener("input", validarFormulario);
+        if (!senhasIguais) {
+            msgConfirmar.textContent = "As senhas não conferem.";
+        } else {
+            msgConfirmar.textContent = "";
+        }
 
-        validarFormulario();
-    });
+        if (!emailValido) {
+            msgEmail.textContent = "Digite um email válido (.com, .com.br ou .gov)";
+            email.classList.add("input-invalido");
+            email.classList.remove("input-valido");
+        } else {
+            msgEmail.textContent = "";
+            email.classList.remove("input-invalido");
+            email.classList.add("input-valido");
+        }
+
+        botao.disabled = !(senhaValida && senhasIguais && emailValido);
+    }
+
+    senha.addEventListener("input", validarFormulario);
+    confirmar.addEventListener("input", validarFormulario);
+    email.addEventListener("input", validarFormulario);
+
+    validarFormulario();
+
+});
 </script>
 
 <style>
+
     body {
         background: linear-gradient(135deg, #e6f4f1, #f8fbff);
         font-family: 'Segoe UI', sans-serif;
@@ -260,6 +283,14 @@
             border-color: #4db6ac;
             box-shadow: 0 0 0 2px rgba(77,182,172,0.2);
         }
+
+    .input-invalido {
+        border-color: #dc3545 !important;
+    }
+
+    .input-valido {
+        border-color: #2e7d32 !important;
+    }
 
     .btn-primary-auth {
         width: 100%;
