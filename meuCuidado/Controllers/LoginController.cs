@@ -85,7 +85,11 @@ namespace meuCuidado.Controllers
                         Email = email
                     };
 
-                    return View("Autenticacao", autenticacaoViewModel);
+                    return Json(new
+                    {
+                        success = true,
+                        redirectUrl = Url.Action("Autenticacao", "Login", new { email = email })
+                    });
                 }
 
                 return Json(new { success = false, message = "Usuário ou senha inválidos." });

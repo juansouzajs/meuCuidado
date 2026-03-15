@@ -113,9 +113,7 @@ $("#btnLogin").click(function(){
                 showToaster(response.message,'error');
             }
             else{
-                document.open();
-                document.write(response);
-                document.close();
+                window.location.href = response.redirectUrl;
             }
 
         },

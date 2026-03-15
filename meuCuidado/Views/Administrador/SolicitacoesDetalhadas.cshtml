@@ -43,6 +43,43 @@
             </ul>
         </div>
 
+        <div class="card info">
+            <h3>Links auxiliares</h3>
+
+            <ul class="lista-links">
+                <li>
+                    <a href="https://servicos.receita.fazenda.gov.br/servicos/cpf/consultasituacao/consultapublica.asp" target="_blank">
+                        Validar situação do CPF (Receita Federal)
+                    </a>
+                </li>
+
+                <li>
+                    <a href="https://antecedentes.dpf.gov.br/antecedentes-criminais/certidao" target="_blank">
+                        Emitir / validar antecedentes criminais (Polícia Federal)
+                    </a>
+                </li>
+
+                <li>
+                    <a href="https://www.gov.br/defesa/pt-br/servicos/servico-militar" target="_blank">
+                        Verificar situação do serviço militar / reservista
+                    </a>
+                </li>
+
+                <li>
+                    <a href="https://www.gov.br/pt-br/servicos/validar-documentos-digitais" target="_blank">
+                        Validar documentos digitais (gov.br)
+                    </a>
+                </li>
+
+                <li>
+                    <a href="https://www.gov.br/prf/pt-br/assuntos/multas/validar-documentos" target="_blank">
+                        Validação de documentos diversos
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+
         <div class="acoes">
 
             @using (Html.BeginForm("AprovarSolicitacao", "Administrador", FormMethod.Post))
@@ -100,6 +137,29 @@
 
 
 <style>
+
+    .lista-links {
+        list-style: none;
+        padding: 0;
+    }
+
+        .lista-links li {
+            background: #f1f7f6;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .lista-links a {
+            text-decoration: none;
+            color: #2f6f68;
+            font-weight: 600;
+        }
+
+            .lista-links a:hover {
+                text-decoration: underline;
+            }
+
 
     body {
         background: linear-gradient(135deg,#e6f4f1,#f8fbff);
