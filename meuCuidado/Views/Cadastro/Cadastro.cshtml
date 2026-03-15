@@ -108,6 +108,34 @@
     </div>
 </div>
 
+<!-- MODAL PERSONALIZADO -->
+<div id="emailModal" class="modal-overlay">
+    <div class="modal-box">
+
+        <h2>Email já cadastrado</h2>
+
+        <p>
+            Já existe uma conta com este email.
+            Deseja ir para a tela de login?
+        </p>
+
+        <div class="modal-actions">
+
+            <button id="btnIrLogin" class="btn-modal-primary">
+                Ir para login
+            </button>
+
+            <button id="btnContinuar" class="btn-modal-secondary">
+                Continuar aqui
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -164,6 +192,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const botao = document.getElementById("btnCadastrar");
 
+    let emailExiste = false;
+
+    function abrirModalEmail() {
+        document.getElementById("emailModal").style.display = "flex";
+    }
+
+    function fecharModalEmail() {
+        document.getElementById("emailModal").style.display = "none";
+    }
+
+    document.getElementById("btnIrLogin").onclick = function () {
+        window.location.href = '@Url.Action("Login","Login")';
+    };
+
+    document.getElementById("btnContinuar").onclick = function () {
+        fecharModalEmail();
+    };
+
     function validarSenhaForte(valor) {
         const min = valor.length >= 6;
         const letra = /[A-Za-z]/.test(valor);
@@ -173,10 +219,37 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function validarEmail(valor) {
-
-        const regex = /^[^\s@]+@[^\s@]+\.(com|com\.br|gov)$/;
-
+        const regex = /^[^\s@@]+@@[^\s@@]+\.(com|com\.br|gov)$/;
         return regex.test(valor);
+    }
+
+    function verificarEmail(emailDigitado) {
+
+        $.ajax({
+            url: '@Url.Action("VerificarEmail","Cadastro")',
+            type: 'POST',
+            data: { email: emailDigitado },
+
+            success: function (response) {
+
+                if (response.existe) {
+
+                    emailExiste = true;
+
+                    msgEmail.textContent = "Este email já está cadastrado.";
+                    email.classList.add("input-invalido");
+
+                    abrirModalEmail();
+
+                } else {
+
+                    emailExiste = false;
+                    msgEmail.textContent = "";
+                }
+
+                validarFormulario();
+            }
+        });
     }
 
     function validarFormulario() {
@@ -206,17 +279,27 @@ document.addEventListener("DOMContentLoaded", function () {
             email.classList.add("input-invalido");
             email.classList.remove("input-valido");
         } else {
-            msgEmail.textContent = "";
+            if (!emailExiste) msgEmail.textContent = "";
             email.classList.remove("input-invalido");
             email.classList.add("input-valido");
         }
 
-        botao.disabled = !(senhaValida && senhasIguais && emailValido);
+        botao.disabled = !(senhaValida && senhasIguais && emailValido) || emailExiste;
     }
 
     senha.addEventListener("input", validarFormulario);
     confirmar.addEventListener("input", validarFormulario);
     email.addEventListener("input", validarFormulario);
+
+    email.addEventListener("blur", function () {
+
+        const valor = email.value;
+
+        if (validarEmail(valor)) {
+            verificarEmail(valor);
+        }
+
+    });
 
     validarFormulario();
 
@@ -224,6 +307,54 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 <style>
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.45);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+    }
+
+    .modal-box {
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 380px;
+        text-align: center;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-modal-primary {
+        flex: 1;
+        height: 40px;
+        border: none;
+        border-radius: 10px;
+        background: #4db6ac;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-modal-secondary {
+        flex: 1;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        background: white;
+        cursor: pointer;
+    }
 
     body {
         background: linear-gradient(135deg, #e6f4f1, #f8fbff);

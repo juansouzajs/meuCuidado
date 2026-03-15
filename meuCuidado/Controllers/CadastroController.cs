@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using static meuCuidado.Dominio.Extensions.EnumExtension;
@@ -33,7 +34,7 @@ namespace meuCuidado.Controllers
                     {
                         IdentificadorUnico = Guid.NewGuid(),
                         Nome = pessoa.Usuario.Nome,
-                        Email = pessoa.Usuario.Email,
+                        Email = pessoa.Usuario.Email.ToLower(),
                         CPF = pessoa.Usuario.CPF,
                         Endereco = pessoa.Usuario.Endereco,
                         Telefone = pessoa.Usuario.Telefone,
@@ -54,7 +55,7 @@ namespace meuCuidado.Controllers
                     {
                         IdentificadorUnico = new Guid(),
                         Nome = pessoa.Usuario.Nome,
-                        Email = pessoa.Usuario.Email,
+                        Email = pessoa.Usuario.Email.ToLower(),
                         CPF = pessoa.Usuario.CPF,
                         Endereco = pessoa.Usuario.Endereco,
                         Telefone = pessoa.Usuario.Telefone,
@@ -134,7 +135,7 @@ namespace meuCuidado.Controllers
                     medico.DataCadasto = DateTime.Now;
                     medico.Endereco = idoso.Endereco;
                     medico.Telefone = idoso.Telefone;
-                    medico.Email = idoso.Email;
+                    medico.Email = idoso.Email.ToLower();
                     _context.Medicos.Add(medico);
                 }
 
@@ -166,7 +167,7 @@ namespace meuCuidado.Controllers
                     {
                         IdentificadorUnico = Guid.NewGuid(),
                         Nome = cadastroProfissionalViewModel.Usuario.Nome,
-                        Email = cadastroProfissionalViewModel.Usuario.Email,
+                        Email = cadastroProfissionalViewModel.Usuario.Email.ToLower(),
                         CPF = cadastroProfissionalViewModel.Usuario.CPF,
                         Endereco = cadastroProfissionalViewModel.Usuario.Endereco,
                         Telefone = cadastroProfissionalViewModel.Usuario.Telefone,
@@ -185,7 +186,7 @@ namespace meuCuidado.Controllers
                     {
                         IdentificadorUnico = new Guid(),
                         Nome = cadastroProfissionalViewModel.Usuario.Nome,
-                        Email = cadastroProfissionalViewModel.Usuario.Email,
+                        Email = cadastroProfissionalViewModel.Usuario.Email.ToLower(),
                         CPF = cadastroProfissionalViewModel.Usuario.CPF,
                         Endereco = cadastroProfissionalViewModel.Usuario.Endereco,
                         Telefone = cadastroProfissionalViewModel.Usuario.Telefone,
@@ -295,6 +296,26 @@ namespace meuCuidado.Controllers
         public ActionResult AguardandoAprovacao()
         {
             return View();
+        }
+
+        [HttpPost]
+        public JsonResult VerificarEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return Json(new { existe = false });
+
+            var emailNormalizado = email.ToLower();
+
+            bool existe =
+                _context.CuidadoresDeIdoso.Any(p => p.Email.ToLower() == emailNormalizado) ||
+                _context.Fisioterapeutas.Any(p => p.Email.ToLower() == emailNormalizado) ||
+                _context.Idosos.Any(p => p.Email.ToLower() == emailNormalizado) ||
+                _context.Tutores.Any(p => p.Email.ToLower() == emailNormalizado);
+
+            return Json(new
+            {
+                existe = existe
+            });
         }
     }
 }
