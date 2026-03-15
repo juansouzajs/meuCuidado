@@ -35,151 +35,162 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #f4f6f8, #eef1f5);
-        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: linear-gradient(135deg,#e6f4f1,#f8fbff);
+        font-family:'Segoe UI',sans-serif;
     }
 
-    .auth-container {
-        max-width: 420px;
-        margin: 80px auto;
-        padding: 30px 28px;
-        background: #ffffff;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        text-align: center;
-        animation: fadeIn 0.4s ease;
+    /* CARD */
+
+    .auth-container{
+        max-width:420px;
+        margin:80px auto;
+        padding:30px;
+        background:#ffffff;
+        border-radius:16px;
+        box-shadow:0 10px 30px rgba(0,0,0,0.08);
+        text-align:center;
     }
 
-    h2 {
-        font-size: 22px;
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 6px;
+    /* TITULOS */
+
+    h2{
+        font-size:26px;
+        font-weight:600;
+        color:#2f6f68;
     }
 
-    .subtitle {
-        font-size: 14px;
-        color: #6b7280;
-        margin-bottom: 24px;
+    .subtitle{
+        font-size:14px;
+        color:#6c8f8b;
+        margin-bottom:25px;
     }
 
-    .info-text {
-        font-size: 14px;
-        color: #374151;
-        margin-bottom: 18px;
+    .info-text{
+        font-size:14px;
+        color:#4a6f6a;
+        margin-bottom:18px;
     }
 
-    .code-inputs {
-        display: flex;
-        justify-content: center;
-        gap: 12px;
-        margin-bottom: 10px;
+    /* INPUTS */
+
+    .code-inputs{
+        display:flex;
+        justify-content:center;
+        gap:12px;
+        margin-bottom:10px;
     }
 
-    .code-box {
-        width: 54px;
-        height: 58px;
-        font-size: 22px;
-        font-weight: 600;
-        text-align: center;
-        border-radius: 12px;
-        border: 1px solid #d1d5db;
-        background-color: #f9fafb;
-        transition: all 0.2s ease;
+    .code-box{
+        width:55px;
+        height:50px;
+        border-radius:10px;
+        border:1px solid #cfe3df;
+        font-size:20px;
+        text-align:center;
     }
 
-        .code-box:focus {
-            border-color: #3b82f6;
-            background-color: #ffffff;
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
-            outline: none;
-            transform: translateY(-1px);
+    .code-box:focus{
+        outline:none;
+        border-color:#4db6ac;
+        box-shadow:0 0 0 2px rgba(77,182,172,0.2);
+    }
+
+    /* BOTÕES */
+
+    .auth-footer{
+        margin-top:26px;
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+    }
+
+    .confirm-btn{
+        width:100%;
+        height:48px;
+        background:#4db6ac;
+        border:none;
+        border-radius:12px;
+        color:white;
+        font-size:16px;
+        font-weight:600;
+        cursor:pointer;
+    }
+
+    .confirm-btn:hover{
+        background:#3da59b;
+    }
+
+    /* BOTÃO REENVIAR */
+
+    .resend-btn{
+        background:none;
+        border:none;
+        color:#4db6ac;
+        font-size:14px;
+        cursor:pointer;
+    }
+
+    .resend-btn:disabled{
+        color:#9aa;
+        cursor:not-allowed;
+    }
+
+    /* SPINNER */
+
+    .spinner{
+        width:16px;
+        height:16px;
+        border:2px solid #e5e7eb;
+        border-top:2px solid #4db6ac;
+        border-radius:50%;
+        animation:spin 1s linear infinite;
+    }
+
+    .hidden{
+        display:none;
+    }
+
+    /* ANIMAÇÕES */
+
+    @@keyframes spin{
+        to{ transform:rotate(360deg); }
+    }
+
+    /* Corrige o fundo repetido do toastr */
+
+    #toast-container > .toast {
+        background-repeat: no-repeat !important;
+        background-position: 15px center !important;
+        background-size: 20px !important;
+    }
+
+    /* sucesso */
+    .toast-success {
+        background-color: #4db6ac !important;
+    }
+
+    /* erro */
+    .toast-error {
+        background-color: #e74c3c !important;
+    }
+
+    /* RESPONSIVO */
+
+    @@media(max-width:480px){
+
+        .auth-container{
+            margin:40px 16px;
+            padding:24px 20px;
         }
 
-    .auth-footer {
-        margin-top: 26px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .confirm-btn {
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-        color: white;
-        border: none;
-        padding: 12px;
-        border-radius: 12px;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.25s ease;
-    }
-
-        .confirm-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(37,99,235,0.4);
+        .code-box{
+            width:46px;
+            height:46px;
+            font-size:18px;
         }
 
-    .resend-btn {
-        background: none;
-        border: none;
-        color: #2563eb;
-        font-size: 14px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
     }
 
-        .resend-btn:disabled {
-            color: #9ca3af;
-            cursor: not-allowed;
-        }
-
-    .spinner {
-        width: 16px;
-        height: 16px;
-        border: 2px solid #e5e7eb;
-        border-top: 2px solid #2563eb;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    .hidden {
-        display: none;
-    }
-
-    @@keyframes spin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    @@keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(6px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @@media (max-width: 480px) {
-        .auth-container {
-            margin: 40px 16px;
-            padding: 24px 20px;
-        }
-
-        .code-box {
-            width: 46px;
-            height: 50px;
-            font-size: 20px;
-        }
-    }
 </style>
 
 

@@ -10,31 +10,20 @@
             Que bom ter você de volta 💚
         </p>
 
-        @using (Html.BeginForm("RealizarLogin", "Login", FormMethod.Post))
-        {
-            <div class="form-group">
-                @Html.LabelFor(m => m.Email)
-                @Html.TextBoxFor(m => m.Email, new
-                {
-                    @class = "form-control",
-                    placeholder = "seu@email.com"
-                })
-                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-            </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" class="form-control" placeholder="seu@email.com" />
+            <small id="emailErro" class="email-erro"></small>
+        </div>
 
-            <div class="form-group">
-                @Html.Label("Senha")
-                @Html.Password("senha", null, new
-                {
-                    @class = "form-control",
-                    placeholder = "Digite sua senha"
-                })
-            </div>
+        <div class="form-group">
+            <label>Senha</label>
+            <input type="password" id="senha" class="form-control" placeholder="Digite sua senha" />
+        </div>
 
-            <button type="submit" class="btn-primary-auth">
-                Entrar
-            </button>
-        }
+        <button type="button" id="btnLogin" class="btn-primary-auth">
+            Entrar
+        </button>
 
         <div class="divider">
             <span>ou</span>
@@ -49,13 +38,6 @@
                 Entrar com Facebook
             </a>
         </div>
-
-        @if (ViewBag.ErrorMessage != null)
-        {
-            <div class="alert alert-danger mt-3 text-center">
-                @ViewBag.ErrorMessage
-            </div>
-        }
 
         <p class="auth-footer">
             Não tem uma conta?
@@ -74,7 +56,79 @@
     </script>
 }
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+
+function validarEmail(email){
+
+    const regex = /^[^\s@@]+@@[^\s@@]+\.(com|com\.br|gov)$/;
+
+    return regex.test(email);
+}
+
+$("#email").on("input", function(){
+
+    let email = $(this).val();
+
+    if(email.length === 0){
+        $("#emailErro").text("");
+        $(this).removeClass("input-invalido input-valido");
+        return;
+    }
+
+    if(validarEmail(email)){
+        $("#emailErro").text("Email válido").css("color","#2e7d32");
+        $(this).removeClass("input-invalido").addClass("input-valido");
+    }
+    else{
+        $("#emailErro").text("Digite um email válido (.com, .com.br ou .gov)").css("color","#dc3545");
+        $(this).removeClass("input-valido").addClass("input-invalido");
+    }
+
+});
+
+
+$("#btnLogin").click(function(){
+
+    let email = $("#email").val();
+    let senha = $("#senha").val();
+
+    if(!validarEmail(email)){
+        showToaster("Digite um email válido",'error');
+        return;
+    }
+
+    $.ajax({
+        url: '@Url.Action("RealizarLogin","Login")',
+        type: 'POST',
+        data: {
+            email: email,
+            senha: senha
+        },
+
+        success: function(response){
+
+            if(response.success === false){
+                showToaster(response.message,'error');
+            }
+            else{
+                window.location.href = response.redirectUrl;
+            }
+
+        },
+
+        error:function(){
+            showToaster("Erro ao tentar realizar login",'error');
+        }
+    });
+
+});
+
+</script>
+
 <style>
+
     body {
         background: linear-gradient(135deg, #e6f4f1, #f8fbff);
         font-family: 'Segoe UI', sans-serif;
@@ -133,6 +187,20 @@
             border-color: #4db6ac;
             box-shadow: 0 0 0 2px rgba(77,182,172,0.2);
         }
+
+    .input-invalido {
+        border-color: #dc3545 !important;
+    }
+
+    .input-valido {
+        border-color: #2e7d32 !important;
+    }
+
+    .email-erro {
+        font-size: 12px;
+        display: block;
+        margin-top: 4px;
+    }
 
     .btn-primary-auth {
         width: 100%;

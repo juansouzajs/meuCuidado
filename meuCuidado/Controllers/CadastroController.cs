@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using static meuCuidado.Dominio.Extensions.EnumExtension;
@@ -33,11 +34,11 @@ namespace meuCuidado.Controllers
                     {
                         IdentificadorUnico = Guid.NewGuid(),
                         Nome = pessoa.Usuario.Nome,
-                        Email = pessoa.Usuario.Email,
+                        Email = pessoa.Usuario.Email.ToLower(),
                         CPF = pessoa.Usuario.CPF,
                         Endereco = pessoa.Usuario.Endereco,
                         Telefone = pessoa.Usuario.Telefone,
-                        Senha = pessoa.Usuario.Senha,
+                        Senha = SenhaHelper.HashSenha(pessoa.Usuario.Senha),
                         DataCadasto = DateTime.Now,
                         DataNascimento = DateTime.Now,
                         NecessidadesEspeciais = false
@@ -54,11 +55,11 @@ namespace meuCuidado.Controllers
                     {
                         IdentificadorUnico = new Guid(),
                         Nome = pessoa.Usuario.Nome,
-                        Email = pessoa.Usuario.Email,
+                        Email = pessoa.Usuario.Email.ToLower(),
                         CPF = pessoa.Usuario.CPF,
                         Endereco = pessoa.Usuario.Endereco,
                         Telefone = pessoa.Usuario.Telefone,
-                        Senha = pessoa.Usuario.Senha,
+                        Senha = SenhaHelper.HashSenha(pessoa.Usuario.Senha),
                         DataCadasto = DateTime.Now,
                         RelacaoComIdoso = "Tutor",
                         NecessidadesEspeciais = false
@@ -134,13 +135,13 @@ namespace meuCuidado.Controllers
                     medico.DataCadasto = DateTime.Now;
                     medico.Endereco = idoso.Endereco;
                     medico.Telefone = idoso.Telefone;
-                    medico.Email = idoso.Email;
+                    medico.Email = idoso.Email.ToLower();
                     _context.Medicos.Add(medico);
                 }
 
                 _context.SaveChanges();
 
-                return RedirectToAction("Login", "Login"); // Redireciona para a tela de login
+                return RedirectToAction("Login", "Login");
             }
             catch (Exception ex)
             {
@@ -148,7 +149,6 @@ namespace meuCuidado.Controllers
             }
         }
 
-        // Tela de Cadastro do Profissional
         public ActionResult CadastroProfissional(CadastroViewModel pessoa)
         {
             return View("CadastroProfissional", pessoa);
@@ -163,16 +163,16 @@ namespace meuCuidado.Controllers
 
                 if (cadastroProfissionalViewModel.TipoUsuario == TipoUsuario.Cuidador)
                 {
-                    // MODEL PARA CADASTRO DE IDOSO
                     CuidadorDeIdoso cuidadorDeIdoso = new CuidadorDeIdoso
                     {
                         IdentificadorUnico = Guid.NewGuid(),
                         Nome = cadastroProfissionalViewModel.Usuario.Nome,
-                        Email = cadastroProfissionalViewModel.Usuario.Email,
+                        Email = cadastroProfissionalViewModel.Usuario.Email.ToLower(),
                         CPF = cadastroProfissionalViewModel.Usuario.CPF,
                         Endereco = cadastroProfissionalViewModel.Usuario.Endereco,
                         Telefone = cadastroProfissionalViewModel.Usuario.Telefone,
-                        Senha = cadastroProfissionalViewModel.Usuario.Senha,
+                        Senha = SenhaHelper.HashSenha(cadastroProfissionalViewModel.Usuario.Senha),
+                        EtapaAcesso = EtapaAcesso.AguardandoAprovacao,
                         DataCadasto = DateTime.Now
                     };
 
@@ -182,16 +182,16 @@ namespace meuCuidado.Controllers
                 }
                 else if (cadastroProfissionalViewModel.TipoUsuario == TipoUsuario.Fisioterapeuta)
                 {
-                    // MODEL PARA CADASTRO DE TUTOR
                     Fisioterapeuta fisioterapeuta = new Fisioterapeuta
                     {
                         IdentificadorUnico = new Guid(),
                         Nome = cadastroProfissionalViewModel.Usuario.Nome,
-                        Email = cadastroProfissionalViewModel.Usuario.Email,
+                        Email = cadastroProfissionalViewModel.Usuario.Email.ToLower(),
                         CPF = cadastroProfissionalViewModel.Usuario.CPF,
                         Endereco = cadastroProfissionalViewModel.Usuario.Endereco,
                         Telefone = cadastroProfissionalViewModel.Usuario.Telefone,
-                        Senha = cadastroProfissionalViewModel.Usuario.Senha,
+                        Senha = SenhaHelper.HashSenha(cadastroProfissionalViewModel.Usuario.Senha),
+                        EtapaAcesso = EtapaAcesso.AguardandoAprovacao,
                         DataCadasto = DateTime.Now
                     };
 
@@ -202,10 +202,10 @@ namespace meuCuidado.Controllers
 
                 if (idUsuario != null && idUsuario != 0)
                 {
-                    SalvarDocumento(FotoDocumento, TipoDocumento.FotoDocumento, cadastroProfissionalViewModel.Usuario.Id);
-                    SalvarDocumento(Documento, TipoDocumento.Documento, cadastroProfissionalViewModel.Usuario.Id);
-                    SalvarDocumento(CertificadoBonsAntecedentes, TipoDocumento.CertificadoBonsAntecedentes, cadastroProfissionalViewModel.Usuario.Id);
-                    SalvarDocumento(CertificadoDispensa, TipoDocumento.CertificadoDispensa, cadastroProfissionalViewModel.Usuario.Id);
+                    SalvarDocumento(FotoDocumento, TipoDocumento.FotoDocumento, idUsuario.Value);
+                    SalvarDocumento(Documento, TipoDocumento.Documento, idUsuario.Value);
+                    SalvarDocumento(CertificadoBonsAntecedentes, TipoDocumento.CertificadoBonsAntecedentes, idUsuario.Value);
+                    SalvarDocumento(CertificadoDispensa, TipoDocumento.CertificadoDispensa, idUsuario.Value);
                 }
 
                 return RedirectToAction("AguardandoAprovacao");
@@ -273,7 +273,7 @@ namespace meuCuidado.Controllers
                     UsuarioId = usuarioId
                 };
 
-                //_context.Documentos.Add(documento);
+                _context.Documentos.Add(documento);
                 _context.SaveChanges();
             }
         }
@@ -296,6 +296,26 @@ namespace meuCuidado.Controllers
         public ActionResult AguardandoAprovacao()
         {
             return View();
+        }
+
+        [HttpPost]
+        public JsonResult VerificarEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return Json(new { existe = false });
+
+            var emailNormalizado = email.ToLower();
+
+            bool existe =
+                _context.CuidadoresDeIdoso.Any(p => p.Email.ToLower() == emailNormalizado) ||
+                _context.Fisioterapeutas.Any(p => p.Email.ToLower() == emailNormalizado) ||
+                _context.Idosos.Any(p => p.Email.ToLower() == emailNormalizado) ||
+                _context.Tutores.Any(p => p.Email.ToLower() == emailNormalizado);
+
+            return Json(new
+            {
+                existe = existe
+            });
         }
     }
 }

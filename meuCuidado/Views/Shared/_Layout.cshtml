@@ -54,11 +54,11 @@
         }
 
         #toaster.success {
-            background-color: #4CAF50;
+            background-color: #4CAF50 !important;
         }
 
         #toaster.error {
-            background-color: #f44336;
+            background-color: #f44336 !important;
         }
     </style>
 </head>
@@ -112,11 +112,18 @@
 
     <script>
         function showToaster(message, type) {
+
             const toaster = $('#toaster');
-            toaster.removeClass('success error')
-                .addClass(type)
-                .text(message)
-                .fadeIn();
+
+            toaster.removeClass('success error');
+
+            if (type === 'error') {
+                toaster.addClass('error');
+            } else {
+                toaster.addClass('success');
+            }
+
+            toaster.text(message).fadeIn();
 
             setTimeout(() => toaster.fadeOut(), 5000);
         }

@@ -32,7 +32,7 @@
                     new
                     {
                         @class = "form-control",
-                        @id = "telefone",
+                        id = "telefone",
                         value = "+55 ",
                         placeholder = "+55 (XX) XXXXX-XXXX",
                         type = "tel"
@@ -41,7 +41,13 @@
 
             <div class="form-group">
                 @Html.LabelFor(m => m.Usuario.Email)
-                @Html.TextBoxFor(m => m.Usuario.Email, new { @class = "form-control", placeholder = "email@exemplo.com" })
+                @Html.TextBoxFor(m => m.Usuario.Email, new
+                {
+                    @class = "form-control",
+                    id = "email",
+                    placeholder = "email@exemplo.com"
+                })
+                <span id="emailMensagem" class="text-danger"></span>
             </div>
 
             <div class="form-group">
@@ -102,106 +108,254 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
+<!-- MODAL PERSONALIZADO -->
+<div id="emailModal" class="modal-overlay">
+    <div class="modal-box">
 
-        // ======== MÁSCARA DE TELEFONE (SEU CÓDIGO ORIGINAL) ========
-        const input = document.getElementById("telefone");
-        if (input) {
-            const PREFIX = "+55 ";
+        <h2>Email já cadastrado</h2>
+
+        <p>
+            Já existe uma conta com este email.
+            Deseja ir para a tela de login?
+        </p>
+
+        <div class="modal-actions">
+
+            <button id="btnIrLogin" class="btn-modal-primary">
+                Ir para login
+            </button>
+
+            <button id="btnContinuar" class="btn-modal-secondary">
+                Continuar aqui
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const input = document.getElementById("telefone");
+    const PREFIX = "+55 ";
+
+    if (input && !input.value.startsWith(PREFIX)) {
+        input.value = PREFIX;
+    }
+
+    if (input) {
+        input.addEventListener("input", function () {
 
             if (!input.value.startsWith(PREFIX)) {
                 input.value = PREFIX;
             }
 
-            input.addEventListener("input", function () {
-                if (!input.value.startsWith(PREFIX)) {
-                    input.value = PREFIX;
-                }
+            let digits = input.value.substring(PREFIX.length).replace(/\D/g, "");
 
-                let digits = input.value.substring(PREFIX.length).replace(/\D/g, "");
+            if (digits.length > 11) {
+                digits = digits.substring(0, 11);
+            }
 
-                if (digits.length > 11) {
-                    digits = digits.substring(0, 11);
-                }
+            let result = PREFIX;
 
-                let result = PREFIX;
-
-                if (digits.length > 2) {
-                    result += "(" + digits.substring(0, 2) + ") ";
-                    digits = digits.substring(2);
-                } else {
-                    result += digits;
-                    input.value = result;
-                    return;
-                }
-
-                if (digits.length <= 4) {
-                    result += digits;
-                } else if (digits.length <= 8) {
-                    result += digits.substring(0, 4) + "-" + digits.substring(4);
-                } else {
-                    result += digits.substring(0, 5) + "-" + digits.substring(5);
-                }
-
+            if (digits.length > 2) {
+                result += "(" + digits.substring(0, 2) + ") ";
+                digits = digits.substring(2);
+            } else {
+                result += digits;
                 input.value = result;
-            });
+                return;
+            }
 
-            input.addEventListener("keydown", function (e) {
-                if (input.selectionStart < PREFIX.length) {
-                    input.setSelectionRange(PREFIX.length, PREFIX.length);
+            if (digits.length <= 4) {
+                result += digits;
+            } else if (digits.length <= 8) {
+                result += digits.substring(0, 4) + "-" + digits.substring(4);
+            } else {
+                result += digits.substring(0, 5) + "-" + digits.substring(5);
+            }
+
+            input.value = result;
+        });
+    }
+
+    const senha = document.getElementById("senha");
+    const confirmar = document.getElementById("confirmarSenha");
+    const email = document.getElementById("email");
+
+    const msgSenha = document.getElementById("senhaMensagem");
+    const msgConfirmar = document.getElementById("confirmarMensagem");
+    const msgEmail = document.getElementById("emailMensagem");
+
+    const botao = document.getElementById("btnCadastrar");
+
+    let emailExiste = false;
+
+    function abrirModalEmail() {
+        document.getElementById("emailModal").style.display = "flex";
+    }
+
+    function fecharModalEmail() {
+        document.getElementById("emailModal").style.display = "none";
+    }
+
+    document.getElementById("btnIrLogin").onclick = function () {
+        window.location.href = '@Url.Action("Login","Login")';
+    };
+
+    document.getElementById("btnContinuar").onclick = function () {
+        fecharModalEmail();
+    };
+
+    function validarSenhaForte(valor) {
+        const min = valor.length >= 6;
+        const letra = /[A-Za-z]/.test(valor);
+        const numero = /[0-9]/.test(valor);
+
+        return min && letra && numero;
+    }
+
+    function validarEmail(valor) {
+        const regex = /^[^\s@@]+@@[^\s@@]+\.(com|com\.br|gov)$/;
+        return regex.test(valor);
+    }
+
+    function verificarEmail(emailDigitado) {
+
+        $.ajax({
+            url: '@Url.Action("VerificarEmail","Cadastro")',
+            type: 'POST',
+            data: { email: emailDigitado },
+
+            success: function (response) {
+
+                if (response.existe) {
+
+                    emailExiste = true;
+
+                    msgEmail.textContent = "Este email já está cadastrado.";
+                    email.classList.add("input-invalido");
+
+                    abrirModalEmail();
+
+                } else {
+
+                    emailExiste = false;
+                    msgEmail.textContent = "";
                 }
-            });
-        }
 
-        // ======== VALIDAÇÃO DE SENHA EM TEMPO REAL ========
-
-        const senha = document.getElementById("senha");
-        const confirmar = document.getElementById("confirmarSenha");
-
-        const msgSenha = document.getElementById("senhaMensagem");
-        const msgConfirmar = document.getElementById("confirmarMensagem");
-
-        const botao = document.getElementById("btnCadastrar");
-
-        function validarSenhaForte(valor) {
-            const min = valor.length >= 6;
-            const letra = /[A-Za-z]/.test(valor);
-            const numero = /[0-9]/.test(valor);
-
-            return min && letra && numero;
-        }
-
-        function validarFormulario() {
-            const s = senha.value;
-            const c = confirmar.value;
-
-            let senhaValida = validarSenhaForte(s);
-            let senhasIguais = s === c && s.length > 0;
-
-            if (!senhaValida) {
-                msgSenha.textContent = "A senha deve ter pelo menos 6 caracteres, letras e números.";
-            } else {
-                msgSenha.textContent = "";
+                validarFormulario();
             }
+        });
+    }
 
-            if (!senhasIguais) {
-                msgConfirmar.textContent = "As senhas não conferem.";
-            } else {
-                msgConfirmar.textContent = "";
-            }
+    function validarFormulario() {
 
-            botao.disabled = !(senhaValida && senhasIguais);
+        const s = senha.value;
+        const c = confirmar.value;
+        const e = email.value;
+
+        let senhaValida = validarSenhaForte(s);
+        let senhasIguais = s === c && s.length > 0;
+        let emailValido = validarEmail(e);
+
+        if (!senhaValida) {
+            msgSenha.textContent = "A senha deve ter pelo menos 6 caracteres, letras e números.";
+        } else {
+            msgSenha.textContent = "";
         }
 
-        senha.addEventListener("input", validarFormulario);
-        confirmar.addEventListener("input", validarFormulario);
+        if (!senhasIguais) {
+            msgConfirmar.textContent = "As senhas não conferem.";
+        } else {
+            msgConfirmar.textContent = "";
+        }
 
-        validarFormulario();
+        if (!emailValido) {
+            msgEmail.textContent = "Digite um email válido (.com, .com.br ou .gov)";
+            email.classList.add("input-invalido");
+            email.classList.remove("input-valido");
+        } else {
+            if (!emailExiste) msgEmail.textContent = "";
+            email.classList.remove("input-invalido");
+            email.classList.add("input-valido");
+        }
+
+        botao.disabled = !(senhaValida && senhasIguais && emailValido) || emailExiste;
+    }
+
+    senha.addEventListener("input", validarFormulario);
+    confirmar.addEventListener("input", validarFormulario);
+    email.addEventListener("input", validarFormulario);
+
+    email.addEventListener("blur", function () {
+
+        const valor = email.value;
+
+        if (validarEmail(valor)) {
+            verificarEmail(valor);
+        }
+
     });
+
+    validarFormulario();
+
+});
 </script>
 
 <style>
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.45);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+    }
+
+    .modal-box {
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 380px;
+        text-align: center;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-modal-primary {
+        flex: 1;
+        height: 40px;
+        border: none;
+        border-radius: 10px;
+        background: #4db6ac;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-modal-secondary {
+        flex: 1;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        background: white;
+        cursor: pointer;
+    }
+
     body {
         background: linear-gradient(135deg, #e6f4f1, #f8fbff);
         font-family: 'Segoe UI', sans-serif;
@@ -260,6 +414,14 @@
             border-color: #4db6ac;
             box-shadow: 0 0 0 2px rgba(77,182,172,0.2);
         }
+
+    .input-invalido {
+        border-color: #dc3545 !important;
+    }
+
+    .input-valido {
+        border-color: #2e7d32 !important;
+    }
 
     .btn-primary-auth {
         width: 100%;

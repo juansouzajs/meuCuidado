@@ -12,8 +12,10 @@
         <div class="row">
             @foreach (var config in Model)
             {
+                var isLogout = config.Titulo == "Sair da conta";
+
                 <div class="col-md-6 mb-4">
-                    <a href="@config.Link" class="config-card">
+                    <a href="@config.Link" class="config-card @(isLogout ? "logout" : "")">
                         <div class="card h-100">
                             <div class="card-body">
                                 <h5 class="card-title">@config.Titulo</h5>
@@ -29,6 +31,7 @@
 </div>
 
 <style>
+
     .config-card {
         text-decoration: none;
         color: inherit;
@@ -57,5 +60,20 @@
         .config-card .card-text {
             font-size: 14px;
             color: #6b7280;
+        }
+
+        /* CARD DE LOGOUT */
+
+        .config-card.logout .card {
+            border-color: #fecaca;
+            background: #fff7f7;
+        }
+
+        .config-card.logout .card-title {
+            color: #dc2626;
+        }
+
+        .config-card.logout:hover .card {
+            box-shadow: 0 10px 25px rgba(220,38,38,0.15);
         }
 </style>

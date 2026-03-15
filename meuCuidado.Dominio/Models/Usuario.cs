@@ -29,10 +29,19 @@ namespace meuCuidado.Dominio.Models
 
         public string Senha { get; set; }
 
+        public EtapaAcesso EtapaAcesso { get; set; } = EtapaAcesso.AcessoLiberado;
+
         public DateTime DataCadasto { get; set; }
 
         public DateTime? DataAtualizacao { get; set; }
 
         public DateTime? UltimoLogin { get; set; }
+    }
+
+    public enum EtapaAcesso
+    {
+        AguardandoAprovacao = 1,
+        AcessoLiberado = 2,
+        AcessoNegado = 3
     }
 }
