@@ -4,78 +4,254 @@
     Layout = null;
 }
 
-<div class="perfil-detalhado">
-    <!-- Currículo -->
-    <div class="card curriculo">
-        <h3>Currículo</h3>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-        <div class="secao">
-            <h4>Cursos</h4>
-            <ul>
-                @foreach (var curso in Model.Curriculo.Cursos)
-                {
-                    <li>@curso</li>
-                }
-            </ul>
-        </div>
+<div class="perfil-detalhado-container">
 
-        <div class="secao">
-            <h4>Experiências</h4>
-            <ul>
-                @foreach (var experiencia in Model.Curriculo.Experiencias)
-                {
-                    <li>@experiencia</li>
-                }
-            </ul>
-        </div>
-
-        <div class="secao">
-            <h4>Redes Sociais</h4>
-            <ul>
-                @foreach (var redeSocial in Model.Curriculo.RedesSociais)
-                {
-                    <li>@redeSocial</li>
-                }
-            </ul>
-        </div>
+    <!-- FOTO GRANDE -->
+    <div class="perfil-header">
+        <img src="https://i.pinimg.com/564x/ac/0f/41/ac0f419e977af681516e00829c5393ee.jpg"
+             alt="Foto do usuário"
+             class="perfil-img-grande" />
     </div>
 
-    <!-- Avaliação -->
-    <div class="card avaliacao">
-        <h3>Avaliação</h3>
+    <div class="acoes-perfil">
+        @if (Model.TipoUsuario == "Tutor" || Model.TipoUsuario == "Idoso")
+        {
+            <a href="@Url.Action("SolicitarConexao", "Relacionamento", new { identificador = Model.CuidadorDeIdoso?.IdentificadorUnico
+                ?? Model.Fisioterapeuta?.IdentificadorUnico })"
+               class="btn-conexao">
+                <i class="fab fa-whatsapp"></i>
+                Solicitar conexão
+            </a>
+        }
+    </div>
 
-        <div class="avaliacao-info">
-            <p><strong>Média:</strong> @Model.Curriculo.AvaliacaoMedia</p>
-            <p><strong>Total de Avaliações:</strong> @Model.Curriculo.NumeroAvaliacoes</p>
+    <div class="perfil-detalhado">
+        <!-- CURRÍCULO E AVALIAÇÃO (SÓ PROFISSIONAL) -->
+        @if (Model.TipoUsuario == "Tutor" || Model.TipoUsuario == "Idoso")
+        {
+            <div class="card curriculo">
+                <h3>Currículo</h3>
 
-            <p class="avaliacao-status">
-                @if (Model.Curriculo.AvaliacaoMedia >= 4)
-                {
-                    <span class="badge excelente">Excelente</span>
-                }
-                else if (Model.Curriculo.AvaliacaoMedia >= 3)
-                {
-                    <span class="badge bom">Bom</span>
-                }
-                else
-                {
-                    <span class="badge regular">Regular</span>
-                }
-            </p>
+                <div class="secao">
+                    <h4>Cursos</h4>
+                    <ul>
+                        @foreach (var curso in Model.Curriculo.Cursos)
+                        {
+                            <li>@curso</li>
+                        }
+                    </ul>
+                </div>
+
+                <div class="secao">
+                    <h4>Experiências</h4>
+                    <ul>
+                        @foreach (var experiencia in Model.Curriculo.Experiencias)
+                        {
+                            <li>@experiencia</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card avaliacao">
+                <h3>Avaliação</h3>
+
+                <div class="avaliacao-info">
+                    <div class="avaliacao-estrelas">
+                        @{
+                            var media = Model.Curriculo.AvaliacaoMedia;
+                            var estrelasCheias = (int)Math.Floor(media);
+                            var temMeia = (media - estrelasCheias) >= 0.5;
+                            var estrelasVazias = 5 - estrelasCheias - (temMeia ? 1 : 0);
+                        }
+
+                        @for (int i = 0; i < estrelasCheias; i++)
+                        {
+                            <i class="fas fa-star estrela cheia"></i>
+                        }
+
+                        @if (temMeia)
+                        {
+                            <i class="fas fa-star-half-alt estrela meia"></i>
+                        }
+
+                        @for (int i = 0; i < estrelasVazias; i++)
+                        {
+                            <i class="far fa-star estrela vazia"></i>
+                        }
+
+                        <span class="media-numero">@media.ToString("0.0")</span>
+                    </div>
+
+                    <p><strong>Total:</strong> @Model.Curriculo.NumeroAvaliacoes</p>
+
+                    <p class="avaliacao-status">
+                        @if (Model.Curriculo.AvaliacaoMedia >= 4)
+                        {
+                            <span class="badge excelente">Excelente</span>
+                        }
+                        else if (Model.Curriculo.AvaliacaoMedia >= 3)
+                        {
+                            <span class="badge bom">Bom</span>
+                        }
+                        else if (Model.Curriculo.AvaliacaoMedia < 3 && Model.Curriculo.AvaliacaoMedia != 0)
+                        {
+                            <span class="badge regular">Ruim</span>
+                        }
+                    </p>
+                </div>
+            </div>
+        }
+
+        <!-- REDES SOCIAIS (PARA TODOS) -->
+        <div class="card redes-sociais">
+            <h3>Redes Sociais</h3>
+
+            <div class="redes-lista">
+                <a href="#" class="rede-item facebook" target="_blank">
+                    <i class="fab fa-facebook-f"></i>
+                    <span>Facebook</span>
+                </a>
+
+                <a href="#" class="rede-item instagram" target="_blank">
+                    <i class="fab fa-instagram"></i>
+                    <span>Instagram</span>
+                </a>
+
+                <a href="#" class="rede-item youtube" target="_blank">
+                    <i class="fab fa-youtube"></i>
+                    <span>YouTube</span>
+                </a>
+            </div>
         </div>
+
     </div>
 </div>
 
+@if (TempData["Sucesso"] != null)
+{
+    <div class="toast-sucesso" id="toast">
+        @TempData["Sucesso"]
+    </div>
+}
+
 <style>
+
+    .toast-sucesso {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #28a745;
+    color: white;
+    padding: 14px 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    font-weight: 500;
+    z-index: 9999;
+    animation: fadeIn 0.4s ease;
+}
+
+@@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+    .avaliacao-estrelas {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+
+    .estrela {
+        font-size: 1.2rem;
+    }
+
+        .estrela.cheia {
+            color: #ffc107;
+        }
+
+        .estrela.meia {
+            color: #ffc107;
+        }
+
+        .estrela.vazia {
+            color: #ddd;
+        }
+
+    .media-numero {
+        margin-left: 8px;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .acoes-perfil {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .conexao-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .btn-conexao {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background-color: #25d366;
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 999px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+        .btn-conexao i {
+            font-size: 1.2rem;
+        }
+
+        .btn-conexao:hover {
+            background-color: #1ebe5d;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
     body {
         background-color: #f4f6f9;
         font-family: Arial, sans-serif;
     }
 
-    .perfil-detalhado {
+    .perfil-detalhado-container {
         max-width: 1100px;
         margin: 40px auto;
         padding: 0 15px;
+    }
+
+    /* FOTO GRANDE */
+    .perfil-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .perfil-img-grande {
+        width: 220px;
+        height: 220px;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .perfil-detalhado {
         display: grid;
         grid-template-columns: 2fr 1fr;
         gap: 24px;
@@ -109,54 +285,86 @@
     ul {
         list-style: none;
         padding-left: 0;
-        margin: 0;
     }
 
         ul li {
             background-color: #f8f9fa;
-            padding: 10px 14px;
+            padding: 10px;
             border-radius: 8px;
             margin-bottom: 8px;
-            font-size: 0.95rem;
-            color: #343a40;
         }
 
-    .avaliacao-info p {
-        font-size: 1rem;
-        margin-bottom: 10px;
-        color: #495057;
-    }
-
-    .avaliacao-status {
-        margin-top: 16px;
-    }
-
     .badge {
-        display: inline-block;
         padding: 6px 14px;
         border-radius: 999px;
         font-size: 0.85rem;
-        font-weight: 600;
     }
 
-        .badge.excelente {
-            background-color: #d1f7e3;
-            color: #0f5132;
-        }
+    .excelente {
+        background: #d1f7e3;
+    }
 
-        .badge.bom {
-            background-color: #e7f1ff;
-            color: #084298;
-        }
+    .bom {
+        background: #e7f1ff;
+    }
 
-        .badge.regular {
-            background-color: #fff3cd;
-            color: #664d03;
-        }
+    .regular {
+        background: #fff3cd;
+    }
+
+    /* REDES */
+    .redes-sociais {
+        grid-column: span 2;
+    }
+
+    .redes-lista {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .rede-item {
+        flex: 1;
+        min-width: 140px;
+        padding: 14px;
+        border-radius: 12px;
+        color: white;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .facebook {
+        background: #1877f2;
+    }
+
+    .instagram {
+        background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af);
+    }
+
+    .youtube {
+        background: #ff0000;
+    }
 
     @@media (max-width: 768px) {
         .perfil-detalhado {
             grid-template-columns: 1fr;
         }
+
+        .redes-sociais {
+            grid-column: span 1;
+        }
     }
 </style>
+
+<script>
+    setTimeout(function () {
+        var toast = document.getElementById("toast");
+        if (toast) {
+            toast.style.transition = "opacity 0.5s";
+            toast.style.opacity = "0";
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 3000);
+</script>

@@ -1,40 +1,36 @@
 ﻿@model IEnumerable<meuCuidado.Dominio.Models.Usuario>
 @{
     ViewBag.Title = "Perfil";
-    Layout = null;
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container perfil-container">
-
-    @if (ViewBag.ExibirFiltros == true)
-    {
-        <div class="row filtros-card">
-            <div class="col-md-3 mb-3">
-                <label>Usuário do meuCuidado desde</label>
-                <input type="date" id="FiltroDataCadastro" class="form-control" />
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <label>Profissional</label>
-                <select id="FiltroTipoUsuario" class="form-control">
-                    <option value="">Todos</option>
-                    <option value="1">Cuidador</option>
-                    <option value="2">Fisioterapeuta</option>
-                </select>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <label>Localização</label>
-                <input type="text" id="FiltroLocalizacao" placeholder="Cidade ou região" class="form-control" />
-            </div>
-
-            <div class="col-md-3 mb-3 d-flex align-items-end">
-                <button id="btnAplicarFiltros" class="btn btn-primary w-100">
-                    Aplicar Filtros
-                </button>
-            </div>
+    <div class="row filtros-card">
+        <div class="col-md-3 mb-3">
+            <label>Usuário do meuCuidado desde</label>
+            <input type="date" id="FiltroDataCadastro" class="form-control" />
         </div>
-    }
+
+        <div class="col-md-3 mb-3">
+            <label>Profissional</label>
+            <select id="FiltroTipoUsuario" class="form-control">
+                <option value="">Todos</option>
+                <option value="1">Cuidador</option>
+                <option value="2">Fisioterapeuta</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <label>Localização</label>
+            <input type="text" id="FiltroLocalizacao" placeholder="Cidade ou região" class="form-control" />
+        </div>
+
+        <div class="col-md-3 mb-3 d-flex align-items-end">
+            <button id="btnAplicarFiltros" class="btn btn-primary w-100">
+                Aplicar Filtros
+            </button>
+        </div>
+    </div>
 
     <div id="usuariosContainer">
         @Html.Partial("_UsuariosLista", Model)

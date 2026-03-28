@@ -201,6 +201,7 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\MedicamentoController.cs" />
     <Compile Include="Controllers\PerfilController.cs" />
+    <Compile Include="Controllers\RelacionamentoController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -212,6 +213,10 @@
     <Compile Include="Migrations\202603082149400_AddEtapaAcessoUsuario.cs" />
     <Compile Include="Migrations\202603082149400_AddEtapaAcessoUsuario.Designer.cs">
       <DependentUpon>202603082149400_AddEtapaAcessoUsuario.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202603282041406_AddEtapaAtivacaoRelacionamento.cs" />
+    <Compile Include="Migrations\202603282041406_AddEtapaAtivacaoRelacionamento.Designer.cs">
+      <DependentUpon>202603282041406_AddEtapaAtivacaoRelacionamento.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -346,6 +351,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202603082149400_AddEtapaAcessoUsuario.resx">
       <DependentUpon>202603082149400_AddEtapaAcessoUsuario.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202603282041406_AddEtapaAtivacaoRelacionamento.resx">
+      <DependentUpon>202603282041406_AddEtapaAtivacaoRelacionamento.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

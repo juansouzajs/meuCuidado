@@ -1,4 +1,8 @@
 ﻿@model IEnumerable<meuCuidado.Dominio.Models.Usuario>
+@{
+    ViewBag.Title = "Lista de usuários";
+    Layout = null;
+}
 
 @if (Model != null && Model.Any())
 {
@@ -6,7 +10,7 @@
         @foreach (var usuario in Model)
         {
             <div class="col-lg-3 col-md-4 col-sm-6 col-12 usuario-col">
-                <a href="@Url.Action("PerfilDetalhado", "Perfil", new { id = usuario.Id })" class="usuario-link">
+                <a href="@Url.Action("PerfilDetalhado", "Perfil", new { identificadorUnico = usuario.IdentificadorUnico })" class="usuario-link">
                     <div class="card usuario-card">
                         <img src="https://i.pinimg.com/564x/ac/0f/41/ac0f419e977af681516e00829c5393ee.jpg"
                              alt="Foto do usuário"

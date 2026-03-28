@@ -17,78 +17,93 @@ namespace meuCuidado.Controllers
         {
             var tipoUsuarioSessao = Session["TipoUsuario"]?.ToString() ?? string.Empty;
 
-            IEnumerable<Usuario> usuariosParaExibir = new List<Usuario>();
+            var usuarios = new List<Usuario>();
 
-            // Cuidador ou Fisioterapeuta visualizam Idosos e Tutores
+            DateTime? data = null;
+            if (!string.IsNullOrEmpty(dataCadastro))
+                data = DateTime.Parse(dataCadastro);
+
+            // PROFISSIONAIS vendo idosos/tutores
             if (tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Cuidador) ||
                 tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Fisioterapeuta))
             {
-                ViewBag.ExibirFiltros = false;
+                var idosos = _context.Idosos.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+                var tutores = _context.Tutores.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
 
-                var idosos = _context.Idosos.ToList();
-                var tutores = _context.Tutores.ToList();
-
-                usuariosParaExibir = idosos.Concat<Usuario>(tutores);
-            }
-
-            // Idoso ou Tutor visualizam Profissionais
-            else if (tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Idoso) ||
-                     tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Tutor))
-            {
-                ViewBag.ExibirFiltros = true;
-
-                var cuidadores = _context.CuidadoresDeIdoso.ToList();
-                var fisioterapeutas = _context.Fisioterapeutas.ToList();
-
-                // Filtro por localização
                 if (!string.IsNullOrEmpty(localizacao))
                 {
-                    cuidadores = cuidadores.Where(u => u.Endereco.Contains(localizacao)).ToList();
-                    fisioterapeutas = fisioterapeutas.Where(u => u.Endereco.Contains(localizacao)).ToList();
+                    idosos = idosos.Where(x => x.Endereco.Contains(localizacao));
+                    tutores = tutores.Where(x => x.Endereco.Contains(localizacao));
                 }
 
-                // Filtro por data
-                if (!string.IsNullOrEmpty(dataCadastro))
+                if (data.HasValue)
                 {
-                    var data = DateTime.Parse(dataCadastro);
-
-                    cuidadores = cuidadores.Where(u => u.DataCadasto >= data).ToList();
-                    fisioterapeutas = fisioterapeutas.Where(u => u.DataCadasto >= data).ToList();
+                    idosos = idosos.Where(x => x.DataCadasto >= data);
+                    tutores = tutores.Where(x => x.DataCadasto >= data);
                 }
 
-                // Filtro por tipo de profissional
-                if (tipoUsuario == GetEnumDescription(TipoUsuario.Cuidador))
+                usuarios.AddRange(idosos.ToList());
+                usuarios.AddRange(tutores.ToList());
+            }
+            // IDOSO/TUTOR vendo profissionais
+            else
+            {
+                var cuidadores = _context.CuidadoresDeIdoso.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+                var fisios = _context.Fisioterapeutas.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+
+                if (!string.IsNullOrEmpty(localizacao))
                 {
-                    usuariosParaExibir = cuidadores;
+                    cuidadores = cuidadores.Where(x => x.Endereco.Contains(localizacao));
+                    fisios = fisios.Where(x => x.Endereco.Contains(localizacao));
                 }
-                else if (tipoUsuario == GetEnumDescription(TipoUsuario.Fisioterapeuta))
+
+                if (data.HasValue)
                 {
-                    usuariosParaExibir = fisioterapeutas;
+                    cuidadores = cuidadores.Where(x => x.DataCadasto >= data);
+                    fisios = fisios.Where(x => x.DataCadasto >= data);
+                }
+
+                if (tipoUsuario == "1") // Cuidador
+                {
+                    usuarios.AddRange(cuidadores.ToList());
+                }
+                else if (tipoUsuario == "2") // Fisio
+                {
+                    usuarios.AddRange(fisios.ToList());
                 }
                 else
                 {
-                    usuariosParaExibir = cuidadores.Concat<Usuario>(fisioterapeutas);
+                    usuarios.AddRange(cuidadores.ToList());
+                    usuarios.AddRange(fisios.ToList());
                 }
             }
 
-            return View(usuariosParaExibir);
+            return PartialView("_UsuariosLista", usuarios);
         }
 
-        public ActionResult PerfilDetalhado(int id)
+        public ActionResult PerfilDetalhado(Guid IdentificadorUnico)
         {
+            var tipoUsuarioSessao = Session["TipoUsuario"]?.ToString() ?? string.Empty;
+
             var perfilDetalhado = new PerfilDetalhadoViewModel()
             {
-                CuidadorDeIdoso = _context.CuidadoresDeIdoso.SingleOrDefault(p => p.Id == id),
-                Fisioterapeuta = _context.Fisioterapeutas.SingleOrDefault(p => p.Id == id)
+                CuidadorDeIdoso = _context.CuidadoresDeIdoso.SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
+                Fisioterapeuta = _context.Fisioterapeutas.SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
+                Tutor = _context.Tutores.SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
+                Idoso = _context.Idosos.SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
+                TipoUsuario = tipoUsuarioSessao,
+                IdUsuario = Session["IdUsuario"]?.ToString() ?? string.Empty
             };
 
-            if (perfilDetalhado.CuidadorDeIdoso == null && perfilDetalhado.Fisioterapeuta == null)
+            perfilDetalhado.Curriculo = _context.Curriculos.SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico) ?? new Curriculo() { Cursos = new List<string>(), Experiencias = new List<string>(), RedesSociais = new List<string>() }; // colocar relação com usuário
+            if (perfilDetalhado.CuidadorDeIdoso == null && perfilDetalhado.Fisioterapeuta == null && perfilDetalhado.Tutor == null && perfilDetalhado.Idoso == null)
             {
                 return HttpNotFound();
             }
-            else
+            else if(tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Idoso) ||
+                     tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Tutor))
             {
-                perfilDetalhado.Curriculo = _context.Curriculos.SingleOrDefault(p => p.Id == id); // colocar relação com usuário
+                perfilDetalhado.Curriculo = _context.Curriculos.SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico) ?? new Curriculo() { Cursos = new List<string>(), Experiencias = new List<string>(), RedesSociais = new List<string>() }; // colocar relação com usuário
             }
 
             return View(perfilDetalhado);

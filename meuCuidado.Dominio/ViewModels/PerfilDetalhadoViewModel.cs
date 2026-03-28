@@ -1,4 +1,5 @@
 ﻿using meuCuidado.Dominio.Models;
+using static meuCuidado.Dominio.Extensions.EnumExtension;
 
 namespace meuCuidado.Dominio.ViewModels
 {
@@ -6,8 +7,12 @@ namespace meuCuidado.Dominio.ViewModels
     {
         //public Imagem imagem { get; set; }
         //public dadosProfissional dadosProfissional { get; set; }
+        public string TipoUsuario { get; set; }
+        public string IdUsuario { get; set; }
         public Curriculo Curriculo { get; set; }
         public Fisioterapeuta Fisioterapeuta { get; set; }
         public CuidadorDeIdoso CuidadorDeIdoso { get; set; }
+        public Tutor Tutor { get; set; }
+        public Idoso Idoso { get; set; }
     }
 }
