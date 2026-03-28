@@ -6,52 +6,54 @@
 
 @if (Model != null && Model.Any())
 {
-    <div class="row usuarios-grid">
+    <div class="usuarios-grid">
         @foreach (var usuario in Model)
         {
-            <div class="col-lg-3 col-md-4 col-sm-6 col-12 usuario-col">
-                <a href="@Url.Action("PerfilDetalhado", "Perfil", new { identificadorUnico = usuario.IdentificadorUnico })" class="usuario-link">
-                    <div class="card usuario-card">
-                        <img src="https://i.pinimg.com/564x/ac/0f/41/ac0f419e977af681516e00829c5393ee.jpg"
-                             alt="Foto do usuário"
-                             class="card-img-top usuario-img" />
+            <a href="@Url.Action("PerfilDetalhado", "Perfil", new { identificadorUnico = usuario.IdentificadorUnico })" class="usuario-card">
 
-                        <div class="card-body usuario-body">
-                            <h5 class="card-title usuario-nome">@usuario.Nome</h5>
-                            <p class="card-text usuario-email">@usuario.Email</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
+                <div class="usuario-img-wrapper">
+                    <img src="https://i.pinimg.com/564x/ac/0f/41/ac0f419e977af681516e00829c5393ee.jpg"
+                         alt="Foto do usuário"
+                         class="usuario-img" />
+                </div>
+
+                <div class="usuario-body">
+                    <h5 class="usuario-nome">@usuario.Nome</h5>
+                    <p class="usuario-email">@usuario.Email</p>
+                </div>
+
+            </a>
         }
     </div>
 }
 else
 {
-    <p class="text-muted">Nenhum usuário encontrado</p>
+    <div class="empty-state">
+        <h3>Nenhum usuário encontrado</h3>
+        <p>Tente ajustar os filtros para encontrar resultados.</p>
+    </div>
 }
 
 <style>
+
+    /* GRID */
     .usuarios-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
         margin-top: 10px;
     }
 
-    .usuario-col {
-        margin-bottom: 24px;
-    }
-
-    .usuario-link {
+    /* CARD */
+    .usuario-card {
+        display: block;
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
         text-decoration: none;
         color: inherit;
-    }
-
-    .usuario-card {
-        height: 450px;
-        border-radius: 18px;
-        overflow: hidden;
-        border: none;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        transition: all 0.25s ease;
     }
 
         .usuario-card:hover {
@@ -59,30 +61,58 @@ else
             box-shadow: 0 16px 40px rgba(0,0,0,0.15);
         }
 
-    .usuario-img {
+    /* IMAGEM */
+    .usuario-img-wrapper {
         width: 100%;
-        height: 250px;
-        object-fit: cover;
+        height: 200px;
+        overflow: hidden;
     }
 
+    .usuario-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .usuario-card:hover .usuario-img {
+        transform: scale(1.05);
+    }
+
+    /* BODY */
     .usuario-body {
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        height: 200px;
+        padding: 16px;
     }
 
     .usuario-nome {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
         font-weight: 600;
-        margin-bottom: 8px;
-        color: #212529;
+        color: #2f6f68;
+        margin-bottom: 6px;
     }
 
     .usuario-email {
-        font-size: 0.95rem;
-        color: #6c757d;
+        font-size: 0.9rem;
+        color: #6c8f8b;
         word-break: break-word;
     }
+
+    /* EMPTY STATE */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+
+        .empty-state h3 {
+            color: #2f6f68;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #6c8f8b;
+            font-size: 14px;
+        }
 </style>
