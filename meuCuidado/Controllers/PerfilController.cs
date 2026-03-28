@@ -16,6 +16,7 @@ namespace meuCuidado.Controllers
         public ActionResult Perfil(string tipoUsuario = null, string dataCadastro = null, string localizacao = null)
         {
             var tipoUsuarioSessao = Session["TipoUsuario"]?.ToString() ?? string.Empty;
+            ViewBag.TipoUsuario = tipoUsuarioSessao;
 
             var usuarios = new List<Usuario>();
 
@@ -71,6 +72,69 @@ namespace meuCuidado.Controllers
                 {
                     usuarios.AddRange(fisios.ToList());
                 }
+                else
+                {
+                    usuarios.AddRange(cuidadores.ToList());
+                    usuarios.AddRange(fisios.ToList());
+                }
+            }
+
+            return View( usuarios);
+        }
+
+        public ActionResult Filtrar(string tipoUsuario = null, string dataCadastro = null, string localizacao = null)
+        {
+            var tipoUsuarioSessao = Session["TipoUsuario"]?.ToString() ?? string.Empty;
+            ViewBag.TipoUsuario = tipoUsuarioSessao;
+
+            var usuarios = new List<Usuario>();
+
+            DateTime? data = null;
+            if (!string.IsNullOrEmpty(dataCadastro))
+                data = DateTime.Parse(dataCadastro);
+
+            if (tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Cuidador) ||
+                tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Fisioterapeuta))
+            {
+                var idosos = _context.Idosos.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+                var tutores = _context.Tutores.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+
+                if (!string.IsNullOrEmpty(localizacao))
+                {
+                    idosos = idosos.Where(x => x.Endereco.Contains(localizacao));
+                    tutores = tutores.Where(x => x.Endereco.Contains(localizacao));
+                }
+
+                if (data.HasValue)
+                {
+                    idosos = idosos.Where(x => x.DataCadasto >= data);
+                    tutores = tutores.Where(x => x.DataCadasto >= data);
+                }
+
+                usuarios.AddRange(idosos.ToList());
+                usuarios.AddRange(tutores.ToList());
+            }
+            else
+            {
+                var cuidadores = _context.CuidadoresDeIdoso.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+                var fisios = _context.Fisioterapeutas.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+
+                if (!string.IsNullOrEmpty(localizacao))
+                {
+                    cuidadores = cuidadores.Where(x => x.Endereco.Contains(localizacao));
+                    fisios = fisios.Where(x => x.Endereco.Contains(localizacao));
+                }
+
+                if (data.HasValue)
+                {
+                    cuidadores = cuidadores.Where(x => x.DataCadasto >= data);
+                    fisios = fisios.Where(x => x.DataCadasto >= data);
+                }
+
+                if (tipoUsuario == "1")
+                    usuarios.AddRange(cuidadores.ToList());
+                else if (tipoUsuario == "2")
+                    usuarios.AddRange(fisios.ToList());
                 else
                 {
                     usuarios.AddRange(cuidadores.ToList());

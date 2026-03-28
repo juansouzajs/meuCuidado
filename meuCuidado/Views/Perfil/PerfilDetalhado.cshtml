@@ -16,15 +16,12 @@
     </div>
 
     <div class="acoes-perfil">
-        @if (Model.TipoUsuario == "Tutor" || Model.TipoUsuario == "Idoso")
-        {
-            <a href="@Url.Action("SolicitarConexao", "Relacionamento", new { identificador = Model.CuidadorDeIdoso?.IdentificadorUnico
+        <a href="@Url.Action("SolicitarConexao", "Relacionamento", new { identificador = Model.CuidadorDeIdoso?.IdentificadorUnico
                 ?? Model.Fisioterapeuta?.IdentificadorUnico })"
                class="btn-conexao">
                 <i class="fab fa-whatsapp"></i>
                 Solicitar conexão
-            </a>
-        }
+         </a>
     </div>
 
     <div class="perfil-detalhado">

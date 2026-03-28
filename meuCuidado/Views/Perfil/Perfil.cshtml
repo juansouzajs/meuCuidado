@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<meuCuidado.Dominio.Models.Usuario>
 @{
     ViewBag.Title = "Perfil";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = null;
 }
 
 <div class="container perfil-container">
@@ -11,14 +11,17 @@
             <input type="date" id="FiltroDataCadastro" class="form-control" />
         </div>
 
-        <div class="col-md-3 mb-3">
-            <label>Profissional</label>
-            <select id="FiltroTipoUsuario" class="form-control">
-                <option value="">Todos</option>
-                <option value="1">Cuidador</option>
-                <option value="2">Fisioterapeuta</option>
-            </select>
-        </div>
+        @if (ViewBag.TipoUsuario != "Cuidador" && ViewBag.TipoUsuario != "Fisioterapeuta")
+        {
+            <div class="col-md-3 mb-3">
+                <label>Profissional</label>
+                <select id="FiltroTipoUsuario" class="form-control">
+                    <option value="">Todos</option>
+                    <option value="1">Cuidador</option>
+                    <option value="2">Fisioterapeuta</option>
+                </select>
+            </div>
+        }
 
         <div class="col-md-3 mb-3">
             <label>Localização</label>
@@ -69,9 +72,6 @@
     }
 </style>
 
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <script>
     jQuery(document).ready(function ($) {
 
@@ -82,7 +82,7 @@
             var localizacao = $("#FiltroLocalizacao").val();
 
             $.ajax({
-                url: '@Url.Action("Perfil", "Perfil")',
+                url: '@Url.Action("Filtrar", "Perfil")',
                 type: 'GET',
                 data: {
                     tipoUsuario: tipoUsuario,
