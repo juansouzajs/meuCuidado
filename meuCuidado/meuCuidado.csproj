@@ -188,6 +188,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AdministradorController.cs" />
     <Compile Include="Controllers\AjudaController.cs" />
+    <Compile Include="Controllers\AvaliacaoController.cs" />
     <Compile Include="Controllers\CadastroController.cs" />
     <Compile Include="Controllers\ChallengeResult.cs" />
     <Compile Include="Controllers\ConfiguracoesController.cs" />
@@ -307,6 +308,7 @@
     <Content Include="Views\Administrador\SolicitacoesDetalhadas.cshtml" />
     <Content Include="Views\Cadastro\AguardandoAprovacao.cshtml" />
     <Content Include="Views\Administrador\Solicitacoes.cshtml" />
+    <Content Include="Views\Relacionamento\_Conexoes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

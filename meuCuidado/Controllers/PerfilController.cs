@@ -148,26 +148,108 @@ namespace meuCuidado.Controllers
         public ActionResult PerfilDetalhado(Guid IdentificadorUnico)
         {
             var tipoUsuarioSessao = Session["TipoUsuario"]?.ToString() ?? string.Empty;
+            var idUsuarioLogado = Convert.ToInt32(Session["IdUsuario"]);
 
             var perfilDetalhado = new PerfilDetalhadoViewModel()
             {
-                CuidadorDeIdoso = _context.CuidadoresDeIdoso.SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
-                Fisioterapeuta = _context.Fisioterapeutas.SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
-                Tutor = _context.Tutores.SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
-                Idoso = _context.Idosos.SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
+                CuidadorDeIdoso = _context.CuidadoresDeIdoso
+                    .SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
+
+                Fisioterapeuta = _context.Fisioterapeutas
+                    .SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
+
+                Tutor = _context.Tutores
+                    .SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
+
+                Idoso = _context.Idosos
+                    .SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
+
                 TipoUsuario = tipoUsuarioSessao,
-                IdUsuario = Session["IdUsuario"]?.ToString() ?? string.Empty
+                IdUsuario = idUsuarioLogado.ToString()
             };
 
-            perfilDetalhado.Curriculo = _context.Curriculos.SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico) ?? new Curriculo() { Cursos = new List<string>(), Experiencias = new List<string>(), RedesSociais = new List<string>() }; // colocar relação com usuário
-            if (perfilDetalhado.CuidadorDeIdoso == null && perfilDetalhado.Fisioterapeuta == null && perfilDetalhado.Tutor == null && perfilDetalhado.Idoso == null)
+            if (perfilDetalhado.CuidadorDeIdoso == null &&
+                perfilDetalhado.Fisioterapeuta == null &&
+                perfilDetalhado.Tutor == null &&
+                perfilDetalhado.Idoso == null)
             {
                 return HttpNotFound();
             }
-            else if(tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Idoso) ||
-                     tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Tutor))
+
+            perfilDetalhado.Curriculo = _context.Curriculos
+                .SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico)
+                ?? new Curriculo()
+                {
+                    Cursos = new List<string>(),
+                    Experiencias = new List<string>(),
+                    RedesSociais = new List<string>()
+                };
+
+            int? idAlvo = null;
+
+            if (perfilDetalhado.CuidadorDeIdoso != null)
+                idAlvo = perfilDetalhado.CuidadorDeIdoso.Id;
+
+            else if (perfilDetalhado.Fisioterapeuta != null)
+                idAlvo = perfilDetalhado.Fisioterapeuta.Id;
+
+            else if (perfilDetalhado.Idoso != null)
+                idAlvo = perfilDetalhado.Idoso.Id;
+
+            else if (perfilDetalhado.Tutor != null)
+                idAlvo = perfilDetalhado.Tutor.Id;
+
+            perfilDetalhado.TemConexaoAtiva = false;
+
+            if (idAlvo.HasValue)
             {
-                perfilDetalhado.Curriculo = _context.Curriculos.SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico) ?? new Curriculo() { Cursos = new List<string>(), Experiencias = new List<string>(), RedesSociais = new List<string>() }; // colocar relação com usuário
+                perfilDetalhado.TemConexaoAtiva = _context.RelacionamentosIdosoProfissional.Any(r =>
+                    r.EtapaAtivacao == EtapaAtivacao.AtivacaoLiberada &&
+                    (
+                        (r.IdosoId == idUsuarioLogado && r.CuidadorId == idAlvo) ||
+                        (r.IdosoId == idUsuarioLogado && r.FisioterapeutaId == idAlvo) ||
+
+                        (r.TutorId == idUsuarioLogado && r.CuidadorId == idAlvo) ||
+                        (r.TutorId == idUsuarioLogado && r.FisioterapeutaId == idAlvo) ||
+
+                        (r.CuidadorId == idUsuarioLogado && r.IdosoId == idAlvo) ||
+                        (r.CuidadorId == idUsuarioLogado && r.TutorId == idAlvo) ||
+
+                        (r.FisioterapeutaId == idUsuarioLogado && r.IdosoId == idAlvo) ||
+                        (r.FisioterapeutaId == idUsuarioLogado && r.TutorId == idAlvo)
+                    )
+                );
+
+                perfilDetalhado.Avaliacaos = new List<Avaliacao>();
+
+                if (perfilDetalhado.CuidadorDeIdoso != null)
+                {
+                    perfilDetalhado.Avaliacaos = _context.Avaliacoes
+                        .Where(a => a.RelacionamentoIdosoProfissional.CuidadorId == idAlvo)
+                        .OrderByDescending(a => a.Id)
+                        .ToList();
+                }
+                else if (perfilDetalhado.Fisioterapeuta != null)
+                {
+                    perfilDetalhado.Avaliacaos = _context.Avaliacoes
+                        .Where(a => a.RelacionamentoIdosoProfissional.FisioterapeutaId == idAlvo)
+                        .OrderByDescending(a => a.Id)
+                        .ToList();
+                }
+                else if (perfilDetalhado.Idoso != null)
+                {
+                    perfilDetalhado.Avaliacaos = _context.Avaliacoes
+                        .Where(a => a.RelacionamentoIdosoProfissional.IdosoId == idAlvo)
+                        .OrderByDescending(a => a.Id)
+                        .ToList();
+                }
+                else if (perfilDetalhado.Tutor != null)
+                {
+                    perfilDetalhado.Avaliacaos = _context.Avaliacoes
+                        .Where(a => a.RelacionamentoIdosoProfissional.TutorId == idAlvo)
+                        .OrderByDescending(a => a.Id)
+                        .ToList();
+                }
             }
 
             return View(perfilDetalhado);

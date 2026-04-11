@@ -19,6 +19,11 @@
             Perfis
         </button>
 
+        <button id="conexoesBtn" class="btn-dashboard active">
+            <i class="fa fa-user"></i>
+            Conexões
+        </button>
+
         @if (ViewBag.TipoUsuario == "Cuidador" || ViewBag.TipoUsuario == "Fisioterapeuta")
         {
             <button id="lembreteBtn" class="btn-dashboard secondary">
@@ -82,6 +87,27 @@
         $('#lembreteBtn').on('click', function () {
             carregarLembrete();
         });
+
+        function carregarConexoes() {
+            $.ajax({
+                url: '@Url.Action("Conexoes", "Relacionamento")',
+                type: 'GET',
+                success: function (data) {
+                    $('#contentContainer').html(data);
+
+                    $('#conexoesBtn').addClass('active');
+                    $('#perfilBtn').removeClass('active');
+                    $('#lembreteBtn').removeClass('active');
+                },
+                error: function () {
+                    alert("Erro ao carregar conexões.");
+                }
+            });
+        }
+
+        $('#conexoesBtn').on('click', function () {
+            carregarConexoes();
+        });
     });
 </script>
 
@@ -139,18 +165,18 @@
         transition: all 0.2s ease;
     }
 
-        .btn-dashboard.secondary {
-            background: #81c784;
-        }
+    .btn-dashboard.secondary {
+        background: #81c784;
+    }
 
-        .btn-dashboard:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
+    .btn-dashboard:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
 
-        .btn-dashboard.active {
-            box-shadow: 0 0 0 3px rgba(77,182,172,0.3);
-        }
+    .btn-dashboard.active {
+        box-shadow: 0 0 0 3px rgba(77,182,172,0.3);
+    }
 
     /* CONTEÚDO */
     .dashboard-content {

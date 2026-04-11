@@ -1,0 +1,247 @@
+﻿@model List<ConexaoViewModel>
+@using meuCuidado.Dominio.Models
+@using meuCuidado.Dominio.ViewModels
+
+@{
+    var tipoUsuario = ViewBag.TipoUsuario as string;
+    var isProfissional = tipoUsuario == "Cuidador" || tipoUsuario == "Fisioterapeuta";
+}
+
+<div class="conexoes-wrapper">
+
+    <h2 class="titulo">Conexões</h2>
+
+    <!-- PENDENTES -->
+    <div class="secao">
+        <h3>Solicitações pendentes</h3>
+
+        @if (!Model.Any(x => x.EtapaAtivacao == EtapaAtivacao.AguardandoAprovacao))
+        {
+            <p class="empty">Nenhuma solicitação pendente.</p>
+        }
+        else
+        {
+            foreach (var item in Model.Where(x => x.EtapaAtivacao == EtapaAtivacao.AguardandoAprovacao))
+            {
+                <div class="card-conexao pendente"
+                     onclick="abrirPerfil('@item.IdentificadorUnico')">
+
+                    <div class="info">
+                        <span class="status"></span>
+
+                        <div class="textos">
+                            <strong>@item.Nome</strong>
+                            <small>@item.Tipo</small>
+                        </div>
+                    </div>
+
+                    @if (isProfissional)
+                    {
+                        <div class="acoes">
+                            <button class="btn-aceitar" onclick="aceitar(event, @item.Id)">Aceitar</button>
+                            <button class="btn-rejeitar" onclick="rejeitar(event, @item.Id)">Recusar</button>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+
+    <!-- CONFIRMADAS -->
+    <div class="secao">
+        <h3>Conexões confirmadas</h3>
+
+        @if (!Model.Any(x => x.EtapaAtivacao == EtapaAtivacao.AtivacaoLiberada))
+        {
+            <p class="empty">Nenhuma conexão confirmada.</p>
+        }
+        else
+        {
+            foreach (var item in Model.Where(x => x.EtapaAtivacao == EtapaAtivacao.AtivacaoLiberada))
+            {
+                <div class="card-conexao aprovado"
+                     onclick="abrirPerfil('@item.IdentificadorUnico')">
+
+                    <div class="info">
+                        <span class="status"></span>
+
+                        <div class="textos">
+                            <strong>@item.Nome</strong>
+                            <small>@item.Tipo</small>
+                        </div>
+                    </div>
+
+                </div>
+            }
+        }
+    </div>
+
+</div>
+
+<style>
+    .conexoes-wrapper {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .titulo {
+        text-align: center;
+        color: #2f6f68;
+        margin-bottom: 20px;
+    }
+
+    .secao {
+        margin-bottom: 25px;
+    }
+
+        .secao h3 {
+            color: #4db6ac;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+    .empty {
+        color: #8aaeb2;
+        font-size: 14px;
+    }
+
+    /* CARD */
+    .card-conexao {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        padding: 14px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        background: #f8fbff;
+        border: 1px solid #e3f2f4;
+        transition: 0.2s;
+        cursor: pointer; /* 🔥 deixa claro que é clicável */
+    }
+
+        .card-conexao:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+        }
+
+    /* INFO */
+    .info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .textos {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .textos strong {
+            color: #2f6f68;
+        }
+
+        .textos small {
+            color: #8aaeb2;
+            font-size: 12px;
+        }
+
+    /* STATUS */
+    .status {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .pendente .status {
+        background: #f4c542;
+    }
+
+    .aprovado .status {
+        background: #4db6ac;
+    }
+
+    /* BOTÕES */
+    .acoes {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-aceitar {
+        background: #4db6ac;
+        border: none;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+        .btn-aceitar:hover {
+            background: #3da49b;
+        }
+
+    .btn-rejeitar {
+        background: #f4a3a3;
+        border: none;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+        .btn-rejeitar:hover {
+            background: #e58f8f;
+        }
+</style>
+
+<script>
+    function abrirPerfil(guid) {
+        window.location.href = '/Perfil/PerfilDetalhado?IdentificadorUnico=' + guid;
+    }
+
+    function aceitar(e, id) {
+        e.stopPropagation(); // 🔥 impede abrir perfil
+
+        let btn = e.target;
+        btn.disabled = true;
+
+        fetch('/Relacionamento/Aceitar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id })
+        })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    carregarConexoes();
+                } else {
+                    alert(res.message);
+                    btn.disabled = false;
+                }
+            });
+    }
+
+    function rejeitar(e, id) {
+        e.stopPropagation(); // 🔥 impede abrir perfil
+
+        let btn = e.target;
+        btn.disabled = true;
+
+        fetch('/Relacionamento/Rejeitar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id })
+        })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    carregarConexoes();
+                } else {
+                    alert(res.message);
+                    btn.disabled = false;
+                }
+            });
+    }
+</script>
