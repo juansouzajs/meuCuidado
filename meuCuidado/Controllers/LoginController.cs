@@ -63,6 +63,7 @@ namespace meuCuidado.Controllers
 
                     var codigoAutenticacao = _emailController.EnviarEmailAutenticacao(email);
 
+                    Session["IdUsuario"] = cuidadorDeIdoso?.Id ?? fisioterapeuta?.Id ?? idoso?.Id ?? tutor?.Id;
                     Session["CodigoAutenticacao"] = codigoAutenticacao;
                     Session["SenhaCodificada"] = senha;
 

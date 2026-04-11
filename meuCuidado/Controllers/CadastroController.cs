@@ -307,10 +307,10 @@ namespace meuCuidado.Controllers
             var emailNormalizado = email.ToLower();
 
             bool existe =
-                _context.CuidadoresDeIdoso.Any(p => p.Email.ToLower() == emailNormalizado) ||
-                _context.Fisioterapeutas.Any(p => p.Email.ToLower() == emailNormalizado) ||
-                _context.Idosos.Any(p => p.Email.ToLower() == emailNormalizado) ||
-                _context.Tutores.Any(p => p.Email.ToLower() == emailNormalizado);
+                _context.CuidadoresDeIdoso.Any(p => p.Email.ToLower() == emailNormalizado && p.EtapaAcesso == EtapaAcesso.AcessoLiberado) ||
+                _context.Fisioterapeutas.Any(p => p.Email.ToLower() == emailNormalizado && p.EtapaAcesso == EtapaAcesso.AcessoLiberado) ||
+                _context.Idosos.Any(p => p.Email.ToLower() == emailNormalizado && p.EtapaAcesso == EtapaAcesso.AcessoLiberado) ||
+                _context.Tutores.Any(p => p.Email.ToLower() == emailNormalizado && p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
 
             return Json(new
             {

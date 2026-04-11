@@ -30,5 +30,14 @@ namespace meuCuidado.Dominio.Models
         public virtual Idoso Idoso { get; set; }
 
         public virtual Tutor Tutor { get; set; }
+
+        public EtapaAtivacao EtapaAtivacao { get; set; } = EtapaAtivacao.AguardandoAprovacao;
+    }
+
+    public enum EtapaAtivacao
+    {
+        AguardandoAprovacao = 1,
+        AtivacaoLiberada = 2,
+        AcessoNegado = 3
     }
 }

@@ -1,44 +1,60 @@
 ﻿@model meuCuidado.Dominio.Models.Usuario
 @{
     ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- Botões grandes para Perfil e Lembretes -->
-<div class="d-flex justify-content-around mb-4">
-    <!-- Botão Perfil -->
-    <a href="javascript:void(0);" id="perfilBtn" class="btn btn-primary btn-lg">
-        <i class="fa fa-user"></i> Perfis
-    </a>
+<div class="dashboard-wrapper">
 
-    <!-- Condição para exibir o botão de lembretes -->
-    @if (ViewBag.TipoUsuario == "Cuidador" || ViewBag.TipoUsuario == "Fisioterapeuta")
-    {
-        <a href="javascript:void(0);" id="lembreteBtn" class="btn btn-success btn-lg">
-            <i class="fa fa-bell"></i> Lembretes
-        </a>
-    }
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Bem-vindo 👋</h1>
+        <p class="dashboard-subtitle">Gerencie seus perfis e atividades</p>
+    </div>
+
+    <!-- Botões -->
+    <div class="dashboard-actions">
+        <button id="perfilBtn" class="btn-dashboard active">
+            <i class="fa fa-user"></i>
+            Perfis
+        </button>
+
+        <button id="conexoesBtn" class="btn-dashboard active">
+            <i class="fa fa-user"></i>
+            Conexões
+        </button>
+
+        @if (ViewBag.TipoUsuario == "Cuidador" || ViewBag.TipoUsuario == "Fisioterapeuta")
+        {
+            <button id="lembreteBtn" class="btn-dashboard secondary">
+                <i class="fa fa-bell"></i>
+                Lembretes
+            </button>
+        }
+    </div>
+
+    <!-- Conteúdo -->
+    <div id="contentContainer" class="dashboard-content">
+        <!-- Conteúdo dinâmico -->
+    </div>
+
 </div>
 
-<!-- Div para exibir as views completas -->
-<div id="contentContainer">
-    <!-- O conteúdo será carregado aqui -->
-</div>
-
-<!-- Incluindo jQuery -->
+<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
     jQuery(document).ready(function ($) {
-        // Função para carregar a view de Perfil
+
         function carregarPerfil() {
             $.ajax({
-                url: '@Url.Action("Perfil", "Perfil")', // Ação para a view de Perfil
+                url: '@Url.Action("Perfil", "Perfil")',
                 type: 'GET',
                 success: function (data) {
-                    $('#contentContainer').html(data); // Coloca a view de perfil no container
-                    // Mudar a aparência do botão selecionado
-                    $('#perfilBtn').addClass('active'); // Adiciona classe active ao botão de perfil
-                    $('#lembreteBtn').removeClass('active'); // Remove a classe active do botão de lembretes
+                    $('#contentContainer').html(data);
+
+                    $('#perfilBtn').addClass('active');
+                    $('#lembreteBtn').removeClass('active');
                 },
                 error: function () {
                     alert("Erro ao carregar perfis.");
@@ -46,16 +62,15 @@
             });
         }
 
-        // Função para carregar a view de Lembretes
         function carregarLembrete() {
             $.ajax({
-                url: '@Url.Action("Lembrete", "Lembrete")', // Ação para a view de lembretes
+                url: '@Url.Action("Lembrete", "Lembrete")',
                 type: 'GET',
                 success: function (data) {
-                    $('#contentContainer').html(data); // Coloca a view de lembretes no container
-                    // Mudar a aparência do botão selecionado
-                    $('#lembreteBtn').addClass('active'); // Adiciona classe active ao botão de lembretes
-                    $('#perfilBtn').removeClass('active'); // Remove a classe active do botão de perfil
+                    $('#contentContainer').html(data);
+
+                    $('#lembreteBtn').addClass('active');
+                    $('#perfilBtn').removeClass('active');
                 },
                 error: function () {
                     alert("Erro ao carregar tela de lembretes.");
@@ -63,17 +78,112 @@
             });
         }
 
-        // Carregar o Perfil por padrão ao carregar a página
         carregarPerfil();
 
-        // Carregar a view de Perfil quando o botão for clicado
         $('#perfilBtn').on('click', function () {
             carregarPerfil();
         });
 
-        // Carregar a view de Lembretes quando o botão for clicado
         $('#lembreteBtn').on('click', function () {
             carregarLembrete();
         });
+
+        function carregarConexoes() {
+            $.ajax({
+                url: '@Url.Action("Conexoes", "Relacionamento")',
+                type: 'GET',
+                success: function (data) {
+                    $('#contentContainer').html(data);
+
+                    $('#conexoesBtn').addClass('active');
+                    $('#perfilBtn').removeClass('active');
+                    $('#lembreteBtn').removeClass('active');
+                },
+                error: function () {
+                    alert("Erro ao carregar conexões.");
+                }
+            });
+        }
+
+        $('#conexoesBtn').on('click', function () {
+            carregarConexoes();
+        });
     });
 </script>
+
+<style>
+
+    body {
+        background: linear-gradient(135deg, #e6f4f1, #f8fbff);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* WRAPPER */
+    .dashboard-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+
+    /* HEADER */
+    .dashboard-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .dashboard-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #2f6f68;
+    }
+
+    .dashboard-subtitle {
+        color: #6c8f8b;
+        font-size: 14px;
+    }
+
+    /* BOTÕES */
+    .dashboard-actions {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 30px;
+    }
+
+    .btn-dashboard {
+        border: none;
+        border-radius: 12px;
+        padding: 14px 24px;
+        font-size: 15px;
+        font-weight: 600;
+        background: #4db6ac;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-dashboard.secondary {
+        background: #81c784;
+    }
+
+    .btn-dashboard:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .btn-dashboard.active {
+        box-shadow: 0 0 0 3px rgba(77,182,172,0.3);
+    }
+
+    /* CONTEÚDO */
+    .dashboard-content {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        min-height: 300px;
+    }
+</style>

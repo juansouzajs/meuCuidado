@@ -16,79 +16,240 @@ namespace meuCuidado.Controllers
         public ActionResult Perfil(string tipoUsuario = null, string dataCadastro = null, string localizacao = null)
         {
             var tipoUsuarioSessao = Session["TipoUsuario"]?.ToString() ?? string.Empty;
+            ViewBag.TipoUsuario = tipoUsuarioSessao;
 
-            IEnumerable<Usuario> usuariosParaExibir = new List<Usuario>();
+            var usuarios = new List<Usuario>();
 
-            // Cuidador ou Fisioterapeuta visualizam Idosos e Tutores
+            DateTime? data = null;
+            if (!string.IsNullOrEmpty(dataCadastro))
+                data = DateTime.Parse(dataCadastro);
+
+            // PROFISSIONAIS vendo idosos/tutores
             if (tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Cuidador) ||
                 tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Fisioterapeuta))
             {
-                ViewBag.ExibirFiltros = false;
+                var idosos = _context.Idosos.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+                var tutores = _context.Tutores.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
 
-                var idosos = _context.Idosos.ToList();
-                var tutores = _context.Tutores.ToList();
-
-                usuariosParaExibir = idosos.Concat<Usuario>(tutores);
-            }
-
-            // Idoso ou Tutor visualizam Profissionais
-            else if (tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Idoso) ||
-                     tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Tutor))
-            {
-                ViewBag.ExibirFiltros = true;
-
-                var cuidadores = _context.CuidadoresDeIdoso.ToList();
-                var fisioterapeutas = _context.Fisioterapeutas.ToList();
-
-                // Filtro por localização
                 if (!string.IsNullOrEmpty(localizacao))
                 {
-                    cuidadores = cuidadores.Where(u => u.Endereco.Contains(localizacao)).ToList();
-                    fisioterapeutas = fisioterapeutas.Where(u => u.Endereco.Contains(localizacao)).ToList();
+                    idosos = idosos.Where(x => x.Endereco.Contains(localizacao));
+                    tutores = tutores.Where(x => x.Endereco.Contains(localizacao));
                 }
 
-                // Filtro por data
-                if (!string.IsNullOrEmpty(dataCadastro))
+                if (data.HasValue)
                 {
-                    var data = DateTime.Parse(dataCadastro);
-
-                    cuidadores = cuidadores.Where(u => u.DataCadasto >= data).ToList();
-                    fisioterapeutas = fisioterapeutas.Where(u => u.DataCadasto >= data).ToList();
+                    idosos = idosos.Where(x => x.DataCadasto >= data);
+                    tutores = tutores.Where(x => x.DataCadasto >= data);
                 }
 
-                // Filtro por tipo de profissional
-                if (tipoUsuario == GetEnumDescription(TipoUsuario.Cuidador))
+                usuarios.AddRange(idosos.ToList());
+                usuarios.AddRange(tutores.ToList());
+            }
+            // IDOSO/TUTOR vendo profissionais
+            else
+            {
+                var cuidadores = _context.CuidadoresDeIdoso.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+                var fisios = _context.Fisioterapeutas.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+
+                if (!string.IsNullOrEmpty(localizacao))
                 {
-                    usuariosParaExibir = cuidadores;
+                    cuidadores = cuidadores.Where(x => x.Endereco.Contains(localizacao));
+                    fisios = fisios.Where(x => x.Endereco.Contains(localizacao));
                 }
-                else if (tipoUsuario == GetEnumDescription(TipoUsuario.Fisioterapeuta))
+
+                if (data.HasValue)
                 {
-                    usuariosParaExibir = fisioterapeutas;
+                    cuidadores = cuidadores.Where(x => x.DataCadasto >= data);
+                    fisios = fisios.Where(x => x.DataCadasto >= data);
+                }
+
+                if (tipoUsuario == "1") // Cuidador
+                {
+                    usuarios.AddRange(cuidadores.ToList());
+                }
+                else if (tipoUsuario == "2") // Fisio
+                {
+                    usuarios.AddRange(fisios.ToList());
                 }
                 else
                 {
-                    usuariosParaExibir = cuidadores.Concat<Usuario>(fisioterapeutas);
+                    usuarios.AddRange(cuidadores.ToList());
+                    usuarios.AddRange(fisios.ToList());
                 }
             }
 
-            return View(usuariosParaExibir);
+            return View( usuarios);
         }
 
-        public ActionResult PerfilDetalhado(int id)
+        public ActionResult Filtrar(string tipoUsuario = null, string dataCadastro = null, string localizacao = null)
         {
-            var perfilDetalhado = new PerfilDetalhadoViewModel()
-            {
-                CuidadorDeIdoso = _context.CuidadoresDeIdoso.SingleOrDefault(p => p.Id == id),
-                Fisioterapeuta = _context.Fisioterapeutas.SingleOrDefault(p => p.Id == id)
-            };
+            var tipoUsuarioSessao = Session["TipoUsuario"]?.ToString() ?? string.Empty;
+            ViewBag.TipoUsuario = tipoUsuarioSessao;
 
-            if (perfilDetalhado.CuidadorDeIdoso == null && perfilDetalhado.Fisioterapeuta == null)
+            var usuarios = new List<Usuario>();
+
+            DateTime? data = null;
+            if (!string.IsNullOrEmpty(dataCadastro))
+                data = DateTime.Parse(dataCadastro);
+
+            if (tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Cuidador) ||
+                tipoUsuarioSessao == GetEnumDescription(TipoUsuario.Fisioterapeuta))
             {
-                return HttpNotFound();
+                var idosos = _context.Idosos.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+                var tutores = _context.Tutores.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+
+                if (!string.IsNullOrEmpty(localizacao))
+                {
+                    idosos = idosos.Where(x => x.Endereco.Contains(localizacao));
+                    tutores = tutores.Where(x => x.Endereco.Contains(localizacao));
+                }
+
+                if (data.HasValue)
+                {
+                    idosos = idosos.Where(x => x.DataCadasto >= data);
+                    tutores = tutores.Where(x => x.DataCadasto >= data);
+                }
+
+                usuarios.AddRange(idosos.ToList());
+                usuarios.AddRange(tutores.ToList());
             }
             else
             {
-                perfilDetalhado.Curriculo = _context.Curriculos.SingleOrDefault(p => p.Id == id); // colocar relação com usuário
+                var cuidadores = _context.CuidadoresDeIdoso.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+                var fisios = _context.Fisioterapeutas.Where(p => p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+
+                if (!string.IsNullOrEmpty(localizacao))
+                {
+                    cuidadores = cuidadores.Where(x => x.Endereco.Contains(localizacao));
+                    fisios = fisios.Where(x => x.Endereco.Contains(localizacao));
+                }
+
+                if (data.HasValue)
+                {
+                    cuidadores = cuidadores.Where(x => x.DataCadasto >= data);
+                    fisios = fisios.Where(x => x.DataCadasto >= data);
+                }
+
+                if (tipoUsuario == "1")
+                    usuarios.AddRange(cuidadores.ToList());
+                else if (tipoUsuario == "2")
+                    usuarios.AddRange(fisios.ToList());
+                else
+                {
+                    usuarios.AddRange(cuidadores.ToList());
+                    usuarios.AddRange(fisios.ToList());
+                }
+            }
+
+            return PartialView("_UsuariosLista", usuarios);
+        }
+
+        public ActionResult PerfilDetalhado(Guid IdentificadorUnico)
+        {
+            var tipoUsuarioSessao = Session["TipoUsuario"]?.ToString() ?? string.Empty;
+            var idUsuarioLogado = Convert.ToInt32(Session["IdUsuario"]);
+
+            var perfilDetalhado = new PerfilDetalhadoViewModel()
+            {
+                CuidadorDeIdoso = _context.CuidadoresDeIdoso
+                    .SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
+
+                Fisioterapeuta = _context.Fisioterapeutas
+                    .SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
+
+                Tutor = _context.Tutores
+                    .SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
+
+                Idoso = _context.Idosos
+                    .SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
+
+                TipoUsuario = tipoUsuarioSessao,
+                IdUsuario = idUsuarioLogado.ToString()
+            };
+
+            if (perfilDetalhado.CuidadorDeIdoso == null &&
+                perfilDetalhado.Fisioterapeuta == null &&
+                perfilDetalhado.Tutor == null &&
+                perfilDetalhado.Idoso == null)
+            {
+                return HttpNotFound();
+            }
+
+            perfilDetalhado.Curriculo = _context.Curriculos
+                .SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico)
+                ?? new Curriculo()
+                {
+                    Cursos = new List<string>(),
+                    Experiencias = new List<string>(),
+                    RedesSociais = new List<string>()
+                };
+
+            int? idAlvo = null;
+
+            if (perfilDetalhado.CuidadorDeIdoso != null)
+                idAlvo = perfilDetalhado.CuidadorDeIdoso.Id;
+
+            else if (perfilDetalhado.Fisioterapeuta != null)
+                idAlvo = perfilDetalhado.Fisioterapeuta.Id;
+
+            else if (perfilDetalhado.Idoso != null)
+                idAlvo = perfilDetalhado.Idoso.Id;
+
+            else if (perfilDetalhado.Tutor != null)
+                idAlvo = perfilDetalhado.Tutor.Id;
+
+            perfilDetalhado.TemConexaoAtiva = false;
+
+            if (idAlvo.HasValue)
+            {
+                perfilDetalhado.TemConexaoAtiva = _context.RelacionamentosIdosoProfissional.Any(r =>
+                    r.EtapaAtivacao == EtapaAtivacao.AtivacaoLiberada &&
+                    (
+                        (r.IdosoId == idUsuarioLogado && r.CuidadorId == idAlvo) ||
+                        (r.IdosoId == idUsuarioLogado && r.FisioterapeutaId == idAlvo) ||
+
+                        (r.TutorId == idUsuarioLogado && r.CuidadorId == idAlvo) ||
+                        (r.TutorId == idUsuarioLogado && r.FisioterapeutaId == idAlvo) ||
+
+                        (r.CuidadorId == idUsuarioLogado && r.IdosoId == idAlvo) ||
+                        (r.CuidadorId == idUsuarioLogado && r.TutorId == idAlvo) ||
+
+                        (r.FisioterapeutaId == idUsuarioLogado && r.IdosoId == idAlvo) ||
+                        (r.FisioterapeutaId == idUsuarioLogado && r.TutorId == idAlvo)
+                    )
+                );
+
+                perfilDetalhado.Avaliacaos = new List<Avaliacao>();
+
+                if (perfilDetalhado.CuidadorDeIdoso != null)
+                {
+                    perfilDetalhado.Avaliacaos = _context.Avaliacoes
+                        .Where(a => a.RelacionamentoIdosoProfissional.CuidadorId == idAlvo)
+                        .OrderByDescending(a => a.Id)
+                        .ToList();
+                }
+                else if (perfilDetalhado.Fisioterapeuta != null)
+                {
+                    perfilDetalhado.Avaliacaos = _context.Avaliacoes
+                        .Where(a => a.RelacionamentoIdosoProfissional.FisioterapeutaId == idAlvo)
+                        .OrderByDescending(a => a.Id)
+                        .ToList();
+                }
+                else if (perfilDetalhado.Idoso != null)
+                {
+                    perfilDetalhado.Avaliacaos = _context.Avaliacoes
+                        .Where(a => a.RelacionamentoIdosoProfissional.IdosoId == idAlvo)
+                        .OrderByDescending(a => a.Id)
+                        .ToList();
+                }
+                else if (perfilDetalhado.Tutor != null)
+                {
+                    perfilDetalhado.Avaliacaos = _context.Avaliacoes
+                        .Where(a => a.RelacionamentoIdosoProfissional.TutorId == idAlvo)
+                        .OrderByDescending(a => a.Id)
+                        .ToList();
+                }
             }
 
             return View(perfilDetalhado);

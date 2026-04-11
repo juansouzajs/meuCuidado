@@ -123,6 +123,7 @@
     <Compile Include="Models\Ajuda.cs" />
     <Compile Include="Models\Curriculo.cs" />
     <Compile Include="Models\Documento.cs" />
+    <Compile Include="Models\Request\AvaliacaoRequest.cs" />
     <Compile Include="Utils\SenhasHelper.cs" />
     <Compile Include="ViewModels\AutenticacaoViewModel.cs" />
     <Compile Include="Models\Avaliacao.cs" />
@@ -141,6 +142,7 @@
     <Compile Include="Models\Tutor.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\ConexaoViewModel.cs" />
     <Compile Include="ViewModels\ConfiguracoesViewModel.cs" />
     <Compile Include="ViewModels\DocumentoViewModel.cs" />
     <Compile Include="ViewModels\PerfilDetalhadoViewModel.cs" />
