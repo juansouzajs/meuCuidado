@@ -11,6 +11,12 @@
 
 <div class="perfil-wrapper">
 
+    <div class="topo-voltar">
+        <button onclick="voltarPagina()" class="btn-voltar">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </button>
+    </div>
+
     <!-- HEADER -->
     <div class="perfil-header">
         <div class="perfil-avatar-wrapper">
@@ -25,25 +31,36 @@
             ?? Model.Tutor?.Nome)
         </h2>
 
-        <p class="perfil-subtitle">Conecte-se e acompanhe informações</p>
+        <p class="perfil-subtitle">Conecte-se nas redes sociais e acompanhe informações</p>
 
         <div class="acoes-perfil">
 
-            @if (podeSolicitar && !temConexao)
+            @if (podeSolicitar && !temConexao && !Model.ConexaoPendente)
             {
                 <a href="@Url.Action("SolicitarConexao", "Relacionamento", new {
-                        identificador = Model.CuidadorDeIdoso?.IdentificadorUnico
-                        ?? Model.Fisioterapeuta?.IdentificadorUnico
-                    })"
+            identificador = Model.CuidadorDeIdoso?.IdentificadorUnico
+            ?? Model.Fisioterapeuta?.IdentificadorUnico
+        })"
                    class="btn-primary-soft">
                     Solicitar conexão
                 </a>
             }
-
-            @if (podeSolicitar && temConexao)
+            else if (podeSolicitar && Model.ConexaoPendente)
+            {
+                <button class="btn-primary-soft" disabled>
+                    Conexão solicitada
+                </button>
+            }
+            else if (podeSolicitar && temConexao && !Model.JaAvaliou)
             {
                 <button class="btn-primary-soft" onclick="abrirModalAvaliacao()">
                     Avaliar
+                </button>
+            }
+            else if (podeSolicitar && Model.JaAvaliou)
+            {
+                <button class="btn-primary-soft" disabled>
+                    Já avaliado
                 </button>
             }
 
@@ -186,9 +203,9 @@
 </div>
 
 <!-- TOAST -->
-<div id="toast-sucesso" class="toast-sucesso">
-    <i class="fas fa-check-circle"></i>
-    <span>Avaliação enviada com sucesso!</span>
+<div id="toast" class="toast-custom">
+    <i id="toast-icon" class="fas"></i>
+    <span id="toast-text"></span>
 </div>
 
 <script>
@@ -206,6 +223,39 @@
 </script>
 
 <script>
+
+    function mostrarToast(tipo, mensagem) {
+        const toast = document.getElementById("toast");
+        const icon = document.getElementById("toast-icon");
+        const text = document.getElementById("toast-text");
+
+        text.innerText = mensagem;
+
+        toast.className = "toast-custom";
+
+        if (tipo === "sucesso") {
+            toast.classList.add("sucesso");
+            icon.className = "fas fa-check-circle";
+        } else {
+            toast.classList.add("info");
+            icon.className = "fas fa-exclamation-circle";
+        }
+
+        toast.classList.add("show");
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+        }, 3000);
+    }
+
+    function voltarPagina() {
+        if (document.referrer !== "") {
+            window.history.back();
+        } else {
+            window.location.href = "/";
+        }
+    }
+
     let nota = 0;
 
     function abrirModalAvaliacao() {
@@ -214,15 +264,6 @@
 
     function fecharModal() {
         document.getElementById("modalAvaliacao").style.display = "none";
-    }
-
-    function mostrarToast() {
-        const toast = document.getElementById("toast-sucesso");
-        toast.classList.add("show");
-
-        setTimeout(() => {
-            toast.classList.remove("show");
-        }, 2500);
     }
 
     const estrelas = document.querySelectorAll("#estrelas i");
@@ -275,16 +316,99 @@
             })
         }).then(() => {
             fecharModal();
-            mostrarToast();
 
-            setTimeout(() => {
-                location.reload();
-            }, 2000);
+            // salva o toast antes do reload
+            localStorage.setItem("toastTemp", JSON.stringify({
+                tipo: "sucesso",
+                mensagem: "Avaliação enviada com sucesso!"
+            }));
+
+            location.reload();
         });
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const toastTemp = localStorage.getItem("toastTemp");
+
+        if (toastTemp) {
+            const dados = JSON.parse(toastTemp);
+
+            setTimeout(() => {
+                mostrarToast(dados.tipo, dados.mensagem);
+            }, 300); // espera render da tela
+
+            localStorage.removeItem("toastTemp");
+        }
+    });
 </script>
 
+@if (TempData["ToastMensagem"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            mostrarToast("@TempData["ToastTipo"]", "@TempData["ToastMensagem"]");
+        });
+    </script>
+}
+
 <style>
+
+    .toast-custom {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 14px 18px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: all 0.4s ease;
+        z-index: 9999;
+        color: white;
+    }
+
+        /* TIPOS */
+        .toast-custom.sucesso {
+            background: #4db6ac;
+        }
+
+        .toast-custom.info {
+            background: #ff9800;
+        }
+
+        /* ANIMAÇÃO */
+        .toast-custom.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    /* BOTÃO VOLTAR */
+    .topo-voltar {
+        margin-bottom: 10px;
+    }
+
+    .btn-voltar {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: white;
+        color: #4db6ac;
+        border: 1px solid #4db6ac;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+        .btn-voltar:hover {
+            background: #4db6ac;
+            color: white;
+            transform: translateY(-1px);
+        }
 
     .toast-sucesso {
         position: fixed;

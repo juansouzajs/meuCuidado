@@ -220,6 +220,24 @@ namespace meuCuidado.Controllers
                     )
                 );
 
+                // 🔥 ADIÇÃO AQUI (única mudança)
+                perfilDetalhado.ConexaoPendente = _context.RelacionamentosIdosoProfissional.Any(r =>
+                    r.EtapaAtivacao == EtapaAtivacao.AguardandoAprovacao &&
+                    (
+                        (r.IdosoId == idUsuarioLogado && r.CuidadorId == idAlvo) ||
+                        (r.IdosoId == idUsuarioLogado && r.FisioterapeutaId == idAlvo) ||
+
+                        (r.TutorId == idUsuarioLogado && r.CuidadorId == idAlvo) ||
+                        (r.TutorId == idUsuarioLogado && r.FisioterapeutaId == idAlvo) ||
+
+                        (r.CuidadorId == idUsuarioLogado && r.IdosoId == idAlvo) ||
+                        (r.CuidadorId == idUsuarioLogado && r.TutorId == idAlvo) ||
+
+                        (r.FisioterapeutaId == idUsuarioLogado && r.IdosoId == idAlvo) ||
+                        (r.FisioterapeutaId == idUsuarioLogado && r.TutorId == idAlvo)
+                    )
+                );
+
                 perfilDetalhado.Avaliacaos = new List<Avaliacao>();
 
                 if (perfilDetalhado.CuidadorDeIdoso != null)
@@ -250,6 +268,22 @@ namespace meuCuidado.Controllers
                         .OrderByDescending(a => a.Id)
                         .ToList();
                 }
+
+                perfilDetalhado.JaAvaliou = _context.Avaliacoes.Any(a =>
+                    (
+                        a.RelacionamentoIdosoProfissional.CuidadorId == idAlvo ||
+                        a.RelacionamentoIdosoProfissional.FisioterapeutaId == idAlvo ||
+                        a.RelacionamentoIdosoProfissional.IdosoId == idAlvo ||
+                        a.RelacionamentoIdosoProfissional.TutorId == idAlvo
+                    )
+                    &&
+                    (
+                        a.RelacionamentoIdosoProfissional.IdosoId == idUsuarioLogado ||
+                        a.RelacionamentoIdosoProfissional.TutorId == idUsuarioLogado ||
+                        a.RelacionamentoIdosoProfissional.CuidadorId == idUsuarioLogado ||
+                        a.RelacionamentoIdosoProfissional.FisioterapeutaId == idUsuarioLogado
+                    )
+                );
             }
 
             return View(perfilDetalhado);
