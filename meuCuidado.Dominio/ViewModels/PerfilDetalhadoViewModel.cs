@@ -10,6 +10,8 @@ namespace meuCuidado.Dominio.ViewModels
         //public dadosProfissional dadosProfissional { get; set; }
         public List<Avaliacao> Avaliacaos { get; set; }
         public bool TemConexaoAtiva { get; set; }
+        public bool ConexaoPendente { get; set; }
+        public bool JaAvaliou { get; set; }
         public string TipoUsuario { get; set; }
         public string IdUsuario { get; set; }
         public Curriculo Curriculo { get; set; }
