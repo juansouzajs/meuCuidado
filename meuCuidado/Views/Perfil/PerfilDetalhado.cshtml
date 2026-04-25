@@ -20,8 +20,13 @@
     <!-- HEADER -->
     <div class="perfil-header">
         <div class="perfil-avatar-wrapper">
-            <img src="https://i.pinimg.com/564x/ac/0f/41/ac0f419e977af681516e00829c5393ee.jpg"
-                 class="perfil-avatar" />
+            @{
+                var foto = string.IsNullOrEmpty(Model.FotoUrl)
+                    ? "/ImagensPerfil/default.jpg"
+                    : Model.FotoUrl;
+            }
+
+            <img src="@foto" class="perfil-avatar" />
         </div>
 
         <h2 class="perfil-nome">

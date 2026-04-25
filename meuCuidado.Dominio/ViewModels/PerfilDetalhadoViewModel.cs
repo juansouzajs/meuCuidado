@@ -6,8 +6,10 @@ namespace meuCuidado.Dominio.ViewModels
 {
     public class PerfilDetalhadoViewModel
     {
-        //public Imagem imagem { get; set; }
-        //public dadosProfissional dadosProfissional { get; set; }
+        public string FotoUrl { get; set; }
+        public string Facebook { get; set; }
+        public string Instagram { get; set; }
+        public string Youtube { get; set; }
         public List<Avaliacao> Avaliacaos { get; set; }
         public bool TemConexaoAtiva { get; set; }
         public bool ConexaoPendente { get; set; }

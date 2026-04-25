@@ -1,6 +1,303 @@
-﻿@{
-    ViewBag.Title = "EditarPerfil";
+﻿@model meuCuidado.Dominio.ViewModels.PerfilDetalhadoViewModel
+
+@{
+    Layout = null;
+
+    var foto = string.IsNullOrEmpty(Model.FotoUrl)
+        ? "/ImagensPerfil/default.jpg"
+        : Model.FotoUrl;
 }
 
-<h2>Editar Perfil</h2>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
+<div class="perfil-container">
+
+    <!-- VOLTAR -->
+    <div class="top-bar">
+        <button onclick="window.history.back()" class="btn-voltar">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </button>
+    </div>
+
+    <!-- CARD PERFIL -->
+    <div class="perfil-card">
+
+        <div class="perfil-header">
+
+            <img id="previewFoto" src="@foto" class="perfil-avatar" />
+
+            <h2>
+                @(Model.CuidadorDeIdoso?.Nome
+                ?? Model.Fisioterapeuta?.Nome
+                ?? Model.Idoso?.Nome
+                ?? Model.Tutor?.Nome)
+            </h2>
+
+            <p class="subtitle">Gerencie suas informações e redes sociais</p>
+
+            <button class="btn-primary" onclick="toggleEdit()">
+                <i class="fas fa-pen"></i> Editar Perfil
+            </button>
+
+        </div>
+
+        <!-- CONTEÚDO -->
+        <div class="perfil-body">
+
+            <!-- VISUAL -->
+            <div id="modoVisualizacao">
+
+                <h3>Redes sociais</h3>
+
+                <div class="social-preview">
+
+                    <a href="@Model.Facebook ?? " #"" target="_blank" class="social facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+
+                    <a href="@Model.Instagram ?? " #"" target="_blank" class="social instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+
+                    <a href="@Model.Youtube ?? " #"" target="_blank" class="social youtube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+            <!-- EDIÇÃO -->
+            <div id="modoEdicao" style="display:none;">
+
+                <form id="formPerfil" enctype="multipart/form-data">
+
+                    <!-- FOTO -->
+                    <div class="input-group">
+                        <label>Foto de perfil</label>
+                        <input type="file" id="inputFoto" name="FotoPerfil" onchange="previewImagem(event)" />
+                    </div>
+
+                    <!-- FACEBOOK -->
+                    <div class="input-group">
+                        <label><i class="fab fa-facebook"></i> Facebook</label>
+                        <input type="text"
+                               name="facebook"
+                               placeholder="https://facebook.com/seu.usuario"
+                               value="@Model.Facebook" />
+                    </div>
+
+                    <!-- INSTAGRAM -->
+                    <div class="input-group">
+                        <label><i class="fab fa-instagram"></i> Instagram</label>
+                        <input type="text"
+                               name="instagram"
+                               placeholder="https://instagram.com/seu.usuario"
+                               value="@Model.Instagram" />
+                    </div>
+
+                    <!-- YOUTUBE -->
+                    <div class="input-group">
+                        <label><i class="fab fa-youtube"></i> YouTube</label>
+                        <input type="text"
+                               name="youtube"
+                               placeholder="https://youtube.com/seucanal"
+                               value="@Model.Youtube" />
+                    </div>
+
+                    <button type="button" class="btn-primary full" onclick="salvarPerfil()">
+                        Salvar alterações
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    function carregarConfiguracoes() {
+        $.ajax({
+            url: '/Configuracoes/Configuracoes',
+            type: 'GET',
+            success: function (data) {
+                $('#contentContainer').html(data);
+            }
+        });
+    }
+
+    function toggleEdit() {
+        const edit = document.getElementById("modoEdicao");
+        const view = document.getElementById("modoVisualizacao");
+
+        edit.style.display = edit.style.display === "none" ? "block" : "none";
+        view.style.display = view.style.display === "none" ? "block" : "none";
+    }
+
+    function previewImagem(event) {
+        const reader = new FileReader();
+
+        reader.onload = function () {
+            document.getElementById("previewFoto").src = reader.result;
+        };
+
+        if (event.target.files[0]) {
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    }
+
+    function salvarPerfil() {
+
+        const form = document.getElementById("formPerfil");
+        const formData = new FormData(form);
+
+        fetch('/Perfil/EditarPerfil', {
+            method: 'POST',
+            body: formData
+        })
+            .then(() => location.reload())
+            .catch(() => alert("Erro ao salvar."));
+    }
+</script>
+
+<style>
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #e6f4f1, #f8fbff);
+}
+
+/* CONTAINER */
+.perfil-container {
+    max-width: 700px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* TOPO */
+.top-bar {
+    margin-bottom: 15px;
+}
+
+/* CARD */
+.perfil-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* HEADER */
+.perfil-header {
+    text-align: center;
+}
+
+.perfil-avatar {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+/* TEXTO */
+.subtitle {
+    color: #777;
+    margin-bottom: 15px;
+}
+
+/* BODY */
+.perfil-body {
+    margin-top: 20px;
+}
+
+/* INPUTS */
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+/* BOTÕES */
+.btn-primary {
+    background: #4db6ac;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.btn-primary.full {
+    width: 100%;
+    margin-top: 10px;
+}
+
+    .btn-voltar {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: white;
+        color: #4db6ac;
+        border: 1px solid #4db6ac;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-bottom: 10px;
+    }
+
+        .btn-voltar:hover {
+            background: #4db6ac;
+            color: white;
+        }
+/* REDES */
+.social-preview {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.social {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.facebook { background: #1877f2; }
+.instagram { background: linear-gradient(45deg,#f58529,#dd2a7b,#8134af); }
+.youtube { background: #ff0000; }
+
+/* RESPONSIVO */
+@@media (max-width: 600px) {
+    .perfil-card {
+        padding: 15px;
+    }
+
+    .perfil-avatar {
+        width: 100px;
+        height: 100px;
+    }
+}
+
+</style>

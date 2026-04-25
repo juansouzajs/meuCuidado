@@ -1,5 +1,6 @@
 using meuCuidado.Dominio.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -71,6 +72,47 @@ namespace meuCuidado.Controllers
             catch (Exception ex)
             {
                 return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        public ActionResult MinhasAvaliacoes()
+        {
+            try
+            {
+                var idUsuarioLogado = Convert.ToInt32(Session["IdUsuario"]);
+                var tipoUsuario = Session["TipoUsuario"]?.ToString();
+
+                var query = _context.Avaliacoes
+                    .Include("RelacionamentoIdosoProfissional.Tutor")
+                    .Include("RelacionamentoIdosoProfissional.Idoso")
+                    .AsQueryable();
+
+                if (tipoUsuario == "Cuidador")
+                {
+                    query = query.Where(a =>
+                        a.RelacionamentoIdosoProfissional.CuidadorId == idUsuarioLogado
+                    );
+                }
+                else if (tipoUsuario == "Fisioterapeuta")
+                {
+                    query = query.Where(a =>
+                        a.RelacionamentoIdosoProfissional.FisioterapeutaId == idUsuarioLogado
+                    );
+                }
+                else
+                {
+                    return PartialView(new List<Avaliacao>());
+                }
+
+                var avaliacoes = query
+                    .OrderByDescending(a => a.Id)
+                    .ToList();
+
+                return PartialView(avaliacoes ?? new List<Avaliacao>());
+            }
+            catch (Exception)
+            {
+                return PartialView(new List<Avaliacao>());
             }
         }
     }

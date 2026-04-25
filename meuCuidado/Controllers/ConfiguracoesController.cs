@@ -20,7 +20,7 @@ namespace meuCuidado.Controllers
             if (tipoUsuario == GetEnumDescription(TipoUsuario.Cuidador) || tipoUsuario == GetEnumDescription(TipoUsuario.Fisioterapeuta))
             {
                 configuracoes.Add(new ConfiguracoesViewModel { Titulo = "Currículo", Descricao = "Editar ou visualizar currículo", Link = Url.Action("EditarCurriculo", "Curriculo") });
-                configuracoes.Add(new ConfiguracoesViewModel { Titulo = "Avaliações", Descricao = "Visualizar avaliações recebidas", Link = Url.Action("Avaliacoes", "Configuracoes") });
+                configuracoes.Add(new ConfiguracoesViewModel { Titulo = "Avaliações", Descricao = "Visualizar avaliações recebidas", Link = Url.Action("MinhasAvaliacoes", "Avaliacao") });
                 configuracoes.Add(new ConfiguracoesViewModel { Titulo = "Sair da conta", Descricao = "Encerrar sessão e voltar para o login", Link = Url.Action("Logout", "Login") });
 
             }

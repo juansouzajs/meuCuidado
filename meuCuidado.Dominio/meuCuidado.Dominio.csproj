@@ -148,6 +148,7 @@
     <Compile Include="ViewModels\PerfilDetalhadoViewModel.cs" />
     <Compile Include="ViewModels\SolicitacaoProfissionalDetalheViewModel.cs" />
     <Compile Include="ViewModels\SolicitacaoProfissionalViewModel.cs" />
+    <Compile Include="ViewModels\UsuarioCardViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

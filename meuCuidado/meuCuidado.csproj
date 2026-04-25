@@ -219,6 +219,10 @@
     <Compile Include="Migrations\202603282041406_AddEtapaAtivacaoRelacionamento.Designer.cs">
       <DependentUpon>202603282041406_AddEtapaAtivacaoRelacionamento.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202604251918584_AtualizaDocumento.cs" />
+    <Compile Include="Migrations\202604251918584_AtualizaDocumento.Designer.cs">
+      <DependentUpon>202604251918584_AtualizaDocumento.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -245,6 +249,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="ImagensPerfil\default.jpg" />
     <Content Include="Imagens\facebook-logo.png" />
     <Content Include="Imagens\facebook-logo.svg" />
     <Content Include="Imagens\gmail-logo.png" />
@@ -301,7 +306,6 @@
     <Content Include="Views\Perfil\PerfilDetalhado.cshtml" />
     <Content Include="Views\Curriculo\Curriculo.cshtml" />
     <Content Include="Views\Curriculo\EditarCurriculo.cshtml" />
-    <Content Include="Views\Perfil\EditarPerfil.cshtml" />
     <Content Include="Views\Medicamento\AdicionarMedicamento.cshtml" />
     <Content Include="Views\Cadastro\CadastroTutorEMedicoDoIdoso.cshtml" />
     <Content Include="Views\Administrador\Administrador.cshtml" />
@@ -309,6 +313,8 @@
     <Content Include="Views\Cadastro\AguardandoAprovacao.cshtml" />
     <Content Include="Views\Administrador\Solicitacoes.cshtml" />
     <Content Include="Views\Relacionamento\_Conexoes.cshtml" />
+    <Content Include="Views\Avaliacao\MinhasAvaliacoes.cshtml" />
+    <Content Include="Views\Perfil\EditarPerfil.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -356,6 +362,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202603282041406_AddEtapaAtivacaoRelacionamento.resx">
       <DependentUpon>202603282041406_AddEtapaAtivacaoRelacionamento.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202604251918584_AtualizaDocumento.resx">
+      <DependentUpon>202604251918584_AtualizaDocumento.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -31,6 +31,11 @@
                 Lembretes
             </button>
         }
+
+        <button id="configBtn" class="btn-dashboard secondary">
+            <i class="fa fa-cog"></i>
+            Configurações
+        </button>
     </div>
 
     <!-- Conteúdo -->
@@ -107,6 +112,28 @@
 
         $('#conexoesBtn').on('click', function () {
             carregarConexoes();
+        });
+
+        function carregarConfiguracoes() {
+            $.ajax({
+                url: '@Url.Action("Configuracoes", "Configuracoes")',
+                type: 'GET',
+                success: function (data) {
+                    $('#contentContainer').html(data);
+
+                    $('#configBtn').addClass('active');
+                    $('#perfilBtn').removeClass('active');
+                    $('#lembreteBtn').removeClass('active');
+                    $('#conexoesBtn').removeClass('active');
+                },
+                error: function () {
+                    alert("Erro ao carregar configurações.");
+                }
+            });
+        }
+
+        $('#configBtn').on('click', function () {
+            carregarConfiguracoes();
         });
     });
 </script>

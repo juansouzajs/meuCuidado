@@ -1,18 +1,19 @@
-﻿@model IEnumerable<meuCuidado.Dominio.Models.Usuario>
-@{
-    ViewBag.Title = "Lista de usuários";
-    Layout = null;
-}
+﻿@model IEnumerable<UsuarioCardViewModel>
 
 @if (Model != null && Model.Any())
 {
     <div class="usuarios-grid">
         @foreach (var usuario in Model)
         {
-            <a href="@Url.Action("PerfilDetalhado", "Perfil", new { identificadorUnico = usuario.IdentificadorUnico })" class="usuario-card">
+            var foto = !string.IsNullOrEmpty(usuario.FotoUrl)
+                ? Url.Content(usuario.FotoUrl)
+                : "https://i.pinimg.com/564x/ac/0f/41/ac0f419e977af681516e00829c5393ee.jpg";
+
+            <a href="@Url.Action("PerfilDetalhado", "Perfil", new { identificadorUnico = usuario.IdentificadorUnico })"
+               class="usuario-card">
 
                 <div class="usuario-img-wrapper">
-                    <img src="https://i.pinimg.com/564x/ac/0f/41/ac0f419e977af681516e00829c5393ee.jpg"
+                    <img src="@foto"
                          alt="Foto do usuário"
                          class="usuario-img" />
                 </div>
