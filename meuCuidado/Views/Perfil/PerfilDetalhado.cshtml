@@ -82,23 +82,41 @@
                 <h3>Currículo</h3>
 
                 <div class="secao">
+                    <h4>Anos de experiência: @Model.Curriculo.AnosExperiencia</h4>
+
                     <h4>Cursos</h4>
-                    <ul>
-                        @foreach (var curso in Model.Curriculo.Cursos)
-                        {
-                            <li>@curso</li>
-                        }
-                    </ul>
+
+                    @if (Model.Curriculo.Cursos.Any())
+                    {
+                        <ul>
+                            @foreach (var curso in Model.Curriculo.Cursos)
+                            {
+                                <li>@curso</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>Nenhum curso cadastrado</p>
+                    }
                 </div>
 
                 <div class="secao">
                     <h4>Experiências</h4>
-                    <ul>
-                        @foreach (var experiencia in Model.Curriculo.Experiencias)
-                        {
-                            <li>@experiencia</li>
-                        }
-                    </ul>
+
+                    @if (Model.Curriculo.Experiencias.Any())
+                    {
+                        <ul>
+                            @foreach (var experiencia in Model.Curriculo.Experiencias)
+                            {
+                                <li>@experiencia</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>Nenhuma experiência cadastrada</p>
+                    }
                 </div>
             </div>
 
@@ -165,13 +183,56 @@
         }
 
         <!-- REDES -->
+        @{
+            var redes = Model.Curriculo?.RedesSociais ?? new List<string>();
+
+            var facebook = redes.FirstOrDefault(x => x.ToLower().Contains("facebook"));
+            var instagram = redes.FirstOrDefault(x => x.ToLower().Contains("instagram"));
+            var linkedin = redes.FirstOrDefault(x => x.ToLower().Contains("linkedin"));
+            var youtube = redes.FirstOrDefault(x => x.ToLower().Contains("youtube"));
+        }
+
         <div class="card-soft redes">
             <h3>Redes Sociais</h3>
 
             <div class="redes-lista">
-                <a href="#" class="rede facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="rede instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="rede youtube"><i class="fab fa-youtube"></i></a>
+
+                @if (!string.IsNullOrEmpty(facebook))
+                {
+                    <a href="@facebook" target="_blank" class="rede facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                }
+
+                @if (!string.IsNullOrEmpty(instagram))
+                {
+                    <a href="@instagram" target="_blank" class="rede instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                }
+
+                @if (!string.IsNullOrEmpty(linkedin))
+                {
+                    <a href="@linkedin" target="_blank" class="rede linkedin">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                }
+
+                @if (!string.IsNullOrEmpty(youtube))
+                {
+                    <a href="@youtube" target="_blank" class="rede youtube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                }
+
+                @if (!string.IsNullOrEmpty(facebook) == false &&
+                     !string.IsNullOrEmpty(instagram) == false &&
+                     !string.IsNullOrEmpty(linkedin) == false &&
+                     !string.IsNullOrEmpty(youtube) == false)
+                {
+                    <p style="color:#888;">Nenhuma rede cadastrada</p>
+                }
+
             </div>
         </div>
 
@@ -357,6 +418,10 @@
 }
 
 <style>
+
+    .linkedin {
+        background: #0077b5;
+    }
 
     .toast-custom {
         position: fixed;

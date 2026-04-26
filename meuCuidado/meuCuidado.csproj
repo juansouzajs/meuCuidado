@@ -261,6 +261,7 @@
     <Content Include="Imagens\facebook-logo.png" />
     <Content Include="Imagens\facebook-logo.svg" />
     <Content Include="Imagens\gmail-logo.png" />
+    <Content Include="Imagens\linkedin-logo.png" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />

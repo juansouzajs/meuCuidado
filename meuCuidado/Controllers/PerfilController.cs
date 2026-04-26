@@ -221,28 +221,42 @@ namespace meuCuidado.Controllers
                 return HttpNotFound();
             }
 
+            int? idAlvo = null;
+            TipoUsuario tipoPerfil;
+
+            if (perfilDetalhado.CuidadorDeIdoso != null)
+            {
+                idAlvo = perfilDetalhado.CuidadorDeIdoso.Id;
+                tipoPerfil = TipoUsuario.Cuidador;
+            }
+            else if (perfilDetalhado.Fisioterapeuta != null)
+            {
+                idAlvo = perfilDetalhado.Fisioterapeuta.Id;
+                tipoPerfil = TipoUsuario.Fisioterapeuta;
+            }
+            else if (perfilDetalhado.Idoso != null)
+            {
+                idAlvo = perfilDetalhado.Idoso.Id;
+                tipoPerfil = TipoUsuario.Idoso;
+            }
+            else
+            {
+                idAlvo = perfilDetalhado.Tutor.Id;
+                tipoPerfil = TipoUsuario.Tutor;
+            }
+
             perfilDetalhado.Curriculo = _context.Curriculos
-                .SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico)
+                .FirstOrDefault(c =>
+                    c.UsuarioId == idAlvo &&
+                    c.TipoUsuario == tipoPerfil
+                )
                 ?? new Curriculo()
                 {
+                    AnosExperiencia = 0,
                     Cursos = new List<string>(),
                     Experiencias = new List<string>(),
                     RedesSociais = new List<string>()
                 };
-
-            int? idAlvo = null;
-
-            if (perfilDetalhado.CuidadorDeIdoso != null)
-                idAlvo = perfilDetalhado.CuidadorDeIdoso.Id;
-
-            else if (perfilDetalhado.Fisioterapeuta != null)
-                idAlvo = perfilDetalhado.Fisioterapeuta.Id;
-
-            else if (perfilDetalhado.Idoso != null)
-                idAlvo = perfilDetalhado.Idoso.Id;
-
-            else if (perfilDetalhado.Tutor != null)
-                idAlvo = perfilDetalhado.Tutor.Id;
 
             perfilDetalhado.TemConexaoAtiva = false;
 
@@ -265,7 +279,6 @@ namespace meuCuidado.Controllers
                     )
                 );
 
-                // 🔥 ADIÇÃO AQUI (única mudança)
                 perfilDetalhado.ConexaoPendente = _context.RelacionamentosIdosoProfissional.Any(r =>
                     r.EtapaAtivacao == EtapaAtivacao.AguardandoAprovacao &&
                     (
@@ -285,32 +298,29 @@ namespace meuCuidado.Controllers
 
                 perfilDetalhado.Avaliacaos = new List<Avaliacao>();
 
-                if (perfilDetalhado.CuidadorDeIdoso != null)
+                if (tipoPerfil == TipoUsuario.Cuidador)
                 {
                     perfilDetalhado.Avaliacaos = _context.Avaliacoes
                         .Where(a => a.RelacionamentoIdosoProfissional.CuidadorId == idAlvo)
                         .OrderByDescending(a => a.Id)
                         .ToList();
                 }
-                else if (perfilDetalhado.Fisioterapeuta != null)
+                else if (tipoPerfil == TipoUsuario.Fisioterapeuta)
                 {
                     perfilDetalhado.Avaliacaos = _context.Avaliacoes
                         .Where(a => a.RelacionamentoIdosoProfissional.FisioterapeutaId == idAlvo)
-                        .OrderByDescending(a => a.Id)
                         .ToList();
                 }
-                else if (perfilDetalhado.Idoso != null)
+                else if (tipoPerfil == TipoUsuario.Idoso)
                 {
                     perfilDetalhado.Avaliacaos = _context.Avaliacoes
                         .Where(a => a.RelacionamentoIdosoProfissional.IdosoId == idAlvo)
-                        .OrderByDescending(a => a.Id)
                         .ToList();
                 }
-                else if (perfilDetalhado.Tutor != null)
+                else
                 {
                     perfilDetalhado.Avaliacaos = _context.Avaliacoes
                         .Where(a => a.RelacionamentoIdosoProfissional.TutorId == idAlvo)
-                        .OrderByDescending(a => a.Id)
                         .ToList();
                 }
 
@@ -330,18 +340,11 @@ namespace meuCuidado.Controllers
                     )
                 );
 
-                var tipoUsuarioEnum = (TipoUsuario)Enum.Parse(typeof(TipoUsuario),
-                    perfilDetalhado.CuidadorDeIdoso != null ? "Cuidador" :
-                    perfilDetalhado.Fisioterapeuta != null ? "Fisioterapeuta" :
-                    perfilDetalhado.Idoso != null ? "Idoso" :
-                    "Tutor"
-                );
-
                 var foto = _context.Documentos
                     .Where(d =>
                         d.UsuarioId == idAlvo &&
                         d.TipoDocumento == TipoDocumento.FotoDocumento &&
-                        d.TipoUsuario == tipoUsuarioEnum &&
+                        d.TipoUsuario == tipoPerfil &&
                         d.Descricao == "Perfil"
                     )
                     .OrderByDescending(d => d.DataUpload)
