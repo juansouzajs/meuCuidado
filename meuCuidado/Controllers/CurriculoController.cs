@@ -1,8 +1,8 @@
 ﻿using meuCuidado.Dominio.Models;
 using System;
 using System.Collections.Generic;
-using System.Web.Mvc;
 using System.Linq;
+using System.Web.Mvc;
 using static meuCuidado.Dominio.Extensions.EnumExtension;
 
 namespace meuCuidado.Controllers
@@ -11,23 +11,25 @@ namespace meuCuidado.Controllers
     {
         private readonly MeuCuidadoDbContext _context = new MeuCuidadoDbContext();
 
-        public ActionResult Curriculo()
-        {
-            return View(new Curriculo());
-        }
-
         public ActionResult EditarCurriculo()
         {
             var usuarioId = Convert.ToInt32(Session["IdUsuario"]);
+            var tipoUsuarioStr = Session["TipoUsuario"]?.ToString();
+
+            if (string.IsNullOrEmpty(tipoUsuarioStr))
+                return RedirectToAction("Login", "Account");
+
+            var tipoUsuarioEnum = (TipoUsuario)Enum.Parse(typeof(TipoUsuario), tipoUsuarioStr);
 
             var curriculo = _context.Curriculos
-                .FirstOrDefault(x => x.UsuarioId == usuarioId);
+                .FirstOrDefault(x => x.UsuarioId == usuarioId && x.TipoUsuario == tipoUsuarioEnum);
 
             if (curriculo == null)
             {
                 curriculo = new Curriculo
                 {
                     UsuarioId = usuarioId,
+                    TipoUsuario = tipoUsuarioEnum,
                     Cursos = new List<string>(),
                     Experiencias = new List<string>(),
                     RedesSociais = new List<string>()
@@ -38,7 +40,15 @@ namespace meuCuidado.Controllers
         }
 
         [HttpPost]
-        public JsonResult SalvarCurriculo(Curriculo model)
+        public JsonResult SalvarCurriculo(
+            int AnosExperiencia,
+            string Escolaridade,
+            List<string> Cursos,
+            List<string> Experiencias,
+            string Facebook,
+            string Instagram,
+            string Linkedin,
+            string Youtube)
         {
             try
             {
@@ -51,7 +61,7 @@ namespace meuCuidado.Controllers
                 var tipoUsuarioEnum = (TipoUsuario)Enum.Parse(typeof(TipoUsuario), tipoUsuarioStr);
 
                 var curriculo = _context.Curriculos
-                    .FirstOrDefault(x => x.UsuarioId == usuarioId);
+                    .FirstOrDefault(x => x.UsuarioId == usuarioId && x.TipoUsuario == tipoUsuarioEnum);
 
                 if (curriculo == null)
                 {
@@ -64,29 +74,21 @@ namespace meuCuidado.Controllers
                     _context.Curriculos.Add(curriculo);
                 }
 
-                // DADOS
-                curriculo.AnosExperiencia = model.AnosExperiencia;
-                curriculo.Escolaridade = model.Escolaridade;
+                curriculo.AnosExperiencia = AnosExperiencia;
+                curriculo.Escolaridade = Escolaridade;
                 curriculo.TipoUsuario = tipoUsuarioEnum;
 
-                // 🔥 AQUI TÁ OUTRO ERRO SEU (binding não funciona automático)
-                curriculo.Cursos = Request["CursosRaw"]?
-                    .Split(',')
-                    .Select(x => x.Trim())
-                    .Where(x => !string.IsNullOrEmpty(x))
-                    .ToList() ?? new List<string>();
+                curriculo.Cursos = Cursos ?? new List<string>();
+                curriculo.Experiencias = Experiencias ?? new List<string>();
 
-                curriculo.Experiencias = Request["ExperienciasRaw"]?
-                    .Split(',')
-                    .Select(x => x.Trim())
-                    .Where(x => !string.IsNullOrEmpty(x))
-                    .ToList() ?? new List<string>();
+                var redes = new List<string>();
 
-                curriculo.RedesSociais = Request["RedesRaw"]?
-                    .Split(',')
-                    .Select(x => x.Trim())
-                    .Where(x => !string.IsNullOrEmpty(x))
-                    .ToList() ?? new List<string>();
+                if (!string.IsNullOrWhiteSpace(Facebook)) redes.Add(Facebook);
+                if (!string.IsNullOrWhiteSpace(Instagram)) redes.Add(Instagram);
+                if (!string.IsNullOrWhiteSpace(Linkedin)) redes.Add(Linkedin);
+                if (!string.IsNullOrWhiteSpace(Youtube)) redes.Add(Youtube);
+
+                curriculo.RedesSociais = redes;
 
                 _context.SaveChanges();
 
