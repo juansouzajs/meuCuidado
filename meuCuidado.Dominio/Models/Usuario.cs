@@ -29,6 +29,8 @@ namespace meuCuidado.Dominio.Models
 
         public string Senha { get; set; }
 
+        public string LinkWhatsapp { get; set; }
+
         public EtapaAcesso EtapaAcesso { get; set; } = EtapaAcesso.AcessoLiberado;
 
         public DateTime DataCadasto { get; set; }

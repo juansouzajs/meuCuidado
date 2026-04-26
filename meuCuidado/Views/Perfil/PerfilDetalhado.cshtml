@@ -1,4 +1,5 @@
 ﻿@model meuCuidado.Dominio.ViewModels.PerfilDetalhadoViewModel
+@using System.Linq
 @{
     ViewBag.Title = "Perfil Detalhado";
     Layout = null;
@@ -45,7 +46,7 @@
                 <a href="@Url.Action("SolicitarConexao", "Relacionamento", new {
             identificador = Model.CuidadorDeIdoso?.IdentificadorUnico
             ?? Model.Fisioterapeuta?.IdentificadorUnico
-        })"
+            })"
                    class="btn-primary-soft">
                     Solicitar conexão
                 </a>
@@ -70,10 +71,64 @@
             }
 
         </div>
+        @if (temConexao)
+        {
+            var telefone =
+                Model.CuidadorDeIdoso?.Telefone
+                ?? Model.Fisioterapeuta?.Telefone
+                ?? Model.Idoso?.Telefone
+                ?? Model.Tutor?.Telefone;
+
+            if (!string.IsNullOrEmpty(telefone))
+            {
+                var telefoneLimpo = new string(telefone.Where(char.IsDigit).ToArray());
+                var linkWhatsapp = $"https://wa.me/55{telefoneLimpo}";
+
+                <div class="card-soft contato-box">
+                    <h3>Contato</h3>
+
+                    <p>
+                        <strong>Telefone:</strong> @telefone
+                    </p>
+
+                    <a href="@linkWhatsapp" target="_blank" class="btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i> Conversar no WhatsApp
+                    </a>
+                </div>
+            }
+        }
     </div>
 
     <!-- CONTEÚDO -->
     <div class="perfil-grid">
+        @if (Model.Tutor != null || Model.Idoso != null)
+        {
+            var temNecessidades =
+                Model.Tutor?.NecessidadesEspeciais
+                ?? Model.Idoso?.NecessidadesEspeciais
+                ?? false;
+
+            var descricao =
+                Model.Tutor?.DescricaoNecessidadesEspeciais
+                ?? Model.Idoso?.DescricaoNecessidadesEspeciais
+                ?? "";
+
+            <div class="card-soft">
+                <h3>Necessidades Especiais</h3>
+
+                <p>
+                    <strong>Possui:</strong> @(temNecessidades ? "Sim" : "Não")
+                </p>
+
+                @if (temNecessidades && !string.IsNullOrEmpty(descricao))
+                {
+                    <p>
+                        <strong>Descrição:</strong><br />
+                        @descricao
+                    </p>
+                }
+            </div>
+        }
 
         @if (Model.TipoUsuario == "Tutor" || Model.TipoUsuario == "Idoso")
         {
@@ -801,4 +856,28 @@
         width: 100%;
         margin-top: 10px;
     }
+
+    .contato-box {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .btn-whatsapp {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        padding: 10px 16px;
+        background: #25D366;
+        color: white;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+        .btn-whatsapp:hover {
+            background: #1ebe5d;
+            transform: translateY(-2px);
+        }
 </style>

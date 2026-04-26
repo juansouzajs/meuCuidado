@@ -14,6 +14,8 @@ namespace meuCuidado.Dominio.Models
 
         public bool NecessidadesEspeciais { get; set; }
 
+        public string DescricaoNecessidadesEspeciais { get; set; }
+
         public virtual IList<Medico> Medicos { get; set; }
     }
 }

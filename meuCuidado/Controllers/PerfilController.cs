@@ -404,7 +404,12 @@ namespace meuCuidado.Controllers
         }
 
         [HttpPost]
-        public ActionResult EditarPerfil(HttpPostedFileBase FotoPerfil, string facebook, string instagram, string youtube)
+        public ActionResult EditarPerfil(
+            HttpPostedFileBase FotoPerfil,
+            string LinkWhatsapp,
+            bool? NecessidadesEspeciais,
+            string DescricaoNecessidadesEspeciais
+        )
         {
             try
             {
@@ -416,10 +421,75 @@ namespace meuCuidado.Controllers
 
                 var tipoUsuarioEnum = (TipoUsuario)Enum.Parse(typeof(TipoUsuario), tipoUsuarioStr);
 
+                // FOTO
                 if (FotoPerfil != null && FotoPerfil.ContentLength > 0)
                 {
                     SalvarDocumento(FotoPerfil, TipoDocumento.FotoDocumento, idUsuario, tipoUsuarioEnum);
                 }
+
+                // WHATSAPP (para todos)
+                Usuario usuario = null;
+
+                if (tipoUsuarioStr == "Cuidador")
+                    usuario = _context.CuidadoresDeIdoso.FirstOrDefault(x => x.Id == idUsuario);
+                else if (tipoUsuarioStr == "Fisioterapeuta")
+                    usuario = _context.Fisioterapeutas.FirstOrDefault(x => x.Id == idUsuario);
+                else if (tipoUsuarioStr == "Idoso")
+                    usuario = _context.Idosos.FirstOrDefault(x => x.Id == idUsuario);
+                else if (tipoUsuarioStr == "Tutor")
+                    usuario = _context.Tutores.FirstOrDefault(x => x.Id == idUsuario);
+
+                if (usuario != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(LinkWhatsapp))
+                    {
+                        LinkWhatsapp = LinkWhatsapp.Trim();
+
+                        // se não vier com http, força padrão do WhatsApp
+                        if (!LinkWhatsapp.StartsWith("http"))
+                        {
+                            // remove tudo que não for número
+                            var numeros = new string(LinkWhatsapp.Where(char.IsDigit).ToArray());
+
+                            if (!string.IsNullOrEmpty(numeros))
+                                LinkWhatsapp = $"https://wa.me/{numeros}";
+                        }
+
+                        usuario.LinkWhatsapp = LinkWhatsapp;
+                    }
+                    else
+                    {
+                        usuario.LinkWhatsapp = null;
+                    }
+                }
+
+                // NECESSIDADES ESPECIAIS
+                if (tipoUsuarioStr == "Tutor")
+                {
+                    var tutor = usuario as Tutor;
+
+                    if (tutor != null && NecessidadesEspeciais.HasValue)
+                    {
+                        tutor.NecessidadesEspeciais = NecessidadesEspeciais.Value;
+
+                        tutor.DescricaoNecessidadesEspeciais =
+                            tutor.NecessidadesEspeciais ? DescricaoNecessidadesEspeciais : null;
+                    }
+                }
+                else if (tipoUsuarioStr == "Idoso")
+                {
+                    var idoso = usuario as Idoso;
+
+                    if (idoso != null && NecessidadesEspeciais.HasValue)
+                    {
+                        idoso.NecessidadesEspeciais = NecessidadesEspeciais.Value;
+
+                        idoso.DescricaoNecessidadesEspeciais =
+                            idoso.NecessidadesEspeciais ? DescricaoNecessidadesEspeciais : null;
+                    }
+                }
+
+                _context.SaveChanges();
 
                 TempData["ToastMensagem"] = "Perfil atualizado com sucesso!";
                 TempData["ToastTipo"] = "sucesso";

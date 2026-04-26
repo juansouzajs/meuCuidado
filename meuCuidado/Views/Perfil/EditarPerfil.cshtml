@@ -6,20 +6,34 @@
     var foto = string.IsNullOrEmpty(Model.FotoUrl)
         ? "/ImagensPerfil/default.jpg"
         : Model.FotoUrl;
+
+    var temNecessidades =
+        Model.Tutor?.NecessidadesEspeciais
+        ?? Model.Idoso?.NecessidadesEspeciais
+        ?? false;
+
+    var descricao =
+        Model.Tutor?.DescricaoNecessidadesEspeciais
+        ?? Model.Idoso?.DescricaoNecessidadesEspeciais
+        ?? "";
+
+    var whatsapp =
+        Model.CuidadorDeIdoso?.LinkWhatsapp
+        ?? Model.Fisioterapeuta?.LinkWhatsapp
+        ?? Model.Idoso?.LinkWhatsapp
+        ?? Model.Tutor?.LinkWhatsapp;
 }
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
 <div class="perfil-container">
 
-    <!-- VOLTAR -->
     <div class="top-bar">
         <button onclick="window.history.back()" class="btn-voltar">
             <i class="fas fa-arrow-left"></i> Voltar
         </button>
     </div>
 
-    <!-- CARD PERFIL -->
     <div class="perfil-card">
 
         <div class="perfil-header">
@@ -33,7 +47,7 @@
                 ?? Model.Tutor?.Nome)
             </h2>
 
-            <p class="subtitle">Gerencie suas informações e redes sociais</p>
+            <p class="subtitle">Gerencie suas informações</p>
 
             <button class="btn-primary" onclick="toggleEdit()">
                 <i class="fas fa-pen"></i> Editar Perfil
@@ -41,29 +55,38 @@
 
         </div>
 
-        <!-- CONTEÚDO -->
         <div class="perfil-body">
 
             <!-- VISUAL -->
             <div id="modoVisualizacao">
 
-                <h3>Redes sociais</h3>
+                <!-- WHATSAPP -->
+                @if (!string.IsNullOrEmpty(whatsapp))
+                {
+                    <h3>Contato</h3>
 
-                <div class="social-preview">
-
-                    <a href="@Model.Facebook ?? " #"" target="_blank" class="social facebook">
-                        <i class="fab fa-facebook-f"></i>
+                    <a href="@whatsapp" target="_blank" class="whatsapp-btn">
+                        <i class="fab fa-whatsapp"></i> Conversar no WhatsApp
                     </a>
+                }
 
-                    <a href="@Model.Instagram ?? " #"" target="_blank" class="social instagram">
-                        <i class="fab fa-instagram"></i>
-                    </a>
+                <!-- NECESSIDADES ESPECIAIS -->
+                @if (Model.Tutor != null || Model.Idoso != null)
+                {
+                    <h3>Necessidades especiais</h3>
 
-                    <a href="@Model.Youtube ?? " #"" target="_blank" class="social youtube">
-                        <i class="fab fa-youtube"></i>
-                    </a>
+                    <p>
+                        <strong>Possui:</strong> @(temNecessidades ? "Sim" : "Não")
+                    </p>
 
-                </div>
+                    if (temNecessidades && !string.IsNullOrEmpty(descricao))
+                    {
+                        <p>
+                            <strong>Descrição:</strong><br />
+                            @descricao
+                        </p>
+                    }
+                }
 
             </div>
 
@@ -72,38 +95,38 @@
 
                 <form id="formPerfil" enctype="multipart/form-data">
 
-                    <!-- FOTO -->
                     <div class="input-group">
                         <label>Foto de perfil</label>
                         <input type="file" id="inputFoto" name="FotoPerfil" onchange="previewImagem(event)" />
                     </div>
 
-                    <!-- FACEBOOK -->
+                    <!-- WHATSAPP -->
                     <div class="input-group">
-                        <label><i class="fab fa-facebook"></i> Facebook</label>
+                        <label>Link do WhatsApp (opcional)</label>
                         <input type="text"
-                               name="facebook"
-                               placeholder="https://facebook.com/seu.usuario"
-                               value="@Model.Facebook" />
+                               name="LinkWhatsapp"
+                               placeholder="https://wa.me/5599999999999"
+                               value="@whatsapp" />
                     </div>
 
-                    <!-- INSTAGRAM -->
-                    <div class="input-group">
-                        <label><i class="fab fa-instagram"></i> Instagram</label>
-                        <input type="text"
-                               name="instagram"
-                               placeholder="https://instagram.com/seu.usuario"
-                               value="@Model.Instagram" />
-                    </div>
+                    <!-- NECESSIDADES -->
+                    @if (Model.Tutor != null || Model.Idoso != null)
+                    {
+                        <div class="input-group">
+                            <label>Possui necessidades especiais?</label>
 
-                    <!-- YOUTUBE -->
-                    <div class="input-group">
-                        <label><i class="fab fa-youtube"></i> YouTube</label>
-                        <input type="text"
-                               name="youtube"
-                               placeholder="https://youtube.com/seucanal"
-                               value="@Model.Youtube" />
-                    </div>
+                            <select name="NecessidadesEspeciais" id="NecessidadesEspeciais" onchange="toggleDescricao()">
+                                <option value="false" @(temNecessidades ? "" : "selected")>Não</option>
+                                <option value="true" @(temNecessidades ? "selected" : "")>Sim</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group" id="descricaoBox">
+                            <label>Descrição das necessidades</label>
+                            <textarea name="DescricaoNecessidadesEspeciais"
+                                      placeholder="Descreva as necessidades especiais...">@descricao</textarea>
+                        </div>
+                    }
 
                     <button type="button" class="btn-primary full" onclick="salvarPerfil()">
                         Salvar alterações
@@ -120,16 +143,6 @@
 </div>
 
 <script>
-    function carregarConfiguracoes() {
-        $.ajax({
-            url: '/Configuracoes/Configuracoes',
-            type: 'GET',
-            success: function (data) {
-                $('#contentContainer').html(data);
-            }
-        });
-    }
-
     function toggleEdit() {
         const edit = document.getElementById("modoEdicao");
         const view = document.getElementById("modoVisualizacao");
@@ -151,7 +164,6 @@
     }
 
     function salvarPerfil() {
-
         const form = document.getElementById("formPerfil");
         const formData = new FormData(form);
 
@@ -162,142 +174,111 @@
             .then(() => location.reload())
             .catch(() => alert("Erro ao salvar."));
     }
+
+    function toggleDescricao() {
+        const select = document.getElementById("NecessidadesEspeciais");
+        const box = document.getElementById("descricaoBox");
+
+        if (!select || !box) return;
+
+        box.style.display = select.value === "true" ? "block" : "none";
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        toggleDescricao();
+    });
 </script>
 
 <style>
 
-body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #e6f4f1, #f8fbff);
-}
-
-/* CONTAINER */
-.perfil-container {
-    max-width: 700px;
-    margin: auto;
-    padding: 20px;
-}
-
-/* TOPO */
-.top-bar {
-    margin-bottom: 15px;
-}
-
-/* CARD */
-.perfil-card {
-    background: white;
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-}
-
-/* HEADER */
-.perfil-header {
-    text-align: center;
-}
-
-.perfil-avatar {
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
-}
-
-/* TEXTO */
-.subtitle {
-    color: #777;
-    margin-bottom: 15px;
-}
-
-/* BODY */
-.perfil-body {
-    margin-top: 20px;
-}
-
-/* INPUTS */
-.input-group {
-    margin-bottom: 15px;
-}
-
-.input-group label {
-    display: block;
-    font-size: 14px;
-    margin-bottom: 5px;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-}
-
-/* BOTÕES */
-.btn-primary {
-    background: #4db6ac;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 12px;
-    cursor: pointer;
-}
-
-.btn-primary.full {
-    width: 100%;
-    margin-top: 10px;
-}
-
-    .btn-voltar {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 14px;
-        background: white;
-        color: #4db6ac;
-        border: 1px solid #4db6ac;
+    textarea {
+        width: 100%;
+        min-height: 80px;
+        padding: 10px;
         border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        resize: none;
     }
 
-        .btn-voltar:hover {
-            background: #4db6ac;
-            color: white;
-        }
-/* REDES */
-.social-preview {
-    display: flex;
-    gap: 12px;
-    margin-top: 10px;
-}
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #e6f4f1, #f8fbff);
+    }
 
-.social {
-    width: 45px;
-    height: 45px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
+    .perfil-container {
+        max-width: 700px;
+        margin: auto;
+        padding: 20px;
+    }
 
-.facebook { background: #1877f2; }
-.instagram { background: linear-gradient(45deg,#f58529,#dd2a7b,#8134af); }
-.youtube { background: #ff0000; }
-
-/* RESPONSIVO */
-@@media (max-width: 600px) {
     .perfil-card {
-        padding: 15px;
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .perfil-header {
+        text-align: center;
     }
 
     .perfil-avatar {
-        width: 100px;
-        height: 100px;
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 10px;
     }
-}
 
+    .subtitle {
+        color: #777;
+        margin-bottom: 15px;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+    }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+
+    .btn-primary {
+        background: #4db6ac;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 12px;
+        cursor: pointer;
+    }
+
+    .btn-voltar {
+        padding: 8px 14px;
+        border: 1px solid #4db6ac;
+        border-radius: 10px;
+        background: white;
+        color: #4db6ac;
+    }
+
+    /* WHATSAPP */
+    .whatsapp-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #25d366;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .whatsapp-btn i {
+            font-size: 18px;
+        }
 </style>

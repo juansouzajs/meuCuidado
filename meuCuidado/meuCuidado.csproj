@@ -231,6 +231,14 @@
     <Compile Include="Migrations\202604261700563_CurriculoUpdate.Designer.cs">
       <DependentUpon>202604261700563_CurriculoUpdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202604261931117_NecessidadesEspeciais.cs" />
+    <Compile Include="Migrations\202604261931117_NecessidadesEspeciais.Designer.cs">
+      <DependentUpon>202604261931117_NecessidadesEspeciais.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202604261933132_WhatsappLink.cs" />
+    <Compile Include="Migrations\202604261933132_WhatsappLink.Designer.cs">
+      <DependentUpon>202604261933132_WhatsappLink.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -380,6 +388,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202604261700563_CurriculoUpdate.resx">
       <DependentUpon>202604261700563_CurriculoUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202604261931117_NecessidadesEspeciais.resx">
+      <DependentUpon>202604261931117_NecessidadesEspeciais.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202604261933132_WhatsappLink.resx">
+      <DependentUpon>202604261933132_WhatsappLink.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
