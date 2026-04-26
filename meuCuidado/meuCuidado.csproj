@@ -223,6 +223,10 @@
     <Compile Include="Migrations\202604251918584_AtualizaDocumento.Designer.cs">
       <DependentUpon>202604251918584_AtualizaDocumento.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202604252130352_AtualizaCurriculo.cs" />
+    <Compile Include="Migrations\202604252130352_AtualizaCurriculo.Designer.cs">
+      <DependentUpon>202604252130352_AtualizaCurriculo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -365,6 +369,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202604251918584_AtualizaDocumento.resx">
       <DependentUpon>202604251918584_AtualizaDocumento.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202604252130352_AtualizaCurriculo.resx">
+      <DependentUpon>202604252130352_AtualizaCurriculo.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

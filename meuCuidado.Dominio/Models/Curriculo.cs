@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using static meuCuidado.Dominio.Extensions.EnumExtension;
 
 namespace meuCuidado.Dominio.Models
 {
@@ -15,5 +16,7 @@ namespace meuCuidado.Dominio.Models
         public List<string> RedesSociais { get; set; }
         public double AvaliacaoMedia { get; set; }
         public int NumeroAvaliacoes { get; set; }
+        public TipoUsuario TipoUsuario { get; set; }
+        public int UsuarioId { get; set; }
     }
 }
