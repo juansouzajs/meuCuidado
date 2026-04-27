@@ -32,6 +32,11 @@
             </button>
         }
 
+        <button id="farmaciasBtn" class="btn-dashboard secondary">
+            <i class="fa fa-map-marker-alt"></i>
+            Farmácias
+        </button>
+
         <button id="configBtn" class="btn-dashboard secondary">
             <i class="fa fa-cog"></i>
             Configurações
@@ -134,6 +139,29 @@
 
         $('#configBtn').on('click', function () {
             carregarConfiguracoes();
+        });
+
+        function carregarFarmacias() {
+            $.ajax({
+                url: '@Url.Action("Farmacias", "Dashboard")',
+                type: 'GET',
+                success: function (data) {
+                    $('#contentContainer').html(data);
+
+                    $('#farmaciasBtn').addClass('active');
+                    $('#perfilBtn').removeClass('active');
+                    $('#lembreteBtn').removeClass('active');
+                    $('#conexoesBtn').removeClass('active');
+                    $('#configBtn').removeClass('active');
+                },
+                error: function () {
+                    alert("Erro ao carregar farmácias.");
+                }
+            });
+        }
+
+        $('#farmaciasBtn').on('click', function () {
+            carregarFarmacias();
         });
     });
 </script>

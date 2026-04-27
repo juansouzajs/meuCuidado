@@ -14,5 +14,10 @@ namespace meuCuidado.Controllers
 
             return View(new Usuario());
         }
+
+        public ActionResult Farmacias()
+        {
+            return PartialView();
+        }
     }
 }
