@@ -19,16 +19,62 @@ namespace meuCuidado.Controllers
         public ActionResult Lembrete()
         {
             var medicamentos = _context.Medicamentos.ToList();
+
+            var pessoas = _context.Pessoas
+                .OrderBy(p => p.Nome)
+                .ToList();
+
+            ViewBag.Pessoas = pessoas;
+
             ViewBag.Medicamentos = medicamentos;
 
             var hoje = DateTime.Today;
 
             var lembretes = _context.Lembretes
                 .Include(l => l.Medicamento)
+                .Include(l => l.Pessoa)
                 .Where(l => DbFunctions.TruncateTime(l.DataHora) == hoje)
                 .ToList();
 
             return View(lembretes);
+        }
+
+
+        [HttpPost]
+        public JsonResult CreatePessoa(Pessoa pessoa)
+        {
+            try
+            {
+                if (pessoa == null || string.IsNullOrWhiteSpace(pessoa.Nome))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Nome inválido"
+                    });
+                }
+
+                pessoa.Nome = pessoa.Nome.Trim();
+
+                _context.Pessoas.Add(pessoa);
+
+                _context.SaveChanges();
+
+                return Json(new
+                {
+                    success = true,
+                    id = pessoa.Id,
+                    nome = pessoa.Nome
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
         }
 
         [HttpPost]
@@ -36,33 +82,90 @@ namespace meuCuidado.Controllers
         {
             try
             {
-                lembrete.IdentificadorUnico = Guid.NewGuid();
-                lembrete.RelacionamentoIdosoProfissionalId = 1;
+                if (lembrete == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = "Lembrete inválido"
+                    });
+                }
 
-                _context.Lembretes.Add(lembrete);
+                if (lembrete.PessoaId == null)
+                {
+                    var pessoas = _context.Pessoas.ToList();
+
+                    foreach (var pessoa in pessoas)
+                    {
+                        var novo = new Lembrete
+                        {
+                            IdentificadorUnico = Guid.NewGuid(),
+                            PessoaId = pessoa.Id,
+                            Descricao = lembrete.Descricao,
+                            DataHora = lembrete.DataHora,
+                            MedicamentoId = lembrete.MedicamentoId,
+                            Repete = lembrete.Repete
+                        };
+
+                        _context.Lembretes.Add(novo);
+                    }
+                }
+                else
+                {
+                    lembrete.IdentificadorUnico = Guid.NewGuid();
+
+                    _context.Lembretes.Add(lembrete);
+                }
+
                 _context.SaveChanges();
 
                 return Json(new { success = true });
             }
-            catch
+            catch (Exception ex)
             {
-                return Json(new { success = false });
+                return Json(new
+                {
+                    success = false,
+                    error = ex.Message
+                });
             }
         }
 
-        public ActionResult GetReminders(string date)
+        public ActionResult GetReminders(string date, int? pessoaId)
         {
             DateTime selectedDate;
 
             if (!DateTime.TryParse(date, out selectedDate))
-                return PartialView("ListaLembretes", new List<Lembrete>());
+            {
+                return PartialView(
+                    "ListaLembretes",
+                    new List<Lembrete>()
+                );
+            }
 
-            var lembretes = _context.Lembretes
+            var query = _context.Lembretes
                 .Include(l => l.Medicamento)
-                .Where(l => DbFunctions.TruncateTime(l.DataHora) == selectedDate.Date)
+                .Include(l => l.Pessoa)
+                .Where(l =>
+                    DbFunctions.TruncateTime(l.DataHora)
+                    == selectedDate.Date
+                );
+
+            if (pessoaId.HasValue)
+            {
+                query = query.Where(l =>
+                    l.PessoaId == pessoaId.Value
+                );
+            }
+
+            var lembretes = query
+                .OrderBy(l => l.DataHora)
                 .ToList();
 
-            return PartialView("ListaLembretes", lembretes);
+            return PartialView(
+                "ListaLembretes",
+                lembretes
+            );
         }
 
         [HttpPost]
@@ -74,17 +177,27 @@ namespace meuCuidado.Controllers
 
                 if (lembrete == null)
                 {
-                    return Json(new { success = false });
+                    return Json(new
+                    {
+                        success = false
+                    });
                 }
 
                 _context.Lembretes.Remove(lembrete);
+
                 _context.SaveChanges();
 
-                return Json(new { success = true });
+                return Json(new
+                {
+                    success = true
+                });
             }
             catch
             {
-                return Json(new { success = false });
+                return Json(new
+                {
+                    success = false
+                });
             }
         }
 
@@ -92,8 +205,11 @@ namespace meuCuidado.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             var lembrete = _context.Lembretes.Find(id);
+
             _context.Lembretes.Remove(lembrete);
+
             _context.SaveChanges();
+
             return RedirectToAction("Index");
         }
 
@@ -106,25 +222,40 @@ namespace meuCuidado.Controllers
                     .FirstOrDefault(l => l.Id == id);
 
                 if (original == null)
-                    return Json(new { success = false });
+                {
+                    return Json(new
+                    {
+                        success = false
+                    });
+                }
 
                 var novo = new Lembrete
                 {
                     Descricao = original.Descricao,
                     DataHora = novaDataHora,
                     MedicamentoId = original.MedicamentoId,
-                    RelacionamentoIdosoProfissionalId = original.RelacionamentoIdosoProfissionalId,
+                    PessoaId = original.PessoaId,
+                    Repete = original.Repete,
+                    DataHoraPrimeiroAlerta = original.DataHoraPrimeiroAlerta,
                     IdentificadorUnico = Guid.NewGuid()
                 };
 
                 _context.Lembretes.Add(novo);
+
                 _context.SaveChanges();
 
-                return Json(new { success = true });
+                return Json(new
+                {
+                    success = true
+                });
             }
-            catch
+            catch (Exception ex)
             {
-                return Json(new { success = false });
+                return Json(new
+                {
+                    success = false,
+                    error = ex.Message
+                });
             }
         }
     }

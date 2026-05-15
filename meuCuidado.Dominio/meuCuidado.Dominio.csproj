@@ -123,6 +123,7 @@
     <Compile Include="Models\Ajuda.cs" />
     <Compile Include="Models\Curriculo.cs" />
     <Compile Include="Models\Documento.cs" />
+    <Compile Include="Models\Pessoa.cs" />
     <Compile Include="Models\Request\AvaliacaoRequest.cs" />
     <Compile Include="Utils\SenhasHelper.cs" />
     <Compile Include="ViewModels\AutenticacaoViewModel.cs" />
