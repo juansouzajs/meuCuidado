@@ -546,7 +546,9 @@
                         </option>`
                         );
 
-                        $("#selectPessoa").val(res.id);
+                        $("#selectPessoa")
+                            .val(res.id)
+                            .trigger("change");
 
                         $("#personModal").removeClass("show");
 
