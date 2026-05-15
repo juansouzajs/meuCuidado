@@ -5,6 +5,7 @@
     Layout = null;
 }
 
+
 <div class="cadastro-container">
 
     <div class="cadastro-card">
@@ -32,6 +33,14 @@
                     class="btn-padrao btn-add">
 
                 +
+
+            </button>
+
+            <button type="button"
+                    id="btnExportar"
+                    class="btn-padrao">
+
+                Exportar
 
             </button>
 
@@ -142,6 +151,64 @@
                 </div>
 
             </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="modalExportar" class="modal-overlay">
+
+    <div class="modal-card">
+
+        <h3>Exportar lembretes</h3>
+
+        <div class="campo">
+            <label>Data início</label>
+
+            <input type="date"
+                   id="exportDataInicio"
+                   class="input-padrao">
+        </div>
+
+        <div class="campo">
+            <label>Data final</label>
+
+            <input type="date"
+                   id="exportDataFim"
+                   class="input-padrao">
+        </div>
+
+        <div class="campo">
+            <label>Formato</label>
+
+            <select id="exportFormato"
+                    class="input-padrao">
+
+                <option value="csv">CSV</option>
+                <option value="pdf">PDF</option>
+
+            </select>
+        </div>
+
+        <div class="modal-actions">
+
+            <button type="button"
+                    id="cancelExportModal"
+                    class="btn-cancelar">
+
+                Cancelar
+
+            </button>
+
+            <button type="button"
+                    id="confirmExportModal"
+                    class="btn-padrao">
+
+                Baixar
+
+            </button>
 
         </div>
 
@@ -714,6 +781,47 @@
         renderCalendar();
 
         loadReminders(selectedDate);
+
+    });
+
+    $("#btnExportar").on("click", function () {
+
+        let hoje = new Date().toISOString().split("T")[0];
+
+        $("#exportDataInicio").val(hoje);
+
+        $("#exportDataFim").val(hoje);
+
+        $("#modalExportar").addClass("show");
+
+    });
+
+    $("#cancelExportModal").on("click", function () {
+
+        $("#modalExportar").removeClass("show");
+
+    });
+
+    $("#confirmExportModal").on("click", function () {
+
+        let pessoaId = $("#selectPessoa").val();
+
+        let dataInicio = $("#exportDataInicio").val();
+
+        let dataFim = $("#exportDataFim").val();
+
+        let formato = $("#exportFormato").val();
+
+        let url =
+            "/Lembrete/Exportar?" +
+            "pessoaId=" + encodeURIComponent(pessoaId || "") +
+            "&dataInicio=" + encodeURIComponent(dataInicio) +
+            "&dataFim=" + encodeURIComponent(dataFim) +
+            "&formato=" + encodeURIComponent(formato);
+
+        window.location.href = url;
+
+        $("#modalExportar").removeClass("show");
 
     });
 
