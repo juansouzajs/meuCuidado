@@ -24,7 +24,8 @@
         ?? Model.Tutor?.LinkWhatsapp;
 }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
 <div class="perfil-container">
 
@@ -38,7 +39,9 @@
 
         <div class="perfil-header">
 
-            <img id="previewFoto" src="@foto" class="perfil-avatar" />
+            <img id="previewFoto"
+                 src="@foto"
+                 class="perfil-avatar" />
 
             <h2>
                 @(Model.CuidadorDeIdoso?.Nome
@@ -47,44 +50,58 @@
                 ?? Model.Tutor?.Nome)
             </h2>
 
-            <p class="subtitle">Gerencie suas informações</p>
+            <p class="subtitle">
+                Gerencie suas informações
+            </p>
 
-            <button class="btn-primary" onclick="toggleEdit()">
-                <i class="fas fa-pen"></i> Editar Perfil
+            <button class="btn-primary"
+                    onclick="toggleEdit()">
+                <i class="fas fa-pen"></i>
+                Editar Perfil
             </button>
 
         </div>
 
         <div class="perfil-body">
 
-            <!-- VISUAL -->
+            <!-- VISUALIZAÇÃO -->
             <div id="modoVisualizacao">
 
-                <!-- WHATSAPP -->
                 @if (!string.IsNullOrEmpty(whatsapp))
                 {
                     <h3>Contato</h3>
 
-                    <a href="@whatsapp" target="_blank" class="whatsapp-btn">
-                        <i class="fab fa-whatsapp"></i> Conversar no WhatsApp
+                    <a href="@whatsapp"
+                       target="_blank"
+                       class="whatsapp-btn">
+
+                        <i class="fab fa-whatsapp"></i>
+                        Conversar no WhatsApp
+
                     </a>
                 }
 
-                <!-- NECESSIDADES ESPECIAIS -->
                 @if (Model.Tutor != null || Model.Idoso != null)
                 {
-                    <h3>Necessidades especiais</h3>
+                    <h3 style="margin-top:25px;">
+                        Necessidades especiais
+                    </h3>
 
                     <p>
-                        <strong>Possui:</strong> @(temNecessidades ? "Sim" : "Não")
+                        <strong>Possui:</strong>
+                        @(temNecessidades ? "Sim" : "Não")
                     </p>
 
                     if (temNecessidades && !string.IsNullOrEmpty(descricao))
                     {
-                        <p>
-                            <strong>Descrição:</strong><br />
-                            @descricao
-                        </p>
+                        <div class="necessidades-view">
+                            @foreach (var item in descricao.Split(','))
+                            {
+                                <span class="tag-necessidade">
+                                    @item.Trim()
+                                </span>
+                            }
+                        </div>
                     }
                 }
 
@@ -93,43 +110,155 @@
             <!-- EDIÇÃO -->
             <div id="modoEdicao" style="display:none;">
 
-                <form id="formPerfil" enctype="multipart/form-data">
+                <form id="formPerfil"
+                      enctype="multipart/form-data">
 
                     <div class="input-group">
                         <label>Foto de perfil</label>
-                        <input type="file" id="inputFoto" name="FotoPerfil" onchange="previewImagem(event)" />
+
+                        <input type="file"
+                               id="inputFoto"
+                               name="FotoPerfil"
+                               onchange="previewImagem(event)" />
                     </div>
 
                     <!-- WHATSAPP -->
                     <div class="input-group">
-                        <label>Link do WhatsApp (opcional)</label>
+
+                        <label>
+                            Link do WhatsApp (opcional)
+                        </label>
+
                         <input type="text"
                                name="LinkWhatsapp"
                                placeholder="https://wa.me/5599999999999"
                                value="@whatsapp" />
+
                     </div>
 
                     <!-- NECESSIDADES -->
                     @if (Model.Tutor != null || Model.Idoso != null)
                     {
                         <div class="input-group">
-                            <label>Possui necessidades especiais?</label>
 
-                            <select name="NecessidadesEspeciais" id="NecessidadesEspeciais" onchange="toggleDescricao()">
-                                <option value="false" @(temNecessidades ? "" : "selected")>Não</option>
-                                <option value="true" @(temNecessidades ? "selected" : "")>Sim</option>
+                            <label>
+                                Possui necessidades especiais?
+                            </label>
+
+                            <select name="NecessidadesEspeciais"
+                                    id="NecessidadesEspeciais"
+                                    onchange="toggleNecessidades()">
+
+                                <option value="false"
+                                        @(temNecessidades ? "" : "selected")>
+                                    Não
+                                </option>
+
+                                <option value="true"
+                                        @(temNecessidades ? "selected" : "")>
+                                    Sim
+                                </option>
+
                             </select>
+
                         </div>
 
-                        <div class="input-group" id="descricaoBox">
-                            <label>Descrição das necessidades</label>
+                        <div id="necessidadesContainer">
+
+                            <label class="switch-label">
+
+                                <input type="checkbox"
+                                       id="switchNecessidades"
+                                       @(temNecessidades ? "checked" : "")
+                                       onchange="toggleListaNecessidades()" />
+
+                                Ativar necessidades especiais
+
+                            </label>
+
+                            <div id="listaNecessidades">
+
+                                <div class="check-item">
+                                    <input type="checkbox"
+                                           class="necessidade-check"
+                                           value="Ajuda para se locomover" />
+
+                                    <span>Ajuda para se locomover</span>
+                                </div>
+
+                                <div class="check-item">
+                                    <input type="checkbox"
+                                           class="necessidade-check"
+                                           value="Ajuda para tomar banho" />
+
+                                    <span>Ajuda para tomar banho</span>
+                                </div>
+
+                                <div class="check-item">
+                                    <input type="checkbox"
+                                           class="necessidade-check"
+                                           value="Ajuda para alimentação" />
+
+                                    <span>Ajuda para alimentação</span>
+                                </div>
+
+                                <div class="check-item">
+                                    <input type="checkbox"
+                                           class="necessidade-check"
+                                           value="Administração de medicamentos" />
+
+                                    <span>Administração de medicamentos</span>
+                                </div>
+
+                                <div class="check-item">
+                                    <input type="checkbox"
+                                           class="necessidade-check"
+                                           value="Companhia e supervisão" />
+
+                                    <span>Companhia e supervisão</span>
+                                </div>
+
+                                <div class="check-item">
+                                    <input type="checkbox"
+                                           class="necessidade-check"
+                                           value="Acompanhamento médico" />
+
+                                    <span>Acompanhamento médico</span>
+                                </div>
+
+                                <div class="check-item">
+
+                                    <input type="checkbox"
+                                           id="checkOutros"
+                                           onchange="toggleOutros()" />
+
+                                    <span>Outros</span>
+
+                                </div>
+
+                                <div id="outrosBox"
+                                     style="display:none; margin-top:10px;">
+
+                                    <textarea id="outrosTexto"
+                                              placeholder="Digite outras necessidades..."></textarea>
+
+                                </div>
+
+                            </div>
+
                             <textarea name="DescricaoNecessidadesEspeciais"
-                                      placeholder="Descreva as necessidades especiais...">@descricao</textarea>
+                                      id="DescricaoNecessidadesEspeciais"
+                                      style="display:none;">@descricao</textarea>
+
                         </div>
                     }
 
-                    <button type="button" class="btn-primary full" onclick="salvarPerfil()">
+                    <button type="button"
+                            class="btn-primary full"
+                            onclick="salvarPerfil()">
+
                         Salvar alterações
+
                     </button>
 
                 </form>
@@ -143,19 +272,35 @@
 </div>
 
 <script>
-    function toggleEdit() {
-        const edit = document.getElementById("modoEdicao");
-        const view = document.getElementById("modoVisualizacao");
 
-        edit.style.display = edit.style.display === "none" ? "block" : "none";
-        view.style.display = view.style.display === "none" ? "block" : "none";
+    function toggleEdit() {
+
+        const edit =
+            document.getElementById("modoEdicao");
+
+        const view =
+            document.getElementById("modoVisualizacao");
+
+        edit.style.display =
+            edit.style.display === "none"
+                ? "block"
+                : "none";
+
+        view.style.display =
+            view.style.display === "none"
+                ? "block"
+                : "none";
     }
 
     function previewImagem(event) {
+
         const reader = new FileReader();
 
         reader.onload = function () {
-            document.getElementById("previewFoto").src = reader.result;
+
+            document.getElementById(
+                "previewFoto"
+            ).src = reader.result;
         };
 
         if (event.target.files[0]) {
@@ -164,8 +309,14 @@
     }
 
     function salvarPerfil() {
-        const form = document.getElementById("formPerfil");
-        const formData = new FormData(form);
+
+        atualizarDescricao();
+
+        const form =
+            document.getElementById("formPerfil");
+
+        const formData =
+            new FormData(form);
 
         fetch('/Perfil/EditarPerfil', {
             method: 'POST',
@@ -175,30 +326,187 @@
             .catch(() => alert("Erro ao salvar."));
     }
 
-    function toggleDescricao() {
-        const select = document.getElementById("NecessidadesEspeciais");
-        const box = document.getElementById("descricaoBox");
+    function toggleNecessidades() {
 
-        if (!select || !box) return;
+        const select =
+            document.getElementById("NecessidadesEspeciais");
 
-        box.style.display = select.value === "true" ? "block" : "none";
+        const container =
+            document.getElementById("necessidadesContainer");
+
+        if (!select || !container)
+            return;
+
+        container.style.display =
+            select.value === "true"
+                ? "block"
+                : "none";
+    }
+
+    function toggleListaNecessidades() {
+
+        const ativo =
+            document.getElementById("switchNecessidades").checked;
+
+        const lista =
+            document.getElementById("listaNecessidades");
+
+        lista.style.display =
+            ativo
+                ? "block"
+                : "none";
+
+        atualizarDescricao();
+    }
+
+    function toggleOutros() {
+
+        const check =
+            document.getElementById("checkOutros");
+
+        const box =
+            document.getElementById("outrosBox");
+
+        box.style.display =
+            check.checked
+                ? "block"
+                : "none";
+
+        atualizarDescricao();
+    }
+
+    function atualizarDescricao() {
+
+        const checks =
+            document.querySelectorAll(
+                ".necessidade-check:checked"
+            );
+
+        let valores = [];
+
+        checks.forEach(c => {
+            valores.push(c.value);
+        });
+
+        const checkOutros =
+            document.getElementById("checkOutros");
+
+        if (checkOutros.checked) {
+
+            const texto =
+                document.getElementById("outrosTexto").value;
+
+            if (texto.trim() !== "") {
+
+                valores.push(
+                    "Outros: " + texto
+                );
+            }
+        }
+
+        document.getElementById(
+            "DescricaoNecessidadesEspeciais"
+        ).value = valores.join(", ");
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-        toggleDescricao();
+
+        toggleNecessidades();
+
+        const descricaoInput =
+            document.getElementById(
+                "DescricaoNecessidadesEspeciais"
+            );
+
+        const descricao =
+            descricaoInput.value;
+
+        if (descricao && descricao.trim() !== "") {
+
+            document.getElementById(
+                "switchNecessidades"
+            ).checked = true;
+
+            document.getElementById(
+                "listaNecessidades"
+            ).style.display = "block";
+
+            const opcoes = [
+                "Ajuda para se locomover",
+                "Ajuda para tomar banho",
+                "Ajuda para alimentação",
+                "Administração de medicamentos",
+                "Companhia e supervisão",
+                "Acompanhamento médico"
+            ];
+
+            opcoes.forEach(opcao => {
+
+                if (descricao.includes(opcao)) {
+
+                    const checkbox =
+                        document.querySelector(
+                            `.necessidade-check[value="${opcao}"]`
+                        );
+
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                }
+            });
+
+            if (descricao.includes("Outros:")) {
+
+                const partes =
+                    descricao.split("Outros:");
+
+                const textoOutros =
+                    partes[1]?.trim() || "";
+
+                document.getElementById(
+                    "checkOutros"
+                ).checked = true;
+
+                document.getElementById(
+                    "outrosBox"
+                ).style.display = "block";
+
+                document.getElementById(
+                    "outrosTexto"
+                ).value = textoOutros;
+            }
+        }
+
+        const checks =
+            document.querySelectorAll(
+                ".necessidade-check"
+            );
+
+        checks.forEach(c => {
+
+            c.addEventListener(
+                "change",
+                atualizarDescricao
+            );
+        });
+
+        const outros =
+            document.getElementById(
+                "outrosTexto"
+            );
+
+        if (outros) {
+
+            outros.addEventListener(
+                "input",
+                atualizarDescricao
+            );
+        }
     });
+
 </script>
 
 <style>
-
-    textarea {
-        width: 100%;
-        min-height: 80px;
-        padding: 10px;
-        border-radius: 10px;
-        border: 1px solid #ccc;
-        resize: none;
-    }
 
     body {
         margin: 0;
@@ -241,18 +549,25 @@
     }
 
         .input-group input,
-        .input-group select {
+        .input-group select,
+        textarea {
             width: 100%;
             padding: 10px;
             border-radius: 10px;
             border: 1px solid #ccc;
+            box-sizing: border-box;
         }
+
+    textarea {
+        min-height: 80px;
+        resize: vertical;
+    }
 
     .btn-primary {
         background: #4db6ac;
         color: white;
         border: none;
-        padding: 10px;
+        padding: 12px 18px;
         border-radius: 12px;
         cursor: pointer;
     }
@@ -263,9 +578,9 @@
         border-radius: 10px;
         background: white;
         color: #4db6ac;
+        cursor: pointer;
     }
 
-    /* WHATSAPP */
     .whatsapp-btn {
         display: inline-flex;
         align-items: center;
@@ -281,4 +596,57 @@
         .whatsapp-btn i {
             font-size: 18px;
         }
+
+    .switch-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        margin-top: 10px;
+    }
+
+    #necessidadesContainer {
+        margin-top: 10px;
+    }
+
+    #listaNecessidades {
+        display: none;
+        background: #f7fdfc;
+        border: 1px solid #d8ece8;
+        padding: 15px;
+        border-radius: 14px;
+    }
+
+    .check-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+        .check-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+    .necessidades-view {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .tag-necessidade {
+        background: #e6f7f4;
+        color: #2f7c73;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    #outrosBox textarea {
+        margin-top: 10px;
+    }
 </style>
