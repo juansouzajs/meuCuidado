@@ -281,6 +281,9 @@
         const view =
             document.getElementById("modoVisualizacao");
 
+        if (!edit || !view)
+            return;
+
         edit.style.display =
             edit.style.display === "none"
                 ? "block"
@@ -298,9 +301,12 @@
 
         reader.onload = function () {
 
-            document.getElementById(
-                "previewFoto"
-            ).src = reader.result;
+            const preview =
+                document.getElementById("previewFoto");
+
+            if (preview) {
+                preview.src = reader.result;
+            }
         };
 
         if (event.target.files[0]) {
@@ -314,6 +320,9 @@
 
         const form =
             document.getElementById("formPerfil");
+
+        if (!form)
+            return;
 
         const formData =
             new FormData(form);
@@ -345,14 +354,17 @@
 
     function toggleListaNecessidades() {
 
-        const ativo =
-            document.getElementById("switchNecessidades").checked;
+        const switchEl =
+            document.getElementById("switchNecessidades");
 
         const lista =
             document.getElementById("listaNecessidades");
 
+        if (!switchEl || !lista)
+            return;
+
         lista.style.display =
-            ativo
+            switchEl.checked
                 ? "block"
                 : "none";
 
@@ -367,6 +379,9 @@
         const box =
             document.getElementById("outrosBox");
 
+        if (!check || !box)
+            return;
+
         box.style.display =
             check.checked
                 ? "block"
@@ -376,6 +391,14 @@
     }
 
     function atualizarDescricao() {
+
+        const descricaoInput =
+            document.getElementById(
+                "DescricaoNecessidadesEspeciais"
+            );
+
+        if (!descricaoInput)
+            return;
 
         const checks =
             document.querySelectorAll(
@@ -391,10 +414,15 @@
         const checkOutros =
             document.getElementById("checkOutros");
 
-        if (checkOutros.checked) {
+        if (checkOutros && checkOutros.checked) {
+
+            const outrosTexto =
+                document.getElementById("outrosTexto");
 
             const texto =
-                document.getElementById("outrosTexto").value;
+                outrosTexto
+                    ? outrosTexto.value
+                    : "";
 
             if (texto.trim() !== "") {
 
@@ -404,9 +432,8 @@
             }
         }
 
-        document.getElementById(
-            "DescricaoNecessidadesEspeciais"
-        ).value = valores.join(", ");
+        descricaoInput.value =
+            valores.join(", ");
     }
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -418,18 +445,29 @@
                 "DescricaoNecessidadesEspeciais"
             );
 
+        if (!descricaoInput)
+            return;
+
         const descricao =
             descricaoInput.value;
 
         if (descricao && descricao.trim() !== "") {
 
-            document.getElementById(
-                "switchNecessidades"
-            ).checked = true;
+            const switchNec =
+                document.getElementById(
+                    "switchNecessidades"
+                );
 
-            document.getElementById(
-                "listaNecessidades"
-            ).style.display = "block";
+            const listaNec =
+                document.getElementById(
+                    "listaNecessidades"
+                );
+
+            if (switchNec)
+                switchNec.checked = true;
+
+            if (listaNec)
+                listaNec.style.display = "block";
 
             const opcoes = [
                 "Ajuda para se locomover",
@@ -463,17 +501,29 @@
                 const textoOutros =
                     partes[1]?.trim() || "";
 
-                document.getElementById(
-                    "checkOutros"
-                ).checked = true;
+                const checkOutros =
+                    document.getElementById(
+                        "checkOutros"
+                    );
 
-                document.getElementById(
-                    "outrosBox"
-                ).style.display = "block";
+                const outrosBox =
+                    document.getElementById(
+                        "outrosBox"
+                    );
 
-                document.getElementById(
-                    "outrosTexto"
-                ).value = textoOutros;
+                const outrosTexto =
+                    document.getElementById(
+                        "outrosTexto"
+                    );
+
+                if (checkOutros)
+                    checkOutros.checked = true;
+
+                if (outrosBox)
+                    outrosBox.style.display = "block";
+
+                if (outrosTexto)
+                    outrosTexto.value = textoOutros;
             }
         }
 
