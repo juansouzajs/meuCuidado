@@ -1,4 +1,4 @@
-﻿@model IEnumerable <UsuarioCardViewModel>
+﻿@model IEnumerable<UsuarioCardViewModel>
 @{
     ViewBag.Title = "Perfil";
     Layout = null;
@@ -24,6 +24,15 @@
                 </select>
             </div>
         }
+
+        <div class="col-md-3 mb-3">
+            <label>Escolaridade</label>
+            <select id="FiltroEscolaridade" class="form-control">
+                <option value="">Todos</option>
+                <option value="Ensino Técnico">Ensino Técnico</option>
+                <option value="Ensino Superior">Ensino Superior</option>
+            </select>
+        </div>
 
         <div class="col-md-3 mb-3">
             <label>Localização</label>
@@ -111,6 +120,7 @@
             var tipoUsuario = $("#FiltroTipoUsuario").val();
             var dataCadastro = $("#FiltroDataCadastro").val();
             var localizacao = $("#FiltroLocalizacao").val();
+            var escolaridade = $("#FiltroEscolaridade").val();
 
             $.ajax({
                 url: '@Url.Action("Filtrar", "Perfil")',
@@ -118,7 +128,8 @@
                 data: {
                     tipoUsuario: tipoUsuario,
                     dataCadastro: dataCadastro,
-                    localizacao: localizacao
+                    localizacao: localizacao,
+                    escolaridade: escolaridade
                 },
                 success: function (data) {
                     $('#usuariosContainer').html(data);

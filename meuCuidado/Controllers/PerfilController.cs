@@ -15,7 +15,12 @@ namespace meuCuidado.Controllers
     {
         private readonly MeuCuidadoDbContext _context = new MeuCuidadoDbContext();
 
-        public ActionResult Perfil(string tipoUsuario = null, string dataCadastro = null, string localizacao = null)
+        public ActionResult Perfil(
+    string tipoUsuario = null,
+    string dataCadastro = null,
+    string localizacao = null,
+    string escolaridade = null
+)
         {
             var tipoUsuarioSessao = Session["TipoUsuario"]?.ToString() ?? string.Empty;
             ViewBag.TipoUsuario = tipoUsuarioSessao;
@@ -62,6 +67,16 @@ namespace meuCuidado.Controllers
                 {
                     cuidadores = cuidadores.Where(x => x.DataCadasto >= data);
                     fisios = fisios.Where(x => x.DataCadasto >= data);
+                }
+                if (!string.IsNullOrEmpty(escolaridade))
+                {
+                    var idsCurriculos = _context.Curriculos
+                        .Where(c => c.EscolaridadeNivel == escolaridade)
+                        .Select(c => c.UsuarioId)
+                        .ToList();
+
+                    cuidadores = cuidadores.Where(x => idsCurriculos.Contains(x.Id));
+                    fisios = fisios.Where(x => idsCurriculos.Contains(x.Id));
                 }
 
                 if (tipoUsuario == "1")
@@ -80,7 +95,12 @@ namespace meuCuidado.Controllers
             return View(usuariosVm);
         }
 
-        public ActionResult Filtrar(string tipoUsuario = null, string dataCadastro = null, string localizacao = null)
+        public ActionResult Filtrar(
+            string tipoUsuario = null,
+            string dataCadastro = null,
+            string localizacao = null,
+            string escolaridade = null
+        )
         {
             var tipoUsuarioSessao = Session["TipoUsuario"]?.ToString() ?? string.Empty;
             ViewBag.TipoUsuario = tipoUsuarioSessao;
@@ -127,6 +147,17 @@ namespace meuCuidado.Controllers
                 {
                     cuidadores = cuidadores.Where(x => x.DataCadasto >= data);
                     fisios = fisios.Where(x => x.DataCadasto >= data);
+                }
+
+                if (!string.IsNullOrEmpty(escolaridade))
+                {
+                    var idsCurriculos = _context.Curriculos
+                        .Where(c => c.EscolaridadeNivel == escolaridade)
+                        .Select(c => c.UsuarioId)
+                        .ToList();
+
+                    cuidadores = cuidadores.Where(x => idsCurriculos.Contains(x.Id));
+                    fisios = fisios.Where(x => idsCurriculos.Contains(x.Id));
                 }
 
                 if (tipoUsuario == "1")
