@@ -31,5 +31,11 @@ namespace meuCuidado.Dominio.Models
 
         [Required]
         public bool Repete { get; set; } = false;
+
+        // NOVOS CAMPOS
+
+        public int UsuarioId { get; set; }
+
+        public int TipoUsuario { get; set; }
     }
 }

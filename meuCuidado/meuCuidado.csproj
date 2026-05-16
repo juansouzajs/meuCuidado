@@ -250,6 +250,10 @@
     <Compile Include="Migrations\202605151517269_Pessoa.Designer.cs">
       <DependentUpon>202605151517269_Pessoa.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202605151638512_lembretes1.cs" />
+    <Compile Include="Migrations\202605151638512_lembretes1.Designer.cs">
+      <DependentUpon>202605151638512_lembretes1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -409,6 +413,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202605151517269_Pessoa.resx">
       <DependentUpon>202605151517269_Pessoa.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605151638512_lembretes1.resx">
+      <DependentUpon>202605151638512_lembretes1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

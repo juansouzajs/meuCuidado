@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Web.Mvc;
-using meuCuidado.Dominio.Models;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Web.Mvc;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using meuCuidado.Dominio.Models;
 
 namespace meuCuidado.Controllers
 {
@@ -20,9 +20,66 @@ namespace meuCuidado.Controllers
             _context = new MeuCuidadoDbContext();
         }
 
+        private int UsuarioIdLogado
+        {
+            get
+            {
+                if (Session["IdUsuario"] == null)
+                {
+                    return 0;
+                }
+
+                int usuarioId;
+
+                if (int.TryParse(
+                    Session["IdUsuario"].ToString(),
+                    out usuarioId))
+                {
+                    return usuarioId;
+                }
+
+                return 0;
+            }
+        }
+
+        private int TipoUsuarioLogado
+        {
+            get
+            {
+                if (Session["TipoUsuario"] == null)
+                {
+                    return 0;
+                }
+
+                var tipo = Session["TipoUsuario"]
+                    .ToString()
+                    .Trim()
+                    .ToLower();
+
+                switch (tipo)
+                {
+                    case "idoso":
+                        return 1;
+
+                    case "tutor":
+                        return 2;
+
+                    case "cuidador":
+                        return 3;
+
+                    case "fisioterapeuta":
+                        return 4;
+
+                    default:
+                        return 0;
+                }
+            }
+        }
+
         public ActionResult Lembrete()
         {
-            var medicamentos = _context.Medicamentos.ToList();
+            var medicamentos = _context.Medicamentos
+                .ToList();
 
             var pessoas = _context.Pessoas
                 .OrderBy(p => p.Nome)
@@ -37,19 +94,26 @@ namespace meuCuidado.Controllers
             var lembretes = _context.Lembretes
                 .Include(l => l.Medicamento)
                 .Include(l => l.Pessoa)
-                .Where(l => DbFunctions.TruncateTime(l.DataHora) == hoje)
+                .Where(l =>
+                    DbFunctions.TruncateTime(l.DataHora) == hoje
+                    &&
+                    l.UsuarioId == UsuarioIdLogado
+                    &&
+                    l.TipoUsuario == TipoUsuarioLogado
+                )
+                .OrderBy(l => l.DataHora)
                 .ToList();
 
             return View(lembretes);
         }
-
 
         [HttpPost]
         public JsonResult CreatePessoa(Pessoa pessoa)
         {
             try
             {
-                if (pessoa == null || string.IsNullOrWhiteSpace(pessoa.Nome))
+                if (pessoa == null ||
+                    string.IsNullOrWhiteSpace(pessoa.Nome))
                 {
                     return Json(new
                     {
@@ -104,11 +168,20 @@ namespace meuCuidado.Controllers
                         var novo = new Lembrete
                         {
                             IdentificadorUnico = Guid.NewGuid(),
+
                             PessoaId = pessoa.Id,
+
                             Descricao = lembrete.Descricao,
+
                             DataHora = lembrete.DataHora,
+
                             MedicamentoId = lembrete.MedicamentoId,
-                            Repete = lembrete.Repete
+
+                            Repete = lembrete.Repete,
+
+                            UsuarioId = UsuarioIdLogado,
+
+                            TipoUsuario = TipoUsuarioLogado
                         };
 
                         _context.Lembretes.Add(novo);
@@ -118,12 +191,19 @@ namespace meuCuidado.Controllers
                 {
                     lembrete.IdentificadorUnico = Guid.NewGuid();
 
+                    lembrete.UsuarioId = UsuarioIdLogado;
+
+                    lembrete.TipoUsuario = TipoUsuarioLogado;
+
                     _context.Lembretes.Add(lembrete);
                 }
 
                 _context.SaveChanges();
 
-                return Json(new { success = true });
+                return Json(new
+                {
+                    success = true
+                });
             }
             catch (Exception ex)
             {
@@ -135,7 +215,10 @@ namespace meuCuidado.Controllers
             }
         }
 
-        public ActionResult GetReminders(string date, int? pessoaId)
+        public ActionResult GetReminders(
+            string date,
+            int? pessoaId
+        )
         {
             DateTime selectedDate;
 
@@ -153,6 +236,14 @@ namespace meuCuidado.Controllers
                 .Where(l =>
                     DbFunctions.TruncateTime(l.DataHora)
                     == selectedDate.Date
+
+                    &&
+
+                    l.UsuarioId == UsuarioIdLogado
+
+                    &&
+
+                    l.TipoUsuario == TipoUsuarioLogado
                 );
 
             if (pessoaId.HasValue)
@@ -177,7 +268,14 @@ namespace meuCuidado.Controllers
         {
             try
             {
-                var lembrete = _context.Lembretes.Find(id);
+                var lembrete = _context.Lembretes
+                    .FirstOrDefault(l =>
+                        l.Id == id
+                        &&
+                        l.UsuarioId == UsuarioIdLogado
+                        &&
+                        l.TipoUsuario == TipoUsuarioLogado
+                    );
 
                 if (lembrete == null)
                 {
@@ -205,25 +303,22 @@ namespace meuCuidado.Controllers
             }
         }
 
-        [HttpPost, ActionName("Delete")]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            var lembrete = _context.Lembretes.Find(id);
-
-            _context.Lembretes.Remove(lembrete);
-
-            _context.SaveChanges();
-
-            return RedirectToAction("Index");
-        }
-
         [HttpPost]
-        public JsonResult Duplicar(int id, DateTime novaDataHora)
+        public JsonResult Duplicar(
+            int id,
+            DateTime novaDataHora
+        )
         {
             try
             {
                 var original = _context.Lembretes
-                    .FirstOrDefault(l => l.Id == id);
+                    .FirstOrDefault(l =>
+                        l.Id == id
+                        &&
+                        l.UsuarioId == UsuarioIdLogado
+                        &&
+                        l.TipoUsuario == TipoUsuarioLogado
+                    );
 
                 if (original == null)
                 {
@@ -236,12 +331,23 @@ namespace meuCuidado.Controllers
                 var novo = new Lembrete
                 {
                     Descricao = original.Descricao,
+
                     DataHora = novaDataHora,
+
                     MedicamentoId = original.MedicamentoId,
+
                     PessoaId = original.PessoaId,
+
                     Repete = original.Repete,
-                    DataHoraPrimeiroAlerta = original.DataHoraPrimeiroAlerta,
-                    IdentificadorUnico = Guid.NewGuid()
+
+                    DataHoraPrimeiroAlerta =
+                        original.DataHoraPrimeiroAlerta,
+
+                    IdentificadorUnico = Guid.NewGuid(),
+
+                    UsuarioId = UsuarioIdLogado,
+
+                    TipoUsuario = TipoUsuarioLogado
                 };
 
                 _context.Lembretes.Add(novo);
@@ -273,7 +379,11 @@ namespace meuCuidado.Controllers
             var query = _context.Lembretes
                 .Include(l => l.Medicamento)
                 .Include(l => l.Pessoa)
-                .AsQueryable();
+                .Where(l =>
+                    l.UsuarioId == UsuarioIdLogado
+                    &&
+                    l.TipoUsuario == TipoUsuarioLogado
+                );
 
             if (pessoaId.HasValue)
             {
@@ -287,7 +397,8 @@ namespace meuCuidado.Controllers
                 var inicio = dataInicio.Value.Date;
 
                 query = query.Where(l =>
-                    DbFunctions.TruncateTime(l.DataHora) >= inicio
+                    DbFunctions.TruncateTime(l.DataHora)
+                    >= inicio
                 );
             }
 
@@ -296,7 +407,8 @@ namespace meuCuidado.Controllers
                 var fim = dataFim.Value.Date;
 
                 query = query.Where(l =>
-                    DbFunctions.TruncateTime(l.DataHora) <= fim
+                    DbFunctions.TruncateTime(l.DataHora)
+                    <= fim
                 );
             }
 
@@ -322,11 +434,13 @@ namespace meuCuidado.Controllers
             string periodo =
                 $"{dataInicio:yyyy-MM-dd}_{dataFim:yyyy-MM-dd}";
 
-            if (formato == "csv")
+            if (formato.ToLower() == "csv")
             {
                 var linhas = new List<string>();
 
-                linhas.Add("Pessoa;Descricao;Data;Hora;Medicamento");
+                linhas.Add(
+                    "Pessoa;Descricao;Data;Hora;Medicamento"
+                );
 
                 foreach (var item in lembretes)
                 {
@@ -344,7 +458,8 @@ namespace meuCuidado.Controllers
                     linhas
                 );
 
-                var bytes = Encoding.UTF8.GetBytes(csv);
+                var bytes =
+                    Encoding.UTF8.GetBytes(csv);
 
                 return File(
                     bytes,
@@ -353,12 +468,20 @@ namespace meuCuidado.Controllers
                 );
             }
 
-
             using (var memoryStream = new MemoryStream())
             {
-                var document = new Document(PageSize.A4, 20, 20, 20, 20);
+                var document = new Document(
+                    PageSize.A4,
+                    20,
+                    20,
+                    20,
+                    20
+                );
 
-                PdfWriter.GetInstance(document, memoryStream);
+                PdfWriter.GetInstance(
+                    document,
+                    memoryStream
+                );
 
                 document.Open();
 
@@ -382,16 +505,24 @@ namespace meuCuidado.Controllers
 
                 foreach (var item in lembretes)
                 {
-                    tabela.AddCell(item.Pessoa?.Nome ?? "-");
-
-                    tabela.AddCell(item.Descricao ?? "-");
-
                     tabela.AddCell(
-                        item.DataHora.ToString("dd/MM/yyyy")
+                        item.Pessoa?.Nome ?? "-"
                     );
 
                     tabela.AddCell(
-                        item.DataHora.ToString("HH:mm")
+                        item.Descricao ?? "-"
+                    );
+
+                    tabela.AddCell(
+                        item.DataHora.ToString(
+                            "dd/MM/yyyy"
+                        )
+                    );
+
+                    tabela.AddCell(
+                        item.DataHora.ToString(
+                            "HH:mm"
+                        )
                     );
 
                     tabela.AddCell(
