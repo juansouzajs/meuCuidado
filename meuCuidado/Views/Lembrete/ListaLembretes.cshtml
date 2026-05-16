@@ -185,10 +185,13 @@
 
         <br>
 
-        <button onclick="confirmarDuplicar()"
+        <button type="button"
+                onclick="confirmarDuplicar()"
                 class="btn-padrao"
                 style="width:100%">
+
             Duplicar
+
         </button>
 
     </div>
@@ -467,23 +470,29 @@
         var hora = dupHora.value;
 
         if (!data || !hora) {
-            alert("Selecione data e hora");
+
+            showToast("Selecione data e hora", true);
+
             return;
         }
 
-        var novaDataHora = data + " " + hora;
+        var novaDataHora = data + "T" + hora;
 
         fetch('/Lembrete/Duplicar', {
 
             method: 'POST',
 
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/json'
             },
 
-            body:
-                'id=' + duplicarId +
-                '&novaDataHora=' + encodeURIComponent(novaDataHora)
+            body: JSON.stringify({
+
+                id: duplicarId,
+
+                novaDataHora: novaDataHora
+
+            })
 
         })
             .then(r => r.json())
@@ -492,15 +501,22 @@
                 if (res.success) {
 
                     fecharModalDuplicar();
-                    location.reload();
+
+                    showToast("Duplicado com sucesso");
+
+                    loadReminders(selectedDate);
 
                 } else {
 
-                    alert("Erro ao duplicar");
+                    showToast(res.error || "Erro ao duplicar", true);
 
                 }
 
             })
-            .catch(() => alert("Erro ao duplicar"));
+            .catch(() => {
+
+                showToast("Erro ao duplicar", true);
+
+            });
     }
 </script>

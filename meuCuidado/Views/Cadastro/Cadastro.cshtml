@@ -7,26 +7,74 @@
 
 <div class="auth-wrapper">
     <div class="auth-card">
+
         <h1 class="auth-title">Criar conta</h1>
+
         <p class="auth-subtitle">
             Cuidar é um ato de amor. Comece seu cadastro 💚
         </p>
 
         @using (Html.BeginForm())
         {
+            <!-- EMAIL PRIMEIRO -->
+
             <div class="form-group">
+
+                @Html.LabelFor(m => m.Usuario.Email)
+
+                @Html.TextBoxFor(
+                    m => m.Usuario.Email,
+                    new
+                    {
+                        @class = "form-control",
+                        id = "email",
+                        placeholder = "email@exemplo.com",
+                        autocomplete = "off"
+                    })
+
+                <span id="emailMensagem" class="text-danger"></span>
+
+            </div>
+
+            <div class="form-group">
+
                 @Html.LabelFor(m => m.Usuario.Nome)
-                @Html.TextBoxFor(m => m.Usuario.Nome, new { @class = "form-control", placeholder = "Nome completo" })
-                @Html.ValidationMessageFor(m => m.Usuario.Nome, "", new { @class = "text-danger" })
+
+                @Html.TextBoxFor(
+                    m => m.Usuario.Nome,
+                    new
+                    {
+                        @class = "form-control",
+                        id = "nome",
+                        placeholder = "Nome completo"
+                    })
+
+                @Html.ValidationMessageFor(
+                    m => m.Usuario.Nome,
+                    "",
+                    new { @class = "text-danger" })
+
             </div>
 
             <div class="form-group">
+
                 @Html.LabelFor(m => m.Usuario.Endereco)
-                @Html.TextBoxFor(m => m.Usuario.Endereco, new { @class = "form-control", placeholder = "Endereço" })
+
+                @Html.TextBoxFor(
+                    m => m.Usuario.Endereco,
+                    new
+                    {
+                        @class = "form-control",
+                        id = "endereco",
+                        placeholder = "Endereço"
+                    })
+
             </div>
 
             <div class="form-group">
+
                 @Html.Label("Telefone")
+
                 @Html.TextBoxFor(
                     m => m.Usuario.Telefone,
                     new
@@ -37,53 +85,68 @@
                         placeholder = "+55 (XX) XXXXX-XXXX",
                         type = "tel"
                     })
+
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(m => m.Usuario.Email)
-                @Html.TextBoxFor(m => m.Usuario.Email, new
-                {
-                    @class = "form-control",
-                    id = "email",
-                    placeholder = "email@exemplo.com"
-                })
-                <span id="emailMensagem" class="text-danger"></span>
-            </div>
 
-            <div class="form-group">
                 @Html.LabelFor(m => m.Usuario.Senha)
-                @Html.PasswordFor(m => m.Usuario.Senha, new
-                {
-                    @class = "form-control",
-                    id = "senha",
-                    placeholder = "Crie uma senha segura"
-                })
+
+                @Html.PasswordFor(
+                    m => m.Usuario.Senha,
+                    new
+                    {
+                        @class = "form-control",
+                        id = "senha",
+                        placeholder = "Crie uma senha segura"
+                    })
+
                 <span id="senhaMensagem" class="text-danger"></span>
+
             </div>
 
             <div class="form-group">
+
                 @Html.Label("Confirmar Senha")
-                @Html.PasswordFor(m => m.ConfirmarSenha, new
-                {
-                    @class = "form-control",
-                    id = "confirmarSenha",
-                    placeholder = "Repita sua senha"
-                })
+
+                @Html.PasswordFor(
+                    m => m.ConfirmarSenha,
+                    new
+                    {
+                        @class = "form-control",
+                        id = "confirmarSenha",
+                        placeholder = "Repita sua senha"
+                    })
+
                 <span id="confirmarMensagem" class="text-danger"></span>
+
             </div>
 
             <div class="form-group">
+
                 @Html.Label("Tipo de Usuário")
+
                 @Html.DropDownListFor(
                     m => m.TipoUsuario,
-                    new SelectList(EnumExtension.ToSelectList<EnumExtension.TipoUsuario>(), "Value", "Text"),
+                    new SelectList(
+                        EnumExtension.ToSelectList<EnumExtension.TipoUsuario>(),
+                        "Value",
+                        "Text"),
                     "Selecione",
-                    new { @class = "form-control" }
-                )
+                    new
+                    {
+                        @class = "form-control",
+                        id = "tipoUsuario"
+                    })
+
             </div>
 
-            <button type="submit" id="btnCadastrar" class="btn-primary-auth">
+            <button type="submit"
+                    id="btnCadastrar"
+                    class="btn-primary-auth">
+
                 Criar conta
+
             </button>
         }
 
@@ -92,24 +155,40 @@
         </div>
 
         <div class="social-login">
-            <a href="@Url.Action("ExternalLogin", "Login", new { provider = "Google" })" class="btn-social google">
+
+            <a href="@Url.Action("ExternalLogin", "Login", new { provider = "Google" })"
+               class="btn-social google">
+
                 Entrar com Google
+
             </a>
 
-            <a href="@Url.Action("ExternalLogin", "Login", new { provider = "Facebook" })" class="btn-social facebook">
+            <a href="@Url.Action("ExternalLogin", "Login", new { provider = "Facebook" })"
+               class="btn-social facebook">
+
                 Entrar com Facebook
+
             </a>
+
         </div>
 
         <p class="auth-footer">
+
             Já tem uma conta?
-            <a href="@Url.Action("Login", "Login")">Entrar</a>
+
+            <a href="@Url.Action("Login", "Login")">
+                Entrar
+            </a>
+
         </p>
+
     </div>
 </div>
 
-<!-- MODAL PERSONALIZADO -->
+<!-- MODAL EMAIL -->
+
 <div id="emailModal" class="modal-overlay">
+
     <div class="modal-box">
 
         <h2>Email já cadastrado</h2>
@@ -121,70 +200,78 @@
 
         <div class="modal-actions">
 
-            <button id="btnIrLogin" class="btn-modal-primary">
+            <button id="btnIrLogin"
+                    type="button"
+                    class="btn-modal-primary">
+
                 Ir para login
+
             </button>
 
-            <button id="btnContinuar" class="btn-modal-secondary">
+            <button id="btnContinuar"
+                    type="button"
+                    class="btn-modal-secondary">
+
                 Continuar aqui
+
             </button>
 
         </div>
 
     </div>
+
+</div>
+
+<!-- MODAL REAPROVEITAR -->
+
+<div id="modalReaproveitar" class="modal-overlay">
+
+    <div class="modal-box">
+
+        <h2>Cadastro anteriormente reprovado</h2>
+
+        <p>
+            Encontramos um cadastro reprovado com este email.
+            Deseja reaproveitar os dados anteriores?
+        </p>
+
+        <div class="modal-actions">
+
+            <button id="btnReaproveitar"
+                    type="button"
+                    class="btn-modal-primary">
+
+                Sim
+
+            </button>
+
+            <button id="btnNaoReaproveitar"
+                    type="button"
+                    class="btn-modal-secondary">
+
+                Não
+
+            </button>
+
+        </div>
+
+    </div>
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
+
 document.addEventListener("DOMContentLoaded", function () {
 
-    const input = document.getElementById("telefone");
-    const PREFIX = "+55 ";
-
-    if (input && !input.value.startsWith(PREFIX)) {
-        input.value = PREFIX;
-    }
-
-    if (input) {
-        input.addEventListener("input", function () {
-
-            if (!input.value.startsWith(PREFIX)) {
-                input.value = PREFIX;
-            }
-
-            let digits = input.value.substring(PREFIX.length).replace(/\D/g, "");
-
-            if (digits.length > 11) {
-                digits = digits.substring(0, 11);
-            }
-
-            let result = PREFIX;
-
-            if (digits.length > 2) {
-                result += "(" + digits.substring(0, 2) + ") ";
-                digits = digits.substring(2);
-            } else {
-                result += digits;
-                input.value = result;
-                return;
-            }
-
-            if (digits.length <= 4) {
-                result += digits;
-            } else if (digits.length <= 8) {
-                result += digits.substring(0, 4) + "-" + digits.substring(4);
-            } else {
-                result += digits.substring(0, 5) + "-" + digits.substring(5);
-            }
-
-            input.value = result;
-        });
-    }
-
+    const telefone = document.getElementById("telefone");
     const senha = document.getElementById("senha");
     const confirmar = document.getElementById("confirmarSenha");
     const email = document.getElementById("email");
+
+    const nome = document.getElementById("nome");
+    const endereco = document.getElementById("endereco");
 
     const msgSenha = document.getElementById("senhaMensagem");
     const msgConfirmar = document.getElementById("confirmarMensagem");
@@ -192,25 +279,149 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const botao = document.getElementById("btnCadastrar");
 
+    const PREFIX = "+55 ";
+
     let emailExiste = false;
+    let dadosReprovados = null;
+
+    // TELEFONE
+
+    if (telefone && !telefone.value.startsWith(PREFIX)) {
+        telefone.value = PREFIX;
+    }
+
+    telefone.addEventListener("input", function () {
+
+        if (!telefone.value.startsWith(PREFIX)) {
+            telefone.value = PREFIX;
+        }
+
+        let digits = telefone.value
+            .substring(PREFIX.length)
+            .replace(/\D/g, "");
+
+        if (digits.length > 11) {
+            digits = digits.substring(0, 11);
+        }
+
+        let result = PREFIX;
+
+        if (digits.length > 2) {
+
+            result += "(" + digits.substring(0, 2) + ") ";
+
+            digits = digits.substring(2);
+        }
+        else {
+
+            result += digits;
+
+            telefone.value = result;
+
+            return;
+        }
+
+        if (digits.length <= 4) {
+
+            result += digits;
+        }
+        else if (digits.length <= 8) {
+
+            result +=
+                digits.substring(0, 4) +
+                "-" +
+                digits.substring(4);
+        }
+        else {
+
+            result +=
+                digits.substring(0, 5) +
+                "-" +
+                digits.substring(5);
+        }
+
+        telefone.value = result;
+    });
+
+    // MODAIS
 
     function abrirModalEmail() {
-        document.getElementById("emailModal").style.display = "flex";
+
+        document.getElementById("emailModal")
+            .style.display = "flex";
     }
 
     function fecharModalEmail() {
-        document.getElementById("emailModal").style.display = "none";
+
+        document.getElementById("emailModal")
+            .style.display = "none";
     }
 
-    document.getElementById("btnIrLogin").onclick = function () {
-        window.location.href = '@Url.Action("Login","Login")';
+    function abrirModalReaproveitar() {
+
+        document.getElementById("modalReaproveitar")
+            .style.display = "flex";
+    }
+
+    function fecharModalReaproveitar() {
+
+        document.getElementById("modalReaproveitar")
+            .style.display = "none";
+    }
+
+    // BOTÕES
+
+    document.getElementById("btnIrLogin")
+        .onclick = function () {
+
+        window.location.href =
+            '@Url.Action("Login","Login")';
     };
 
-    document.getElementById("btnContinuar").onclick = function () {
+    document.getElementById("btnContinuar")
+        .onclick = function () {
+
         fecharModalEmail();
     };
 
+    document.getElementById("btnNaoReaproveitar")
+        .onclick = function () {
+
+        fecharModalReaproveitar();
+    };
+
+    document.getElementById("btnReaproveitar")
+        .onclick = function () {
+
+        if (!dadosReprovados)
+            return;
+
+        nome.value =
+            dadosReprovados.nome || "";
+
+        email.value =
+            dadosReprovados.email || "";
+
+        endereco.value =
+            dadosReprovados.endereco || "";
+
+        telefone.value =
+            dadosReprovados.telefone || "+55 ";
+
+        fecharModalReaproveitar();
+
+        msgEmail.textContent =
+            "Cadastro reprovado encontrado. Atualize os dados e envie novamente.";
+
+        email.classList.remove("input-invalido");
+
+        validarFormulario();
+    };
+
+    // VALIDAÇÕES
+
     function validarSenhaForte(valor) {
+
         const min = valor.length >= 6;
         const letra = /[A-Za-z]/.test(valor);
         const numero = /[0-9]/.test(valor);
@@ -219,16 +430,25 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function validarEmail(valor) {
-        const regex = /^[^\s@@]+@@[^\s@@]+\.(com|com\.br|gov)$/;
+
+        const regex =
+            /^[^\s@@]+@@[^\s@@]+\.(com|com\.br|gov)$/;
+
         return regex.test(valor);
     }
 
     function verificarEmail(emailDigitado) {
 
         $.ajax({
-            url: '@Url.Action("VerificarEmail","Cadastro")',
+
+            url:
+                '@Url.Action("VerificarEmail","Cadastro")',
+
             type: 'POST',
-            data: { email: emailDigitado },
+
+            data: {
+                email: emailDigitado
+            },
 
             success: function (response) {
 
@@ -236,16 +456,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     emailExiste = true;
 
-                    msgEmail.textContent = "Este email já está cadastrado.";
+                    msgEmail.textContent =
+                        "Este email já está cadastrado.";
+
                     email.classList.add("input-invalido");
 
                     abrirModalEmail();
 
-                } else {
+                    validarFormulario();
+
+                    return;
+                }
+
+                if (response.reprovado) {
 
                     emailExiste = false;
-                    msgEmail.textContent = "";
+
+                    dadosReprovados = response.usuario;
+
+                    abrirModalReaproveitar();
+
+                    validarFormulario();
+
+                    return;
                 }
+
+                emailExiste = false;
+
+                dadosReprovados = null;
+
+                msgEmail.textContent = "";
 
                 validarFormulario();
             }
@@ -258,53 +498,96 @@ document.addEventListener("DOMContentLoaded", function () {
         const c = confirmar.value;
         const e = email.value;
 
-        let senhaValida = validarSenhaForte(s);
-        let senhasIguais = s === c && s.length > 0;
-        let emailValido = validarEmail(e);
+        const senhaValida =
+            validarSenhaForte(s);
+
+        const senhasIguais =
+            s === c && s.length > 0;
+
+        const emailValido =
+            validarEmail(e);
+
+        // SENHA
 
         if (!senhaValida) {
-            msgSenha.textContent = "A senha deve ter pelo menos 6 caracteres, letras e números.";
-        } else {
+
+            msgSenha.textContent =
+                "A senha deve ter pelo menos 6 caracteres, letras e números.";
+        }
+        else {
+
             msgSenha.textContent = "";
         }
 
+        // CONFIRMAR
+
         if (!senhasIguais) {
-            msgConfirmar.textContent = "As senhas não conferem.";
-        } else {
+
+            msgConfirmar.textContent =
+                "As senhas não conferem.";
+        }
+        else {
+
             msgConfirmar.textContent = "";
         }
 
+        // EMAIL
+
         if (!emailValido) {
-            msgEmail.textContent = "Digite um email válido (.com, .com.br ou .gov)";
+
+            msgEmail.textContent =
+                "Digite um email válido (.com, .com.br ou .gov)";
+
             email.classList.add("input-invalido");
+
             email.classList.remove("input-valido");
-        } else {
-            if (!emailExiste) msgEmail.textContent = "";
-            email.classList.remove("input-invalido");
-            email.classList.add("input-valido");
+        }
+        else {
+
+            if (!emailExiste) {
+
+                email.classList.remove("input-invalido");
+
+                email.classList.add("input-valido");
+            }
         }
 
-        botao.disabled = !(senhaValida && senhasIguais && emailValido) || emailExiste;
+        botao.disabled =
+            !(senhaValida && senhasIguais && emailValido)
+            || emailExiste;
     }
 
+    // EVENTOS
+
     senha.addEventListener("input", validarFormulario);
+
     confirmar.addEventListener("input", validarFormulario);
-    email.addEventListener("input", validarFormulario);
+
+    email.addEventListener("input", function () {
+
+        emailExiste = false;
+
+        dadosReprovados = null;
+
+        validarFormulario();
+    });
 
     email.addEventListener("blur", function () {
 
         const valor = email.value;
 
         if (validarEmail(valor)) {
+
             verificarEmail(valor);
         }
-
     });
 
     validarFormulario();
 
 });
+
 </script>
+
 
 <style>
 

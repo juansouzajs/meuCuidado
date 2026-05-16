@@ -25,56 +25,56 @@ namespace meuCuidado.Controllers
         [HttpPost]
         public ActionResult Cadastro(CadastroViewModel pessoa)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(pessoa);
+
+            if (pessoa.TipoUsuario == TipoUsuario.Idoso)
             {
-                if (pessoa.TipoUsuario == TipoUsuario.Idoso)
+                var idoso = new Idoso
                 {
-                    // MODEL PARA CADASTRO DE IDOSO
-                    Idoso idoso = new Idoso
-                    {
-                        IdentificadorUnico = Guid.NewGuid(),
-                        Nome = pessoa.Usuario.Nome,
-                        Email = pessoa.Usuario.Email.ToLower(),
-                        CPF = pessoa.Usuario.CPF,
-                        Endereco = pessoa.Usuario.Endereco,
-                        Telefone = pessoa.Usuario.Telefone,
-                        Senha = SenhaHelper.HashSenha(pessoa.Usuario.Senha),
-                        DataCadasto = DateTime.Now,
-                        DataNascimento = DateTime.Now,
-                        NecessidadesEspeciais = false
-                    };
+                    IdentificadorUnico = Guid.NewGuid(),
+                    Nome = pessoa.Usuario.Nome,
+                    Email = pessoa.Usuario.Email.ToLower(),
+                    CPF = pessoa.Usuario.CPF,
+                    Endereco = pessoa.Usuario.Endereco,
+                    Telefone = pessoa.Usuario.Telefone,
+                    Senha = SenhaHelper.HashSenha(pessoa.Usuario.Senha),
+                    DataCadasto = DateTime.Now,
 
-                    Session["Idoso"] = JsonConvert.SerializeObject(idoso);
+                    // NÃO USA DateTime.MinValue
+                    DataNascimento = new DateTime(2000, 1, 1),
 
-                    return RedirectToAction("CadastroTutorEMedicoDoIdoso");
-                }
-                else if (pessoa.TipoUsuario == TipoUsuario.Tutor)
+                    NecessidadesEspeciais = false
+                };
+
+                Session["Idoso"] = JsonConvert.SerializeObject(idoso);
+
+                return RedirectToAction("CadastroTutorEMedicoDoIdoso");
+            }
+
+            if (pessoa.TipoUsuario == TipoUsuario.Tutor)
+            {
+                var tutor = new Tutor
                 {
-                    // MODEL PARA CADASTRO DE TUTOR
-                    Tutor tutor = new Tutor
-                    {
-                        IdentificadorUnico = new Guid(),
-                        Nome = pessoa.Usuario.Nome,
-                        Email = pessoa.Usuario.Email.ToLower(),
-                        CPF = pessoa.Usuario.CPF,
-                        Endereco = pessoa.Usuario.Endereco,
-                        Telefone = pessoa.Usuario.Telefone,
-                        Senha = SenhaHelper.HashSenha(pessoa.Usuario.Senha),
-                        DataCadasto = DateTime.Now,
-                        RelacaoComIdoso = "Tutor",
-                        NecessidadesEspeciais = false
-                    };
+                    IdentificadorUnico = Guid.NewGuid(),
+                    Nome = pessoa.Usuario.Nome,
+                    Email = pessoa.Usuario.Email.ToLower(),
+                    CPF = pessoa.Usuario.CPF,
+                    Endereco = pessoa.Usuario.Endereco,
+                    Telefone = pessoa.Usuario.Telefone,
+                    Senha = SenhaHelper.HashSenha(pessoa.Usuario.Senha),
+                    DataCadasto = DateTime.Now,
+                    RelacaoComIdoso = "Tutor",
+                    NecessidadesEspeciais = false
+                };
 
-                    _context.Tutores.Add(tutor);
-                    _context.SaveChanges();
-                }
-                else
-                    return CadastroProfissional(pessoa);
+                _context.Tutores.Add(tutor);
+                _context.SaveChanges();
 
                 return RedirectToAction("Login", "Login");
             }
-            else
-                return View(pessoa);
+
+            return CadastroProfissional(pessoa);
         }
 
         public ActionResult CadastroTutorEMedicoDoIdoso()
@@ -155,69 +155,181 @@ namespace meuCuidado.Controllers
         }
 
         [HttpPost]
-        public ActionResult CadastroProfissional(CadastroViewModel cadastroProfissionalViewModel, HttpPostedFileBase FotoDocumento, HttpPostedFileBase Documento, HttpPostedFileBase CertificadoBonsAntecedentes, HttpPostedFileBase CertificadoDispensa)
+        public ActionResult CadastroProfissional(
+            CadastroViewModel cadastroProfissionalViewModel,
+            HttpPostedFileBase FotoDocumento,
+            HttpPostedFileBase Documento,
+            HttpPostedFileBase CertificadoBonsAntecedentes,
+            HttpPostedFileBase CertificadoDispensa)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                int? idUsuario = null;
+                ViewBag.Errors = GetModelErrors();
+                return View(cadastroProfissionalViewModel);
+            }
 
-                if (cadastroProfissionalViewModel.TipoUsuario == TipoUsuario.Cuidador)
+            int? idUsuario = null;
+
+            var email = cadastroProfissionalViewModel.Usuario.Email.ToLower();
+            var cpf = cadastroProfissionalViewModel.Usuario.CPF;
+
+            if (cadastroProfissionalViewModel.TipoUsuario == TipoUsuario.Cuidador)
+            {
+                var cuidadorExistente = _context.CuidadoresDeIdoso
+                    .FirstOrDefault(x =>
+                        x.Email.ToLower() == email ||
+                        x.CPF == cpf);
+
+                // APROVADO = BLOQUEIA
+                if (cuidadorExistente != null &&
+                    cuidadorExistente.EtapaAcesso == EtapaAcesso.AcessoLiberado)
                 {
-                    CuidadorDeIdoso cuidadorDeIdoso = new CuidadorDeIdoso
+                    ModelState.AddModelError("", "Usuário já cadastrado.");
+                    return View(cadastroProfissionalViewModel);
+                }
+
+                // REPROVADO = REAPROVEITA
+                if (cuidadorExistente != null &&
+                    cuidadorExistente.EtapaAcesso == EtapaAcesso.AcessoNegado)
+                {
+                    cuidadorExistente.Nome =
+                        cadastroProfissionalViewModel.Usuario.Nome;
+
+                    cuidadorExistente.Email = email;
+                    cuidadorExistente.CPF = cpf;
+
+                    cuidadorExistente.Endereco =
+                        cadastroProfissionalViewModel.Usuario.Endereco;
+
+                    cuidadorExistente.Telefone =
+                        cadastroProfissionalViewModel.Usuario.Telefone;
+
+                    cuidadorExistente.Senha =
+                        SenhaHelper.HashSenha(
+                            cadastroProfissionalViewModel.Usuario.Senha);
+
+                    cuidadorExistente.EtapaAcesso =
+                        EtapaAcesso.AguardandoAprovacao;
+
+                    cuidadorExistente.DataCadasto = DateTime.Now;
+
+                    _context.SaveChanges();
+
+                    idUsuario = cuidadorExistente.Id;
+                }
+                else
+                {
+                    var cuidadorDeIdoso = new CuidadorDeIdoso
                     {
                         IdentificadorUnico = Guid.NewGuid(),
                         Nome = cadastroProfissionalViewModel.Usuario.Nome,
-                        Email = cadastroProfissionalViewModel.Usuario.Email.ToLower(),
-                        CPF = cadastroProfissionalViewModel.Usuario.CPF,
+                        Email = email,
+                        CPF = cpf,
                         Endereco = cadastroProfissionalViewModel.Usuario.Endereco,
                         Telefone = cadastroProfissionalViewModel.Usuario.Telefone,
-                        Senha = SenhaHelper.HashSenha(cadastroProfissionalViewModel.Usuario.Senha),
+                        Senha = SenhaHelper.HashSenha(
+                            cadastroProfissionalViewModel.Usuario.Senha),
                         EtapaAcesso = EtapaAcesso.AguardandoAprovacao,
                         DataCadasto = DateTime.Now
                     };
 
                     _context.CuidadoresDeIdoso.Add(cuidadorDeIdoso);
                     _context.SaveChanges();
+
                     idUsuario = cuidadorDeIdoso.Id;
                 }
-                else if (cadastroProfissionalViewModel.TipoUsuario == TipoUsuario.Fisioterapeuta)
+            }
+            else if (cadastroProfissionalViewModel.TipoUsuario == TipoUsuario.Fisioterapeuta)
+            {
+                var fisioterapeutaExistente = _context.Fisioterapeutas
+                    .FirstOrDefault(x =>
+                        x.Email.ToLower() == email ||
+                        x.CPF == cpf);
+
+                // APROVADO = BLOQUEIA
+                if (fisioterapeutaExistente != null &&
+                    fisioterapeutaExistente.EtapaAcesso == EtapaAcesso.AcessoLiberado)
                 {
-                    Fisioterapeuta fisioterapeuta = new Fisioterapeuta
+                    ModelState.AddModelError("", "Usuário já cadastrado.");
+                    return View(cadastroProfissionalViewModel);
+                }
+
+                // REPROVADO = REAPROVEITA
+                if (fisioterapeutaExistente != null &&
+                    fisioterapeutaExistente.EtapaAcesso == EtapaAcesso.AcessoNegado)
+                {
+                    fisioterapeutaExistente.Nome =
+                        cadastroProfissionalViewModel.Usuario.Nome;
+
+                    fisioterapeutaExistente.Email = email;
+                    fisioterapeutaExistente.CPF = cpf;
+
+                    fisioterapeutaExistente.Endereco =
+                        cadastroProfissionalViewModel.Usuario.Endereco;
+
+                    fisioterapeutaExistente.Telefone =
+                        cadastroProfissionalViewModel.Usuario.Telefone;
+
+                    fisioterapeutaExistente.Senha =
+                        SenhaHelper.HashSenha(
+                            cadastroProfissionalViewModel.Usuario.Senha);
+
+                    fisioterapeutaExistente.EtapaAcesso =
+                        EtapaAcesso.AguardandoAprovacao;
+
+                    fisioterapeutaExistente.DataCadasto = DateTime.Now;
+
+                    _context.SaveChanges();
+
+                    idUsuario = fisioterapeutaExistente.Id;
+                }
+                else
+                {
+                    var fisioterapeuta = new Fisioterapeuta
                     {
-                        IdentificadorUnico = new Guid(),
+                        IdentificadorUnico = Guid.NewGuid(),
                         Nome = cadastroProfissionalViewModel.Usuario.Nome,
-                        Email = cadastroProfissionalViewModel.Usuario.Email.ToLower(),
-                        CPF = cadastroProfissionalViewModel.Usuario.CPF,
+                        Email = email,
+                        CPF = cpf,
                         Endereco = cadastroProfissionalViewModel.Usuario.Endereco,
                         Telefone = cadastroProfissionalViewModel.Usuario.Telefone,
-                        Senha = SenhaHelper.HashSenha(cadastroProfissionalViewModel.Usuario.Senha),
+                        Senha = SenhaHelper.HashSenha(
+                            cadastroProfissionalViewModel.Usuario.Senha),
                         EtapaAcesso = EtapaAcesso.AguardandoAprovacao,
                         DataCadasto = DateTime.Now
                     };
 
                     _context.Fisioterapeutas.Add(fisioterapeuta);
                     _context.SaveChanges();
+
                     idUsuario = fisioterapeuta.Id;
                 }
-
-                if (idUsuario != null && idUsuario != 0)
-                {
-                    SalvarDocumento(FotoDocumento, TipoDocumento.FotoDocumento, idUsuario.Value);
-                    SalvarDocumento(Documento, TipoDocumento.Documento, idUsuario.Value);
-                    SalvarDocumento(CertificadoBonsAntecedentes, TipoDocumento.CertificadoBonsAntecedentes, idUsuario.Value);
-                    SalvarDocumento(CertificadoDispensa, TipoDocumento.CertificadoDispensa, idUsuario.Value);
-                }
-
-                return RedirectToAction("AguardandoAprovacao");
             }
 
-            // Pega os erros da model
-            var errors = GetModelErrors();
+            if (idUsuario.HasValue)
+            {
+                SalvarDocumento(
+                    FotoDocumento,
+                    TipoDocumento.FotoDocumento,
+                    idUsuario.Value);
 
-            // Aqui você pode fazer algo com os erros, como logar ou enviar para a view
-            ViewBag.Errors = errors;
+                SalvarDocumento(
+                    Documento,
+                    TipoDocumento.Documento,
+                    idUsuario.Value);
 
-            return View(cadastroProfissionalViewModel);
+                SalvarDocumento(
+                    CertificadoBonsAntecedentes,
+                    TipoDocumento.CertificadoBonsAntecedentes,
+                    idUsuario.Value);
+
+                SalvarDocumento(
+                    CertificadoDispensa,
+                    TipoDocumento.CertificadoDispensa,
+                    idUsuario.Value);
+            }
+
+            return RedirectToAction("AguardandoAprovacao");
         }
 
 
@@ -270,7 +382,8 @@ namespace meuCuidado.Controllers
                     TipoDocumento = tipoDocumento,
                     Extensao = tipoExtensao,
                     Caminho = caminhoCompleto,
-                    UsuarioId = usuarioId
+                    UsuarioId = usuarioId,
+                    DataUpload = DateTime.Now
                 };
 
                 _context.Documentos.Add(documento);
@@ -302,19 +415,60 @@ namespace meuCuidado.Controllers
         public JsonResult VerificarEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
-                return Json(new { existe = false });
+            {
+                return Json(new
+                {
+                    existe = false,
+                    reprovado = false
+                });
+            }
 
             var emailNormalizado = email.ToLower();
 
-            bool existe =
-                _context.CuidadoresDeIdoso.Any(p => p.Email.ToLower() == emailNormalizado && p.EtapaAcesso == EtapaAcesso.AcessoLiberado) ||
-                _context.Fisioterapeutas.Any(p => p.Email.ToLower() == emailNormalizado && p.EtapaAcesso == EtapaAcesso.AcessoLiberado) ||
-                _context.Idosos.Any(p => p.Email.ToLower() == emailNormalizado && p.EtapaAcesso == EtapaAcesso.AcessoLiberado) ||
-                _context.Tutores.Any(p => p.Email.ToLower() == emailNormalizado && p.EtapaAcesso == EtapaAcesso.AcessoLiberado);
+            var cuidador = _context.CuidadoresDeIdoso
+                .FirstOrDefault(p =>
+                    p.Email.ToLower() == emailNormalizado);
+
+            var fisioterapeuta = _context.Fisioterapeutas
+                .FirstOrDefault(p =>
+                    p.Email.ToLower() == emailNormalizado);
+
+            dynamic usuario = null;
+
+            if (cuidador != null)
+                usuario = cuidador;
+            else if (fisioterapeuta != null)
+                usuario = fisioterapeuta;
+
+            if (usuario == null)
+            {
+                return Json(new
+                {
+                    existe = false,
+                    reprovado = false
+                });
+            }
+
+            bool aprovado =
+                usuario.EtapaAcesso ==
+                EtapaAcesso.AcessoLiberado;
+
+            bool reprovado =
+                usuario.EtapaAcesso ==
+                EtapaAcesso.AcessoNegado;
 
             return Json(new
             {
-                existe = existe
+                existe = aprovado,
+                reprovado = reprovado,
+                usuario = new
+                {
+                    nome = usuario.Nome,
+                    email = usuario.Email,
+                    telefone = usuario.Telefone,
+                    endereco = usuario.Endereco,
+                    cpf = usuario.CPF
+                }
             });
         }
     }

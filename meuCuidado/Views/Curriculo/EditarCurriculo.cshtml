@@ -1,151 +1,513 @@
 ﻿@model meuCuidado.Dominio.Models.Curriculo
 
-<div class="container curriculo-detalhes-container">
-    <div class="card curriculo-detalhes-card">
-        <div class="card-body">
+@{
+    Layout = null;
 
-            <!-- Informações principais -->
-            <div class="info-bloco">
-                <p><strong>Cuidadora de idosos há:</strong> @Model.AnosExperiencia anos</p>
-                <p><strong>Escolaridade:</strong> @Model.Escolaridade</p>
-            </div>
+    var redes = Model?.RedesSociais ?? new List<string>();
 
-            <!-- Cursos -->
-            @if (Model.Cursos != null && Model.Cursos.Any())
-            {
-                <div class="info-bloco">
-                    <h4>Cursos</h4>
-                    <ul>
-                        @foreach (var curso in Model.Cursos)
-                        {
-                            <li>@curso</li>
-                        }
-                    </ul>
-                </div>
-            }
+    var facebook =
+        redes.FirstOrDefault(x => x.ToLower().Contains("facebook")) ?? "";
 
-            <!-- Experiências -->
-            @if (Model.Experiencias != null && Model.Experiencias.Any())
-            {
-                <div class="info-bloco">
-                    <h4>Experiência</h4>
-                    <ul>
-                        @foreach (var experiencia in Model.Experiencias)
-                        {
-                            <li>@experiencia</li>
-                        }
-                    </ul>
-                </div>
-            }
+    var instagram =
+        redes.FirstOrDefault(x => x.ToLower().Contains("instagram")) ?? "";
 
-            <!-- Redes sociais -->
-            @if (Model.RedesSociais != null && Model.RedesSociais.Any())
-            {
-                <div class="info-bloco redes-sociais">
-                    <h4>Redes Sociais</h4>
+    var linkedin =
+        redes.FirstOrDefault(x => x.ToLower().Contains("linkedin")) ?? "";
 
-                    @foreach (var rede in Model.RedesSociais)
-                    {
-                        if (rede.Contains("linkedin"))
-                        {
-                            <a href="@rede" target="_blank" title="LinkedIn">
-                                <i class="fa fa-linkedin"></i>
-                            </a>
-                        }
-                        else if (rede.Contains("facebook"))
-                        {
-                            <a href="@rede" target="_blank" title="Facebook">
-                                <i class="fa fa-facebook"></i>
-                            </a>
-                        }
-                        else if (rede.Contains("instagram"))
-                        {
-                            <a href="@rede" target="_blank" title="Instagram">
-                                <i class="fa fa-instagram"></i>
-                            </a>
-                        }
-                    }
-                </div>
-            }
+    var youtube =
+        redes.FirstOrDefault(x => x.ToLower().Contains("youtube")) ?? "";
+}
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="page">
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="header">
+
+            <button class="btn-back"
+                    onclick="window.history.back()">
+
+                <i class="fas fa-arrow-left"></i>
+
+            </button>
+
+            <h2>Editar Currículo</h2>
 
         </div>
+
+        <!-- CARD -->
+        <div class="card">
+
+            <form id="formCurriculo">
+
+                <!-- EXPERIÊNCIA -->
+                <div class="section">
+
+                    <h3>
+                        <i class="fas fa-briefcase"></i>
+                        Experiência
+                    </h3>
+
+                    <div class="input-group">
+
+                        <label>Anos de experiência</label>
+
+                        <input type="number"
+                               name="AnosExperiencia"
+                               value="@(Model?.AnosExperiencia ?? 0)" />
+
+                    </div>
+
+                    <div id="expContainer" class="list"></div>
+
+                    <button type="button"
+                            class="btn-add"
+                            onclick="addExp()">
+
+                        <i class="fas fa-plus"></i>
+                        Adicionar experiência
+
+                    </button>
+
+                </div>
+
+                <!-- FORMAÇÃO -->
+                <div class="section">
+
+                    <h3>
+                        <i class="fas fa-graduation-cap"></i>
+                        Formação
+                    </h3>
+
+                    <div class="formacao-box">
+
+                        <div class="input-group">
+
+                            <label>Nível de escolaridade</label>
+
+                            <select name="EscolaridadeNivel">
+
+                                <option value="">
+                                    Selecione
+                                </option>
+
+                                <option value="Outro"
+                                        @(Model?.EscolaridadeNivel == "Outro" ? "selected" : "")>
+
+                                    Outro
+
+                                </option>
+
+                                <option value="Ensino Técnico"
+                                        @(Model?.EscolaridadeNivel == "Ensino Técnico" ? "selected" : "")>
+
+                                    Ensino Técnico
+
+                                </option>
+
+                                <option value="Ensino Superior"
+                                        @(Model?.EscolaridadeNivel == "Ensino Superior" ? "selected" : "")>
+
+                                    Ensino Superior
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="input-group">
+
+                            <label>
+                                Nome da formação
+                            </label>
+
+                            <input type="text"
+                                   name="EscolaridadeNome"
+                                   placeholder="Ex: Técnico em enfermagem"
+                                   value="@(Model?.EscolaridadeNome ?? "")" />
+
+                        </div>
+
+                    </div>
+
+                    <hr class="divider" />
+
+                    <h4 class="sub-title">
+                        Cursos adicionais
+                    </h4>
+
+                    <div id="cursosContainer" class="list"></div>
+
+                    <button type="button"
+                            class="btn-add"
+                            onclick="addCurso()">
+
+                        <i class="fas fa-plus"></i>
+                        Adicionar curso
+
+                    </button>
+
+                </div>
+
+                <!-- REDES -->
+                <div class="section">
+
+                    <h3>
+                        <i class="fas fa-share-alt"></i>
+                        Redes sociais
+                    </h3>
+
+                    <div class="social-grid">
+
+                        <div class="social-input">
+
+                            <i class="fab fa-facebook"></i>
+
+                            <input name="Facebook"
+                                   value="@facebook"
+                                   placeholder="https://facebook.com/seu.usuario">
+
+                        </div>
+
+                        <div class="social-input">
+
+                            <i class="fab fa-instagram"></i>
+
+                            <input name="Instagram"
+                                   value="@instagram"
+                                   placeholder="https://instagram.com/seu.usuario">
+
+                        </div>
+
+                        <div class="social-input">
+
+                            <i class="fab fa-linkedin"></i>
+
+                            <input name="Linkedin"
+                                   value="@linkedin"
+                                   placeholder="https://linkedin.com/in/seu.usuario">
+
+                        </div>
+
+                        <div class="social-input">
+
+                            <i class="fab fa-youtube"></i>
+
+                            <input name="Youtube"
+                                   value="@youtube"
+                                   placeholder="https://youtube.com/seucanal">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- BOTÃO -->
+                <button type="button"
+                        class="btn-save"
+                        onclick="salvarCurriculo()">
+
+                    <i class="fas fa-save"></i>
+                    Salvar currículo
+
+                </button>
+
+            </form>
+
+        </div>
+
     </div>
 
-    <!-- Botão voltar -->
-    <div class="voltar-container">
-        <a href="@Url.Action("Configuracoes", "Configuracoes")" class="btn-voltar">
-            <i class="fa fa-arrow-left"></i> Voltar
-        </a>
-    </div>
 </div>
 
+<script>
+
+    function addCurso(valor = "") {
+
+        $("#cursosContainer").append(`
+            <div class="list-item fade-in">
+
+                <input type="text"
+                       name="Cursos"
+                       value="${valor}"
+                       placeholder="Ex: Curso de primeiros socorros">
+
+                <button type="button"
+                        onclick="$(this).parent().remove()">
+
+                    <i class="fas fa-times"></i>
+
+                </button>
+
+            </div>
+        `);
+    }
+
+    function addExp(valor = "") {
+
+        $("#expContainer").append(`
+            <div class="list-item fade-in">
+
+                <input type="text"
+                       name="Experiencias"
+                       value="${valor}"
+                       placeholder="Ex: Cuidador de idosos por 2 anos">
+
+                <button type="button"
+                        onclick="$(this).parent().remove()">
+
+                    <i class="fas fa-times"></i>
+
+                </button>
+
+            </div>
+        `);
+    }
+
+    function salvarCurriculo() {
+
+        var data =
+            $("#formCurriculo").serialize();
+
+        $.ajax({
+
+            url: '/Curriculo/SalvarCurriculo',
+
+            type: 'POST',
+
+            data: data,
+
+            success: function (res) {
+
+                if (res.success) {
+
+                    alert("Salvo com sucesso!");
+
+                    window.history.back();
+
+                } else {
+
+                    alert(res.erro);
+                }
+            },
+
+            error: function (xhr) {
+
+                console.log(xhr.responseText);
+
+                alert("Erro ao salvar.");
+            }
+        });
+    }
+
+    $(document).ready(function () {
+
+        var cursos =
+            @Html.Raw(
+                Newtonsoft.Json.JsonConvert.SerializeObject(
+                    Model?.Cursos ?? new List<string>()
+                )
+            );
+
+        var experiencias =
+            @Html.Raw(
+                Newtonsoft.Json.JsonConvert.SerializeObject(
+                    Model?.Experiencias ?? new List<string>()
+                )
+            );
+
+        if (cursos.length > 0) {
+
+            cursos.forEach(c => addCurso(c));
+
+        } else {
+
+            addCurso();
+        }
+
+        if (experiencias.length > 0) {
+
+            experiencias.forEach(e => addExp(e));
+
+        } else {
+
+            addExp();
+        }
+    });
+
+</script>
+
 <style>
-    .curriculo-detalhes-container {
-        max-width: 650px;
-        margin: 40px auto;
+
+    body {
+        margin: 0;
+        font-family: 'Segoe UI';
+        background: linear-gradient(135deg, #e6f4f1, #f8fbff);
     }
 
-    .curriculo-detalhes-card {
-        border-radius: 12px;
-        background-color: #f5f5f5;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    .page {
+        padding: 30px;
     }
 
-    .card-body {
-        padding: 25px;
+    .container {
+        max-width: 750px;
+        margin: auto;
     }
 
-    .info-bloco {
-        margin-bottom: 25px;
-    }
-
-        .info-bloco h4 {
-            margin-bottom: 10px;
-            color: #555;
-        }
-
-    ul {
-        padding-left: 20px;
-    }
-
-        ul li {
-            margin-bottom: 6px;
-        }
-
-    /* Redes sociais */
-    .redes-sociais a {
-        font-size: 28px;
-        margin-right: 15px;
-        color: #555;
-        transition: color 0.2s;
-    }
-
-        .redes-sociais a:hover {
-            color: #007bff;
-        }
-
-    /* Botão voltar */
-    .voltar-container {
-        margin-top: 30px;
-        text-align: center;
-    }
-
-    .btn-voltar {
-        display: inline-flex;
+    .header {
+        display: flex;
         align-items: center;
-        gap: 8px;
-        border: 2px solid #007bff;
-        color: #007bff;
-        padding: 10px 24px;
-        border-radius: 25px;
-        font-size: 16px;
-        text-decoration: none;
-        transition: all 0.3s ease;
+        gap: 12px;
+        margin-bottom: 20px;
     }
 
-        .btn-voltar:hover {
-            background-color: #007bff;
-            color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+        .header h2 {
+            color: #2f6f68;
+            font-size: 22px;
         }
+
+    .btn-back {
+        border: none;
+        background: white;
+        border-radius: 10px;
+        padding: 10px 14px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+    }
+
+    .section {
+        margin-bottom: 30px;
+    }
+
+        .section h3 {
+            margin-bottom: 15px;
+            color: #2f6f68;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+    .sub-title {
+        margin-bottom: 15px;
+        color: #2f6f68;
+    }
+
+    .divider {
+        margin: 25px 0;
+        border: none;
+        border-top: 1px solid #e3efec;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+    }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #cfe3df;
+            box-sizing: border-box;
+        }
+
+    .list-item {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+        .list-item input {
+            flex: 1;
+        }
+
+        .list-item button {
+            background: #ff6b6b;
+            border: none;
+            color: white;
+            border-radius: 10px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+    .btn-add {
+        margin-top: 10px;
+        background: #e0f2f1;
+        border: none;
+        padding: 10px 14px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .social-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .social-input {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid #cfe3df;
+        border-radius: 12px;
+        padding: 10px;
+    }
+
+        .social-input input {
+            border: none;
+            outline: none;
+            width: 100%;
+        }
+
+    .btn-save {
+        width: 100%;
+        padding: 16px;
+        background: #4db6ac;
+        color: white;
+        border: none;
+        border-radius: 16px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+        margin-top: 10px;
+    }
+
+        .btn-save:hover {
+            background: #3da59b;
+            transform: translateY(-2px);
+        }
+
+    .fade-in {
+        animation: fadeIn 0.2s ease-in-out;
+    }
+
+    @@keyframes fadeIn {
+
+        from {
+            opacity: 0;
+            transform: translateY(5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 </style>

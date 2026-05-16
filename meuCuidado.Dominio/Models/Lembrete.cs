@@ -12,8 +12,10 @@ namespace meuCuidado.Dominio.Models
 
         public Guid IdentificadorUnico { get; set; }
 
-        [Required]
-        public int RelacionamentoIdosoProfissionalId { get; set; }
+        public int? PessoaId { get; set; }
+
+        [ForeignKey("PessoaId")]
+        public virtual Pessoa Pessoa { get; set; }
 
         public int? MedicamentoId { get; set; }
 
@@ -30,6 +32,10 @@ namespace meuCuidado.Dominio.Models
         [Required]
         public bool Repete { get; set; } = false;
 
-        public virtual RelacionamentoIdosoProfissional RelacionamentoIdosoProfissional { get; set; }
+        // NOVOS CAMPOS
+
+        public int UsuarioId { get; set; }
+
+        public int TipoUsuario { get; set; }
     }
 }

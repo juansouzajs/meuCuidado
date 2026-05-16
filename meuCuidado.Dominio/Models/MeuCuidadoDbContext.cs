@@ -11,6 +11,7 @@ namespace meuCuidado
         }
 
         public DbSet<RelacionamentoIdosoProfissional> RelacionamentosIdosoProfissional { get; set; }
+        public DbSet<Pessoa> Pessoas { get; set; }
         public DbSet<Lembrete> Lembretes { get; set; }
         public DbSet<Medicamento> Medicamentos { get; set; }
         public DbSet<Avaliacao> Avaliacoes { get; set; }

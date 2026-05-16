@@ -55,11 +55,17 @@
     <Reference Include="BCrypt.Net-Next, Version=4.1.0.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net-Next.4.1.0\lib\net472\BCrypt.Net-Next.dll</HintPath>
     </Reference>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>..\packages\BouncyCastle.Cryptography.2.6.2\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.5, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.13.5\lib\net461\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
@@ -197,6 +203,7 @@
     <Compile Include="Controllers\CurriculoController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\EmailController.cs" />
+    <Compile Include="Controllers\FarmaciasController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LembreteController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -218,6 +225,38 @@
     <Compile Include="Migrations\202603282041406_AddEtapaAtivacaoRelacionamento.cs" />
     <Compile Include="Migrations\202603282041406_AddEtapaAtivacaoRelacionamento.Designer.cs">
       <DependentUpon>202603282041406_AddEtapaAtivacaoRelacionamento.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202604251918584_AtualizaDocumento.cs" />
+    <Compile Include="Migrations\202604251918584_AtualizaDocumento.Designer.cs">
+      <DependentUpon>202604251918584_AtualizaDocumento.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202604252130352_AtualizaCurriculo.cs" />
+    <Compile Include="Migrations\202604252130352_AtualizaCurriculo.Designer.cs">
+      <DependentUpon>202604252130352_AtualizaCurriculo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202604261700563_CurriculoUpdate.cs" />
+    <Compile Include="Migrations\202604261700563_CurriculoUpdate.Designer.cs">
+      <DependentUpon>202604261700563_CurriculoUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202604261931117_NecessidadesEspeciais.cs" />
+    <Compile Include="Migrations\202604261931117_NecessidadesEspeciais.Designer.cs">
+      <DependentUpon>202604261931117_NecessidadesEspeciais.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202604261933132_WhatsappLink.cs" />
+    <Compile Include="Migrations\202604261933132_WhatsappLink.Designer.cs">
+      <DependentUpon>202604261933132_WhatsappLink.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605151517269_Pessoa.cs" />
+    <Compile Include="Migrations\202605151517269_Pessoa.Designer.cs">
+      <DependentUpon>202605151517269_Pessoa.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605151638512_lembretes1.cs" />
+    <Compile Include="Migrations\202605151638512_lembretes1.Designer.cs">
+      <DependentUpon>202605151638512_lembretes1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202605161752332_escolaridade.cs" />
+    <Compile Include="Migrations\202605161752332_escolaridade.Designer.cs">
+      <DependentUpon>202605161752332_escolaridade.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -245,9 +284,11 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="ImagensPerfil\default.jpg" />
     <Content Include="Imagens\facebook-logo.png" />
     <Content Include="Imagens\facebook-logo.svg" />
     <Content Include="Imagens\gmail-logo.png" />
+    <Content Include="Imagens\linkedin-logo.png" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -301,7 +342,6 @@
     <Content Include="Views\Perfil\PerfilDetalhado.cshtml" />
     <Content Include="Views\Curriculo\Curriculo.cshtml" />
     <Content Include="Views\Curriculo\EditarCurriculo.cshtml" />
-    <Content Include="Views\Perfil\EditarPerfil.cshtml" />
     <Content Include="Views\Medicamento\AdicionarMedicamento.cshtml" />
     <Content Include="Views\Cadastro\CadastroTutorEMedicoDoIdoso.cshtml" />
     <Content Include="Views\Administrador\Administrador.cshtml" />
@@ -309,6 +349,9 @@
     <Content Include="Views\Cadastro\AguardandoAprovacao.cshtml" />
     <Content Include="Views\Administrador\Solicitacoes.cshtml" />
     <Content Include="Views\Relacionamento\_Conexoes.cshtml" />
+    <Content Include="Views\Avaliacao\MinhasAvaliacoes.cshtml" />
+    <Content Include="Views\Perfil\EditarPerfil.cshtml" />
+    <Content Include="Views\Dashboard\Farmacias.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -356,6 +399,30 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202603282041406_AddEtapaAtivacaoRelacionamento.resx">
       <DependentUpon>202603282041406_AddEtapaAtivacaoRelacionamento.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202604251918584_AtualizaDocumento.resx">
+      <DependentUpon>202604251918584_AtualizaDocumento.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202604252130352_AtualizaCurriculo.resx">
+      <DependentUpon>202604252130352_AtualizaCurriculo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202604261700563_CurriculoUpdate.resx">
+      <DependentUpon>202604261700563_CurriculoUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202604261931117_NecessidadesEspeciais.resx">
+      <DependentUpon>202604261931117_NecessidadesEspeciais.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202604261933132_WhatsappLink.resx">
+      <DependentUpon>202604261933132_WhatsappLink.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605151517269_Pessoa.resx">
+      <DependentUpon>202605151517269_Pessoa.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605151638512_lembretes1.resx">
+      <DependentUpon>202605151638512_lembretes1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605161752332_escolaridade.resx">
+      <DependentUpon>202605161752332_escolaridade.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -13,6 +13,8 @@ namespace meuCuidado.Dominio.Models
 
         public bool NecessidadesEspeciais { get; set; }
 
+        public string DescricaoNecessidadesEspeciais { get; set; }
+
         [Required]
         public int TutorId { get; set; }
 

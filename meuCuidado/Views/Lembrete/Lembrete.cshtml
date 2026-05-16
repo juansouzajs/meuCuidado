@@ -5,37 +5,81 @@
     Layout = null;
 }
 
+
 <div class="cadastro-container">
+
     <div class="cadastro-card">
 
         <h2 class="cadastro-titulo">Lembretes</h2>
 
-        <!-- Seletor de pessoa -->
+        <!-- Pessoa -->
         <div class="top-bar">
+
             <select id="selectPessoa" class="input-padrao">
-                <option value="Todos">Todos</option>
-                <option value="Maria">Maria</option>
-                <option value="Josefa">Josefa</option>
-                <option value="Abraão">Abraão</option>
+
+                <option value="">Todos</option>
+
+                @foreach (var pessoa in ViewBag.Pessoas)
+                {
+                    <option value="@pessoa.Id">
+                        @pessoa.Nome
+                    </option>
+                }
+
             </select>
 
-            <button id="addPersonButton" class="btn-padrao btn-add">+</button>
+            <button type="button"
+                    id="addPersonButton"
+                    class="btn-padrao btn-add">
+
+                +
+
+            </button>
+
+            <button type="button"
+                    id="btnExportar"
+                    class="btn-padrao">
+
+                Exportar
+
+            </button>
+
         </div>
 
         <!-- Calendário -->
-        <div id="calendar" class="calendar-card">
+        <div class="calendar-card">
+
             <div class="calendar-header">
-                <button id="prevMonth" class="btn-padrao" style="border-radius: 50%">&lt;</button>
+
+                <button type="button"
+                        id="prevMonth"
+                        class="btn-padrao nav-btn">
+
+                    &lt;
+
+                </button>
+
                 <h4 id="monthYear"></h4>
-                <button id="nextMonth" class="btn-padrao" style="border-radius: 50%">&gt;</button>
+
+                <button type="button"
+                        id="nextMonth"
+                        class="btn-padrao nav-btn">
+
+                    &gt;
+
+                </button>
+
             </div>
 
-            <div class="calendar-grid" id="calendarGrid"></div>
+            <div id="calendarGrid" class="calendar-grid"></div>
+
         </div>
 
         <!-- Lista -->
         <div id="ListaLembretesContainer">
+
             @Html.Partial("ListaLembretes", Model)
+
         </div>
 
         <!-- Form -->
@@ -46,18 +90,33 @@
             <form id="addReminderForm">
 
                 <div class="campo">
+
                     <label>Descrição</label>
-                    <input type="text" class="input-padrao" id="descricao" required />
+
+                    <input type="text"
+                           id="descricao"
+                           class="input-padrao"
+                           required />
+
                 </div>
 
                 <div class="campo">
+
                     <label>Hora</label>
-                    <input type="time" class="input-padrao" id="dataHora" required />
+
+                    <input type="time"
+                           id="dataHora"
+                           class="input-padrao"
+                           required />
+
                 </div>
 
                 <div class="campo">
+
                     <label>Medicamento</label>
-                    <select class="input-padrao" id="MedicamentoId">
+
+                    <select id="MedicamentoId"
+                            class="input-padrao">
 
                         <option value="">Nenhum</option>
 
@@ -69,6 +128,7 @@
                         }
 
                     </select>
+
                 </div>
 
                 <div class="acoes">
@@ -81,8 +141,11 @@
 
                     </button>
 
-                    <button type="submit" class="btn-padrao">
+                    <button type="submit"
+                            class="btn-padrao">
+
                         Adicionar
+
                     </button>
 
                 </div>
@@ -92,19 +155,115 @@
         </div>
 
     </div>
+
 </div>
+
+<div id="modalExportar" class="modal-overlay">
+
+    <div class="modal-card">
+
+        <h3>Exportar lembretes</h3>
+
+        <div class="campo">
+            <label>Data início</label>
+
+            <input type="date"
+                   id="exportDataInicio"
+                   class="input-padrao">
+        </div>
+
+        <div class="campo">
+            <label>Data final</label>
+
+            <input type="date"
+                   id="exportDataFim"
+                   class="input-padrao">
+        </div>
+
+        <div class="campo">
+            <label>Formato</label>
+
+            <select id="exportFormato"
+                    class="input-padrao">
+
+                <option value="csv">CSV</option>
+                <option value="pdf">PDF</option>
+
+            </select>
+        </div>
+
+        <div class="modal-actions">
+
+            <button type="button"
+                    id="cancelExportModal"
+                    class="btn-cancelar">
+
+                Cancelar
+
+            </button>
+
+            <button type="button"
+                    id="confirmExportModal"
+                    class="btn-padrao">
+
+                Baixar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div id="personModal" class="modal-overlay">
+
+    <div class="modal-card">
+
+        <h3>Adicionar Pessoa</h3>
+
+        <input type="text"
+               id="novaPessoaNome"
+               class="input-padrao"
+               placeholder="Digite o nome" />
+
+        <div class="modal-actions">
+
+            <button type="button"
+                    id="cancelPersonModal"
+                    class="btn-cancelar">
+
+                Cancelar
+
+            </button>
+
+            <button type="button"
+                    id="savePersonModal"
+                    class="btn-padrao">
+
+                Salvar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="toast" class="toast"></div>
 
 <audio id="notificationSound">
     <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">
 </audio>
 
-<div id="toast" class="toast"></div>
-
-
 <style>
+
     body {
         background: #eef7fb;
         font-family: Arial, sans-serif;
+        margin: 0;
     }
 
     .cadastro-container {
@@ -114,10 +273,10 @@
     }
 
     .cadastro-card {
-        background: #ffffff;
-        padding: 28px 32px;
-        border-radius: 14px;
+        background: white;
         width: 880px;
+        border-radius: 14px;
+        padding: 28px 32px;
         box-shadow: 0 6px 18px rgba(90,159,168,0.15);
         border: 1px solid #e3f2f4;
     }
@@ -125,18 +284,13 @@
     .cadastro-titulo {
         text-align: center;
         color: #5a9fa8;
-        font-weight: 600;
         margin-bottom: 20px;
     }
 
     .top-bar {
         display: flex;
         gap: 10px;
-        margin-bottom: 18px;
-    }
-
-    .selectPessoa {
-        flex: 1;
+        margin-bottom: 20px;
     }
 
     .input-padrao {
@@ -144,25 +298,16 @@
         padding: 10px 12px;
         border-radius: 8px;
         border: 1px solid #a8dadc;
-        background: #fafdfe;
-        transition: 0.2s;
+        box-sizing: border-box;
     }
-
-        .input-padrao:focus {
-            outline: none;
-            border-color: #5a9fa8;
-            box-shadow: 0 0 0 2px rgba(168,218,220,0.3);
-        }
 
     .btn-padrao {
         background: #a8dadc;
         color: white;
         border: none;
-        padding: 9px 16px;
         border-radius: 8px;
+        padding: 10px 16px;
         cursor: pointer;
-        transition: 0.2s;
-        font-weight: 500;
     }
 
         .btn-padrao:hover {
@@ -170,102 +315,97 @@
         }
 
     .btn-add {
-        width: 40px;
-        font-size: 18px;
+        width: 44px;
+        min-width: 44px;
         border-radius: 50%;
+        font-size: 18px;
     }
 
     .btn-link {
-        background: none;
         border: none;
+        background: none;
         color: #5a9fa8;
         cursor: pointer;
-        font-weight: 500;
     }
 
-        .btn-link:hover {
-            text-decoration: underline;
-        }
-
     .calendar-card {
-        margin-top: 10px;
-        margin-bottom: 20px;
-        padding: 18px;
+        background: #fafdfe;
         border: 1px solid #a8dadc;
         border-radius: 10px;
-        background: #fafdfe;
+        padding: 18px;
+        margin-bottom: 20px;
     }
 
     .calendar-header {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 10px;
+        justify-content: space-between;
+        margin-bottom: 14px;
+    }
+
+    .nav-btn {
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        padding: 0;
     }
 
     #monthYear {
         color: #5a9fa8;
-        font-weight: 600;
+        margin: 0;
+        text-transform: capitalize;
     }
 
     .calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 6px;
+        gap: 8px;
     }
 
     .day {
-        padding: 10px;
-        text-align: center;
         background: #f0f8ff;
-        border-radius: 8px;
-        cursor: pointer;
         border: 1px solid #d6eef2;
-        transition: 0.15s;
-        font-weight: 500;
+        border-radius: 8px;
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.2s;
     }
 
         .day:hover {
-            background: #e3f4f6;
+            background: #dff3f5;
         }
 
         .day.selected {
             background: #5a9fa8;
             color: white;
-            border: none;
+            border-color: #5a9fa8;
         }
 
-    #ListaLembretesContainer {
-        margin-top: 10px;
-        margin-bottom: 20px;
+    .empty-day {
+        visibility: hidden;
     }
 
     .form-area {
         border-top: 1px solid #e3f2f4;
-        padding-top: 15px;
+        padding-top: 20px;
     }
 
-        .form-area h3 {
-            color: #5a9fa8;
-            margin-bottom: 12px;
-        }
-
     .campo {
-        margin-bottom: 12px;
+        margin-bottom: 14px;
     }
 
         .campo label {
             display: block;
-            font-size: 14px;
+            margin-bottom: 5px;
             color: #5a9fa8;
-            margin-bottom: 4px;
         }
 
     .acoes {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 10px;
+        margin-top: 14px;
     }
 
     .toast {
@@ -279,38 +419,62 @@
         opacity: 0;
         transform: translateY(20px);
         transition: 0.3s;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 99999;
     }
-
-        /* vermelho pastel */
-        .toast.error {
-            background: #f4a3a3;
-        }
 
         .toast.show {
             opacity: 1;
             transform: translateY(0);
         }
 
-    .btn-excluir {
-        background: #f4a3a3;
-        border: none;
-        color: white;
-        border-radius: 8px;
-        padding: 6px 10px;
-        cursor: pointer;
-        transition: 0.2s;
+        .toast.error {
+            background: #f4a3a3;
+        }
+
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.35);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
     }
 
-        .btn-excluir:hover {
-            background: #e58f8f;
+        .modal-overlay.show {
+            display: flex;
         }
+
+    .modal-card {
+        width: 380px;
+        background: white;
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+        .modal-card h3 {
+            margin-top: 0;
+            color: #5a9fa8;
+        }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 18px;
+    }
+
+    .btn-cancelar {
+        border: none;
+        background: #ececec;
+        border-radius: 8px;
+        padding: 10px 16px;
+        cursor: pointer;
+    }
 </style>
 
-
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 
 <script>
 
@@ -318,54 +482,52 @@
 
     let selectedDate =
         today.getFullYear() + "-" +
-        String(today.getMonth() + 1).padStart(2, '0') + "-" +
-        String(today.getDate()).padStart(2, '0');
+        String(today.getMonth() + 1).padStart(2, "0") + "-" +
+        String(today.getDate()).padStart(2, "0");
 
     function showToast(message, error = false) {
 
-        let toast = document.getElementById("toast");
+        let toast = $("#toast");
 
-        toast.innerText = message;
+        toast.text(message);
 
-        toast.classList.remove("error");
+        toast.removeClass("error");
 
-        if (error)
-            toast.classList.add("error");
+        if (error) {
+            toast.addClass("error");
+        }
 
-        toast.classList.add("show");
+        toast.addClass("show");
 
-        setTimeout(() => {
-
-            toast.classList.remove("show");
-
+        setTimeout(function () {
+            toast.removeClass("show");
         }, 3000);
-
     }
-
 
     function loadReminders(date) {
 
         selectedDate = date;
 
-        $("#ListaLembretesContainer")
-            .load("/Lembrete/GetReminders?date=" + date);
+        let pessoaId = $("#selectPessoa").val();
 
+        $("#ListaLembretesContainer").load(
+            "/Lembrete/GetReminders?date=" +
+            encodeURIComponent(date) +
+            "&pessoaId=" +
+            encodeURIComponent(pessoaId || "")
+        );
     }
-
-
 
     function excluirLembrete(id) {
 
         fetch("/Lembrete/Excluir", {
-
             method: "POST",
-
             headers: {
                 "Content-Type": "application/json"
             },
-
-            body: JSON.stringify({ id: id })
-
+            body: JSON.stringify({
+                id: id
+            })
         })
             .then(r => r.json())
             .then(res => {
@@ -376,34 +538,100 @@
 
                     loadReminders(selectedDate);
 
-                }
-                else {
+                } else {
 
                     showToast("Erro ao excluir", true);
 
                 }
 
             });
-
     }
 
+    $(function () {
 
-    $(document).ready(function () {
+        $("#selectPessoa").on("change", function () {
 
-        if ("Notification" in window) {
+            loadReminders(selectedDate);
 
-            if (Notification.permission !== "granted") {
+        });
 
-                Notification.requestPermission()
-                    .then(permission => {
+        // MODAL
 
-                        console.log("Permissão:", permission);
+        $("#addPersonButton").on("click", function () {
 
-                    });
+            $("#personModal").addClass("show");
+
+            $("#novaPessoaNome").val("");
+
+            setTimeout(function () {
+
+                $("#novaPessoaNome").focus();
+
+            }, 100);
+
+        });
+
+        $("#cancelPersonModal").on("click", function () {
+
+            $("#personModal").removeClass("show");
+
+        });
+
+        $("#savePersonModal").on("click", function () {
+
+            let nome = $("#novaPessoaNome").val().trim();
+
+            if (nome === "") {
+
+                showToast("Digite um nome", true);
+
+                return;
 
             }
 
-        }
+            fetch("/Lembrete/CreatePessoa", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    Nome: nome
+                })
+
+            })
+                .then(r => r.json())
+                .then(res => {
+
+                    if (res.success) {
+
+                        $("#selectPessoa").append(
+                            `<option value="${res.id}">
+                            ${nome}
+                        </option>`
+                        );
+
+                        $("#selectPessoa")
+                            .val(res.id)
+                            .trigger("change");
+
+                        $("#personModal").removeClass("show");
+
+                        showToast("Pessoa adicionada");
+
+                    } else {
+
+                        showToast(res.error || "Erro ao adicionar pessoa", true);
+
+                    }
+
+                });
+
+        });
+
+        // CALENDÁRIO
 
         let currentMonth = new Date();
 
@@ -412,44 +640,56 @@
             $("#monthYear").text(
 
                 currentMonth.toLocaleDateString("pt-BR", {
-
                     month: "long",
                     year: "numeric"
-
                 })
 
             );
 
             $("#calendarGrid").html("");
 
-            let firstDay = new Date(
-                currentMonth.getFullYear(),
-                currentMonth.getMonth(),
-                1
-            );
+            let year = currentMonth.getFullYear();
 
-            let lastDay = new Date(
-                currentMonth.getFullYear(),
-                currentMonth.getMonth() + 1,
-                0
-            );
+            let month = currentMonth.getMonth();
 
-            for (let i = 0; i < firstDay.getDay(); i++)
-                $("#calendarGrid").append("<div></div>");
+            let firstDay = new Date(year, month, 1);
 
-            for (let d = 1; d <= lastDay.getDate(); d++) {
+            let lastDay = new Date(year, month + 1, 0);
+
+            let startDay = firstDay.getDay();
+
+            if (startDay === 0) {
+                startDay = 7;
+            }
+
+            startDay--;
+
+            for (let i = 0; i < startDay; i++) {
+
+                $("#calendarGrid").append(
+                    `<div class="empty-day"></div>`
+                );
+
+            }
+
+            for (let day = 1; day <= lastDay.getDate(); day++) {
 
                 let date =
-                    currentMonth.getFullYear() + "-" +
-                    String(currentMonth.getMonth() + 1).padStart(2, '0') + "-" +
-                    String(d).padStart(2, '0');
+                    year + "-" +
+                    String(month + 1).padStart(2, "0") + "-" +
+                    String(day).padStart(2, "0");
 
-                let div = $("<div class='day'>" + d + "</div>");
+                let dayDiv = $(`
+                    <div class="day">
+                        ${day}
+                    </div>
+                `);
 
-                if (date == selectedDate)
-                    div.addClass("selected");
+                if (date === selectedDate) {
+                    dayDiv.addClass("selected");
+                }
 
-                div.click(function () {
+                dayDiv.on("click", function () {
 
                     $(".day").removeClass("selected");
 
@@ -459,35 +699,34 @@
 
                 });
 
-                $("#calendarGrid").append(div);
+                $("#calendarGrid").append(dayDiv);
 
             }
-
-            loadReminders(selectedDate);
-
         }
 
+        $("#prevMonth").on("click", function () {
 
-        $("#prevMonth").click(() => {
-
-            currentMonth.setMonth(currentMonth.getMonth() - 1);
-
-            renderCalendar();
-
-        });
-
-
-        $("#nextMonth").click(() => {
-
-            currentMonth.setMonth(currentMonth.getMonth() + 1);
+            currentMonth.setMonth(
+                currentMonth.getMonth() - 1
+            );
 
             renderCalendar();
 
         });
 
+        $("#nextMonth").on("click", function () {
 
+            currentMonth.setMonth(
+                currentMonth.getMonth() + 1
+            );
 
-        $("#addReminderForm").submit(function (e) {
+            renderCalendar();
+
+        });
+
+        // CREATE LEMBRETE
+
+        $("#addReminderForm").on("submit", function (e) {
 
             e.preventDefault();
 
@@ -503,9 +742,14 @@
 
                     Descricao: $("#descricao").val(),
 
-                    DataHora: selectedDate + "T" + $("#dataHora").val(),
+                    DataHora:
+                        selectedDate + "T" + $("#dataHora").val(),
 
-                    MedicamentoId: $("#MedicamentoId").val() || null
+                    MedicamentoId:
+                        $("#MedicamentoId").val() || null,
+
+                    PessoaId:
+                        $("#selectPessoa").val() || null
 
                 })
 
@@ -517,14 +761,16 @@
 
                         showToast("Criado com sucesso");
 
-                        this.reset();
+                        $("#addReminderForm")[0].reset();
 
                         loadReminders(selectedDate);
 
-                    }
-                    else {
+                    } else {
 
-                        showToast("Erro ao criar", true);
+                        showToast(
+                            res.error || "Erro ao criar",
+                            true
+                        );
 
                     }
 
@@ -532,68 +778,51 @@
 
         });
 
-
         renderCalendar();
+
+        loadReminders(selectedDate);
 
     });
 
-    function dispararNotificacao(descricao) {
+    $("#btnExportar").on("click", function () {
 
-        if (!window.lembretesDisparados)
-            window.lembretesDisparados = {};
+        let hoje = new Date().toISOString().split("T")[0];
 
-        if (window.lembretesDisparados[descricao])
-            return;
+        $("#exportDataInicio").val(hoje);
 
-        window.lembretesDisparados[descricao] = true;
+        $("#exportDataFim").val(hoje);
 
-        let audio = document.getElementById("notificationSound");
+        $("#modalExportar").addClass("show");
 
-        if (audio) {
+    });
 
-            audio.currentTime = 0;
+    $("#cancelExportModal").on("click", function () {
 
-            audio.play().catch(() => { });
+        $("#modalExportar").removeClass("show");
 
-        }
+    });
 
-        showToast("🔔 Lembrete: " + descricao);
+    $("#confirmExportModal").on("click", function () {
 
-        if ("Notification" in window && Notification.permission === "granted") {
+        let pessoaId = $("#selectPessoa").val();
 
-            new Notification("🔔 Lembrete", {
-                body: descricao,
-                icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
-            });
+        let dataInicio = $("#exportDataInicio").val();
 
-        }
+        let dataFim = $("#exportDataFim").val();
 
-    }
+        let formato = $("#exportFormato").val();
 
-    function verificarLembretes() {
+        let url =
+            "/Lembrete/Exportar?" +
+            "pessoaId=" + encodeURIComponent(pessoaId || "") +
+            "&dataInicio=" + encodeURIComponent(dataInicio) +
+            "&dataFim=" + encodeURIComponent(dataFim) +
+            "&formato=" + encodeURIComponent(formato);
 
-        let agora = new Date();
+        window.location.href = url;
 
-        document.querySelectorAll(".lembrete-item")
-            .forEach(item => {
+        $("#modalExportar").removeClass("show");
 
-                let dataStr = item.dataset.datetime;
+    });
 
-                if (!dataStr) return;
-
-                let data = new Date(dataStr);
-
-                let diff = Math.abs(agora.getTime() - data.getTime());
-
-                if (diff <= 1000) {
-
-                    dispararNotificacao(item.dataset.descricao);
-
-                }
-
-            });
-
-    }
-
-    setInterval(verificarLembretes, 1000);
 </script>

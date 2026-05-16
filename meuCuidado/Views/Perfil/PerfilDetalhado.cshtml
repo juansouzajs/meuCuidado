@@ -1,4 +1,5 @@
 ﻿@model meuCuidado.Dominio.ViewModels.PerfilDetalhadoViewModel
+@using System.Linq
 @{
     ViewBag.Title = "Perfil Detalhado";
     Layout = null;
@@ -20,8 +21,13 @@
     <!-- HEADER -->
     <div class="perfil-header">
         <div class="perfil-avatar-wrapper">
-            <img src="https://i.pinimg.com/564x/ac/0f/41/ac0f419e977af681516e00829c5393ee.jpg"
-                 class="perfil-avatar" />
+            @{
+                var foto = string.IsNullOrEmpty(Model.FotoUrl)
+                    ? "/ImagensPerfil/default.jpg"
+                    : Model.FotoUrl;
+            }
+
+            <img src="@foto" class="perfil-avatar" />
         </div>
 
         <h2 class="perfil-nome">
@@ -40,7 +46,7 @@
                 <a href="@Url.Action("SolicitarConexao", "Relacionamento", new {
             identificador = Model.CuidadorDeIdoso?.IdentificadorUnico
             ?? Model.Fisioterapeuta?.IdentificadorUnico
-        })"
+            })"
                    class="btn-primary-soft">
                     Solicitar conexão
                 </a>
@@ -65,36 +71,139 @@
             }
 
         </div>
+        @if (temConexao)
+        {
+            var telefone =
+                Model.CuidadorDeIdoso?.Telefone
+                ?? Model.Fisioterapeuta?.Telefone
+                ?? Model.Idoso?.Telefone
+                ?? Model.Tutor?.Telefone;
+
+            if (!string.IsNullOrEmpty(telefone))
+            {
+                var telefoneLimpo = new string(telefone.Where(char.IsDigit).ToArray());
+                var linkWhatsapp = $"https://wa.me/55{telefoneLimpo}";
+
+                <div class="card-soft contato-box">
+                    <h3>Contato</h3>
+
+                    <p>
+                        <strong>Telefone:</strong> @telefone
+                    </p>
+
+                    <a href="@linkWhatsapp" target="_blank" class="btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i> Conversar no WhatsApp
+                    </a>
+                </div>
+            }
+        }
     </div>
 
     <!-- CONTEÚDO -->
     <div class="perfil-grid">
+        @if (Model.Tutor != null || Model.Idoso != null)
+        {
+            var temNecessidades =
+                Model.Tutor?.NecessidadesEspeciais
+                ?? Model.Idoso?.NecessidadesEspeciais
+                ?? false;
+
+            var descricao =
+                Model.Tutor?.DescricaoNecessidadesEspeciais
+                ?? Model.Idoso?.DescricaoNecessidadesEspeciais
+                ?? "";
+
+            <div class="card-soft">
+                <h3>Necessidades Especiais</h3>
+
+                <p>
+                    <strong>Possui:</strong> @(temNecessidades ? "Sim" : "Não")
+                </p>
+
+                @if (temNecessidades && !string.IsNullOrEmpty(descricao))
+                {
+                    <p>
+                        <strong>Descrição:</strong><br />
+                        @descricao
+                    </p>
+                }
+            </div>
+        }
 
         @if (Model.TipoUsuario == "Tutor" || Model.TipoUsuario == "Idoso")
         {
             <!-- CURRÍCULO -->
             <div class="card-soft">
+
                 <h3>Currículo</h3>
 
                 <div class="secao">
+
+                    <h4>
+                        Anos de experiência:
+                        @Model.Curriculo.AnosExperiencia
+                    </h4>
+
+                    @if (!string.IsNullOrEmpty(Model.Curriculo.EscolaridadeNivel))
+                    {
+                        <div class="escolaridade-box">
+
+                            <h4>Escolaridade</h4>
+
+                            <p>
+                                <strong>Nível:</strong>
+                                @Model.Curriculo.EscolaridadeNivel
+                            </p>
+
+                            @if (!string.IsNullOrEmpty(Model.Curriculo.EscolaridadeNome))
+                            {
+                                <p>
+                                    <strong>Formação:</strong>
+                                    @Model.Curriculo.EscolaridadeNome
+                                </p>
+                            }
+
+                        </div>
+                    }
+
                     <h4>Cursos</h4>
-                    <ul>
-                        @foreach (var curso in Model.Curriculo.Cursos)
-                        {
-                            <li>@curso</li>
-                        }
-                    </ul>
+
+                    @if (Model.Curriculo.Cursos.Any())
+                    {
+                        <ul>
+                            @foreach (var curso in Model.Curriculo.Cursos)
+                            {
+                                <li>@curso</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>Nenhum curso cadastrado</p>
+                    }
+
                 </div>
 
                 <div class="secao">
+
                     <h4>Experiências</h4>
-                    <ul>
-                        @foreach (var experiencia in Model.Curriculo.Experiencias)
-                        {
-                            <li>@experiencia</li>
-                        }
-                    </ul>
+
+                    @if (Model.Curriculo.Experiencias.Any())
+                    {
+                        <ul>
+                            @foreach (var experiencia in Model.Curriculo.Experiencias)
+                            {
+                                <li>@experiencia</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>Nenhuma experiência cadastrada</p>
+                    }
+
                 </div>
+
             </div>
 
             <!-- AVALIAÇÃO -->
@@ -160,13 +269,56 @@
         }
 
         <!-- REDES -->
+        @{
+            var redes = Model.Curriculo?.RedesSociais ?? new List<string>();
+
+            var facebook = redes.FirstOrDefault(x => x.ToLower().Contains("facebook"));
+            var instagram = redes.FirstOrDefault(x => x.ToLower().Contains("instagram"));
+            var linkedin = redes.FirstOrDefault(x => x.ToLower().Contains("linkedin"));
+            var youtube = redes.FirstOrDefault(x => x.ToLower().Contains("youtube"));
+        }
+
         <div class="card-soft redes">
             <h3>Redes Sociais</h3>
 
             <div class="redes-lista">
-                <a href="#" class="rede facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="rede instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="rede youtube"><i class="fab fa-youtube"></i></a>
+
+                @if (!string.IsNullOrEmpty(facebook))
+                {
+                    <a href="@facebook" target="_blank" class="rede facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                }
+
+                @if (!string.IsNullOrEmpty(instagram))
+                {
+                    <a href="@instagram" target="_blank" class="rede instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                }
+
+                @if (!string.IsNullOrEmpty(linkedin))
+                {
+                    <a href="@linkedin" target="_blank" class="rede linkedin">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                }
+
+                @if (!string.IsNullOrEmpty(youtube))
+                {
+                    <a href="@youtube" target="_blank" class="rede youtube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                }
+
+                @if (!string.IsNullOrEmpty(facebook) == false &&
+                     !string.IsNullOrEmpty(instagram) == false &&
+                     !string.IsNullOrEmpty(linkedin) == false &&
+                     !string.IsNullOrEmpty(youtube) == false)
+                {
+                    <p style="color:#888;">Nenhuma rede cadastrada</p>
+                }
+
             </div>
         </div>
 
@@ -352,6 +504,28 @@
 }
 
 <style>
+    .escolaridade-box {
+        background: #f5f9f8;
+        border-radius: 12px;
+        padding: 14px;
+        margin: 15px 0;
+        border-left: 4px solid #4db6ac;
+    }
+
+        .escolaridade-box h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #2f6f68;
+        }
+
+        .escolaridade-box p {
+            margin: 6px 0;
+            color: #444;
+        }
+
+    .linkedin {
+        background: #0077b5;
+    }
 
     .toast-custom {
         position: fixed;
@@ -731,4 +905,28 @@
         width: 100%;
         margin-top: 10px;
     }
+
+    .contato-box {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .btn-whatsapp {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        padding: 10px 16px;
+        background: #25D366;
+        color: white;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+        .btn-whatsapp:hover {
+            background: #1ebe5d;
+            transform: translateY(-2px);
+        }
 </style>
