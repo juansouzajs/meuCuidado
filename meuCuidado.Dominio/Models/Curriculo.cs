@@ -9,19 +9,33 @@ namespace meuCuidado.Dominio.Models
     public class Curriculo
     {
         public int Id { get; set; }
+
         public Guid IdentificadorUnico { get; set; }
+
         public string Nome { get; set; }
 
         public int AnosExperiencia { get; set; }
-        public string Escolaridade { get; set; }
 
+        // ESCOLARIDADE
+        public string EscolaridadeNivel { get; set; }
+
+        public string EscolaridadeNome { get; set; }
+
+        // JSONS
         public string CursosJson { get; set; }
+
         public string ExperienciasJson { get; set; }
+
         public string RedesSociaisJson { get; set; }
 
+        // AVALIAÇÕES
         public double AvaliacaoMedia { get; set; }
+
         public int NumeroAvaliacoes { get; set; }
+
+        // USUÁRIO
         public TipoUsuario TipoUsuario { get; set; }
+
         public int UsuarioId { get; set; }
 
         [NotMapped]
@@ -31,7 +45,8 @@ namespace meuCuidado.Dominio.Models
                 ? new List<string>()
                 : JsonConvert.DeserializeObject<List<string>>(CursosJson);
 
-            set => CursosJson = JsonConvert.SerializeObject(value ?? new List<string>());
+            set => CursosJson =
+                JsonConvert.SerializeObject(value ?? new List<string>());
         }
 
         [NotMapped]
@@ -41,7 +56,8 @@ namespace meuCuidado.Dominio.Models
                 ? new List<string>()
                 : JsonConvert.DeserializeObject<List<string>>(ExperienciasJson);
 
-            set => ExperienciasJson = JsonConvert.SerializeObject(value ?? new List<string>());
+            set => ExperienciasJson =
+                JsonConvert.SerializeObject(value ?? new List<string>());
         }
 
         [NotMapped]
@@ -51,7 +67,8 @@ namespace meuCuidado.Dominio.Models
                 ? new List<string>()
                 : JsonConvert.DeserializeObject<List<string>>(RedesSociaisJson);
 
-            set => RedesSociaisJson = JsonConvert.SerializeObject(value ?? new List<string>());
+            set => RedesSociaisJson =
+                JsonConvert.SerializeObject(value ?? new List<string>());
         }
     }
 }

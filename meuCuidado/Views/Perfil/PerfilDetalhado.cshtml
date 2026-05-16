@@ -134,10 +134,37 @@
         {
             <!-- CURRÍCULO -->
             <div class="card-soft">
+
                 <h3>Currículo</h3>
 
                 <div class="secao">
-                    <h4>Anos de experiência: @Model.Curriculo.AnosExperiencia</h4>
+
+                    <h4>
+                        Anos de experiência:
+                        @Model.Curriculo.AnosExperiencia
+                    </h4>
+
+                    @if (!string.IsNullOrEmpty(Model.Curriculo.EscolaridadeNivel))
+                    {
+                        <div class="escolaridade-box">
+
+                            <h4>Escolaridade</h4>
+
+                            <p>
+                                <strong>Nível:</strong>
+                                @Model.Curriculo.EscolaridadeNivel
+                            </p>
+
+                            @if (!string.IsNullOrEmpty(Model.Curriculo.EscolaridadeNome))
+                            {
+                                <p>
+                                    <strong>Formação:</strong>
+                                    @Model.Curriculo.EscolaridadeNome
+                                </p>
+                            }
+
+                        </div>
+                    }
 
                     <h4>Cursos</h4>
 
@@ -154,9 +181,11 @@
                     {
                         <p>Nenhum curso cadastrado</p>
                     }
+
                 </div>
 
                 <div class="secao">
+
                     <h4>Experiências</h4>
 
                     @if (Model.Curriculo.Experiencias.Any())
@@ -172,7 +201,9 @@
                     {
                         <p>Nenhuma experiência cadastrada</p>
                     }
+
                 </div>
+
             </div>
 
             <!-- AVALIAÇÃO -->
@@ -473,6 +504,24 @@
 }
 
 <style>
+    .escolaridade-box {
+        background: #f5f9f8;
+        border-radius: 12px;
+        padding: 14px;
+        margin: 15px 0;
+        border-left: 4px solid #4db6ac;
+    }
+
+        .escolaridade-box h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #2f6f68;
+        }
+
+        .escolaridade-box p {
+            margin: 6px 0;
+            color: #444;
+        }
 
     .linkedin {
         background: #0077b5;

@@ -1,16 +1,26 @@
 ﻿@model meuCuidado.Dominio.Models.Curriculo
+
 @{
     Layout = null;
 
     var redes = Model?.RedesSociais ?? new List<string>();
 
-    var facebook = redes.FirstOrDefault(x => x.ToLower().Contains("facebook")) ?? "";
-    var instagram = redes.FirstOrDefault(x => x.ToLower().Contains("instagram")) ?? "";
-    var linkedin = redes.FirstOrDefault(x => x.ToLower().Contains("linkedin")) ?? "";
-    var youtube = redes.FirstOrDefault(x => x.ToLower().Contains("youtube")) ?? "";
+    var facebook =
+        redes.FirstOrDefault(x => x.ToLower().Contains("facebook")) ?? "";
+
+    var instagram =
+        redes.FirstOrDefault(x => x.ToLower().Contains("instagram")) ?? "";
+
+    var linkedin =
+        redes.FirstOrDefault(x => x.ToLower().Contains("linkedin")) ?? "";
+
+    var youtube =
+        redes.FirstOrDefault(x => x.ToLower().Contains("youtube")) ?? "";
 }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <div class="page">
@@ -19,10 +29,16 @@
 
         <!-- HEADER -->
         <div class="header">
-            <button class="btn-back" onclick="window.history.back()">
+
+            <button class="btn-back"
+                    onclick="window.history.back()">
+
                 <i class="fas fa-arrow-left"></i>
+
             </button>
+
             <h2>Editar Currículo</h2>
+
         </div>
 
         <!-- CARD -->
@@ -32,79 +48,176 @@
 
                 <!-- EXPERIÊNCIA -->
                 <div class="section">
-                    <h3><i class="fas fa-briefcase"></i> Experiência</h3>
+
+                    <h3>
+                        <i class="fas fa-briefcase"></i>
+                        Experiência
+                    </h3>
 
                     <div class="input-group">
+
                         <label>Anos de experiência</label>
-                        <input type="number" name="AnosExperiencia"
+
+                        <input type="number"
+                               name="AnosExperiencia"
                                value="@(Model?.AnosExperiencia ?? 0)" />
+
                     </div>
 
                     <div id="expContainer" class="list"></div>
 
-                    <button type="button" class="btn-add" onclick="addExp()">
-                        <i class="fas fa-plus"></i> Adicionar experiência
+                    <button type="button"
+                            class="btn-add"
+                            onclick="addExp()">
+
+                        <i class="fas fa-plus"></i>
+                        Adicionar experiência
+
                     </button>
+
                 </div>
 
                 <!-- FORMAÇÃO -->
                 <div class="section">
-                    <h3><i class="fas fa-graduation-cap"></i> Formação</h3>
 
-                    <div class="input-group">
-                        <label>Escolaridade</label>
-                        <input type="text" name="Escolaridade"
-                               placeholder="Ex: Ensino médio completo"
-                               value="@(Model?.Escolaridade ?? "")" />
+                    <h3>
+                        <i class="fas fa-graduation-cap"></i>
+                        Formação
+                    </h3>
+
+                    <div class="formacao-box">
+
+                        <div class="input-group">
+
+                            <label>Nível de escolaridade</label>
+
+                            <select name="EscolaridadeNivel">
+
+                                <option value="">
+                                    Selecione
+                                </option>
+
+                                <option value="Outro"
+                                        @(Model?.EscolaridadeNivel == "Outro" ? "selected" : "")>
+
+                                    Outro
+
+                                </option>
+
+                                <option value="Ensino Técnico"
+                                        @(Model?.EscolaridadeNivel == "Ensino Técnico" ? "selected" : "")>
+
+                                    Ensino Técnico
+
+                                </option>
+
+                                <option value="Ensino Superior"
+                                        @(Model?.EscolaridadeNivel == "Ensino Superior" ? "selected" : "")>
+
+                                    Ensino Superior
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="input-group">
+
+                            <label>
+                                Nome da formação
+                            </label>
+
+                            <input type="text"
+                                   name="EscolaridadeNome"
+                                   placeholder="Ex: Técnico em enfermagem"
+                                   value="@(Model?.EscolaridadeNome ?? "")" />
+
+                        </div>
+
                     </div>
+
+                    <hr class="divider" />
+
+                    <h4 class="sub-title">
+                        Cursos adicionais
+                    </h4>
 
                     <div id="cursosContainer" class="list"></div>
 
-                    <button type="button" class="btn-add" onclick="addCurso()">
-                        <i class="fas fa-plus"></i> Adicionar curso
+                    <button type="button"
+                            class="btn-add"
+                            onclick="addCurso()">
+
+                        <i class="fas fa-plus"></i>
+                        Adicionar curso
+
                     </button>
+
                 </div>
 
                 <!-- REDES -->
                 <div class="section">
-                    <h3><i class="fas fa-share-alt"></i> Redes sociais</h3>
+
+                    <h3>
+                        <i class="fas fa-share-alt"></i>
+                        Redes sociais
+                    </h3>
 
                     <div class="social-grid">
 
                         <div class="social-input">
+
                             <i class="fab fa-facebook"></i>
+
                             <input name="Facebook"
                                    value="@facebook"
                                    placeholder="https://facebook.com/seu.usuario">
+
                         </div>
 
                         <div class="social-input">
+
                             <i class="fab fa-instagram"></i>
+
                             <input name="Instagram"
                                    value="@instagram"
                                    placeholder="https://instagram.com/seu.usuario">
+
                         </div>
 
                         <div class="social-input">
+
                             <i class="fab fa-linkedin"></i>
+
                             <input name="Linkedin"
                                    value="@linkedin"
                                    placeholder="https://linkedin.com/in/seu.usuario">
+
                         </div>
 
                         <div class="social-input">
+
                             <i class="fab fa-youtube"></i>
+
                             <input name="Youtube"
                                    value="@youtube"
                                    placeholder="https://youtube.com/seucanal">
+
                         </div>
 
                     </div>
+
                 </div>
 
                 <!-- BOTÃO -->
-                <button type="button" class="btn-save" onclick="salvarCurriculo()">
-                    <i class="fas fa-save"></i> Salvar currículo
+                <button type="button"
+                        class="btn-save"
+                        onclick="salvarCurriculo()">
+
+                    <i class="fas fa-save"></i>
+                    Salvar currículo
+
                 </button>
 
             </form>
@@ -118,67 +231,114 @@
 <script>
 
     function addCurso(valor = "") {
+
         $("#cursosContainer").append(`
-        <div class="list-item fade-in">
-            <input type="text" name="Cursos" value="${valor}" placeholder="Ex: Curso de primeiros socorros">
-            <button type="button" onclick="$(this).parent().remove()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `);
+            <div class="list-item fade-in">
+
+                <input type="text"
+                       name="Cursos"
+                       value="${valor}"
+                       placeholder="Ex: Curso de primeiros socorros">
+
+                <button type="button"
+                        onclick="$(this).parent().remove()">
+
+                    <i class="fas fa-times"></i>
+
+                </button>
+
+            </div>
+        `);
     }
 
     function addExp(valor = "") {
+
         $("#expContainer").append(`
-        <div class="list-item fade-in">
-            <input type="text" name="Experiencias" value="${valor}" placeholder="Ex: Cuidador de idoso por 2 anos">
-            <button type="button" onclick="$(this).parent().remove()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `);
+            <div class="list-item fade-in">
+
+                <input type="text"
+                       name="Experiencias"
+                       value="${valor}"
+                       placeholder="Ex: Cuidador de idosos por 2 anos">
+
+                <button type="button"
+                        onclick="$(this).parent().remove()">
+
+                    <i class="fas fa-times"></i>
+
+                </button>
+
+            </div>
+        `);
     }
 
     function salvarCurriculo() {
 
-        var data = $("#formCurriculo").serialize();
+        var data =
+            $("#formCurriculo").serialize();
 
         $.ajax({
+
             url: '/Curriculo/SalvarCurriculo',
+
             type: 'POST',
+
             data: data,
 
             success: function (res) {
+
                 if (res.success) {
+
                     alert("Salvo com sucesso!");
+
                     window.history.back();
+
                 } else {
+
                     alert(res.erro);
                 }
             },
 
             error: function (xhr) {
+
                 console.log(xhr.responseText);
+
                 alert("Erro ao salvar.");
             }
         });
     }
 
-    // 🔥 CARREGA DADOS DO BACK
     $(document).ready(function () {
 
-        var cursos = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model?.Cursos ?? new List<string>()));
-        var experiencias = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model?.Experiencias ?? new List<string>()));
+        var cursos =
+            @Html.Raw(
+                Newtonsoft.Json.JsonConvert.SerializeObject(
+                    Model?.Cursos ?? new List<string>()
+                )
+            );
+
+        var experiencias =
+            @Html.Raw(
+                Newtonsoft.Json.JsonConvert.SerializeObject(
+                    Model?.Experiencias ?? new List<string>()
+                )
+            );
 
         if (cursos.length > 0) {
+
             cursos.forEach(c => addCurso(c));
+
         } else {
+
             addCurso();
         }
 
         if (experiencias.length > 0) {
+
             experiencias.forEach(e => addExp(e));
+
         } else {
+
             addExp();
         }
     });
@@ -242,12 +402,29 @@
             gap: 8px;
         }
 
-    .input-group input {
-        width: 100%;
-        padding: 12px;
-        border-radius: 12px;
-        border: 1px solid #cfe3df;
+    .sub-title {
+        margin-bottom: 15px;
+        color: #2f6f68;
     }
+
+    .divider {
+        margin: 25px 0;
+        border: none;
+        border-top: 1px solid #e3efec;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+    }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #cfe3df;
+            box-sizing: border-box;
+        }
 
     .list-item {
         display: flex;
@@ -322,6 +499,7 @@
     }
 
     @@keyframes fadeIn {
+
         from {
             opacity: 0;
             transform: translateY(5px);

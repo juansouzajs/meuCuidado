@@ -254,6 +254,10 @@
     <Compile Include="Migrations\202605151638512_lembretes1.Designer.cs">
       <DependentUpon>202605151638512_lembretes1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202605161752332_escolaridade.cs" />
+    <Compile Include="Migrations\202605161752332_escolaridade.Designer.cs">
+      <DependentUpon>202605161752332_escolaridade.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -416,6 +420,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202605151638512_lembretes1.resx">
       <DependentUpon>202605151638512_lembretes1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605161752332_escolaridade.resx">
+      <DependentUpon>202605161752332_escolaridade.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
