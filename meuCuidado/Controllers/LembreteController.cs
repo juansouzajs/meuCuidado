@@ -159,21 +159,65 @@ namespace meuCuidado.Controllers
                     });
                 }
 
-                if (lembrete.PessoaId == null)
-                {
-                    var pessoas = _context.Pessoas.ToList();
+                int quantidadeDias = 1;
 
-                    foreach (var pessoa in pessoas)
+                if (lembrete.MedicamentoId.HasValue)
+                {
+                    var medicamento = _context.Medicamentos
+                        .FirstOrDefault(m =>
+                            m.Id == lembrete.MedicamentoId.Value);
+
+                    if (medicamento != null &&
+                        medicamento.DuracaoEmDias > 0)
+                    {
+                        quantidadeDias = medicamento.DuracaoEmDias;
+                    }
+                }
+
+                for (int i = 0; i < quantidadeDias; i++)
+                {
+                    var dataLembrete =
+                        lembrete.DataHora.AddDays(i);
+
+                    if (lembrete.PessoaId == null)
+                    {
+                        var pessoas = _context.Pessoas.ToList();
+
+                        foreach (var pessoa in pessoas)
+                        {
+                            var novo = new Lembrete
+                            {
+                                IdentificadorUnico = Guid.NewGuid(),
+
+                                PessoaId = pessoa.Id,
+
+                                Descricao = lembrete.Descricao,
+
+                                DataHora = dataLembrete,
+
+                                MedicamentoId = lembrete.MedicamentoId,
+
+                                Repete = lembrete.Repete,
+
+                                UsuarioId = UsuarioIdLogado,
+
+                                TipoUsuario = TipoUsuarioLogado
+                            };
+
+                            _context.Lembretes.Add(novo);
+                        }
+                    }
+                    else
                     {
                         var novo = new Lembrete
                         {
                             IdentificadorUnico = Guid.NewGuid(),
 
-                            PessoaId = pessoa.Id,
+                            PessoaId = lembrete.PessoaId,
 
                             Descricao = lembrete.Descricao,
 
-                            DataHora = lembrete.DataHora,
+                            DataHora = dataLembrete,
 
                             MedicamentoId = lembrete.MedicamentoId,
 
@@ -186,16 +230,6 @@ namespace meuCuidado.Controllers
 
                         _context.Lembretes.Add(novo);
                     }
-                }
-                else
-                {
-                    lembrete.IdentificadorUnico = Guid.NewGuid();
-
-                    lembrete.UsuarioId = UsuarioIdLogado;
-
-                    lembrete.TipoUsuario = TipoUsuarioLogado;
-
-                    _context.Lembretes.Add(lembrete);
                 }
 
                 _context.SaveChanges();
