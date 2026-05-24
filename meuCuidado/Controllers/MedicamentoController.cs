@@ -26,7 +26,8 @@ namespace meuCuidado.Controllers
                 medicamento.IdentificadorUnico = Guid.NewGuid();
                 _context.Medicamentos.Add(medicamento);
                 _context.SaveChanges();
-                return RedirectToAction("Lembrete", "Lembrete");
+
+                return RedirectToAction("Dashboard", "Dashboard");
             }
 
             return View(medicamento);
