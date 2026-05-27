@@ -498,7 +498,10 @@
 {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            mostrarToast("@TempData["ToastTipo"]", "@TempData["ToastMensagem"]");
+            mostrarToast(
+                @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(TempData["ToastTipo"])),
+                @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(TempData["ToastMensagem"]))
+            );
         });
     </script>
 }

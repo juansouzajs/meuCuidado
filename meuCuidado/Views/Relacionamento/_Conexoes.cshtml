@@ -215,7 +215,7 @@
             .then(r => r.json())
             .then(res => {
                 if (res.success) {
-                    carregarConexoes();
+                    window.location.href = '/Dashboard/Dashboard';
                 } else {
                     alert(res.message);
                     btn.disabled = false;
@@ -237,7 +237,7 @@
             .then(r => r.json())
             .then(res => {
                 if (res.success) {
-                    carregarConexoes();
+                    window.location.href = '/Dashboard/Dashboard';
                 } else {
                     alert(res.message);
                     btn.disabled = false;

@@ -40,21 +40,41 @@ namespace meuCuidado.Controllers
             if (fisio != null)
                 relacionamento.FisioterapeutaId = fisio.Id;
 
-            var jaExiste = _context.RelacionamentosIdosoProfissional.Any(r =>
-                (r.IdosoId == relacionamento.IdosoId || r.TutorId == relacionamento.TutorId) &&
-                (r.CuidadorId == relacionamento.CuidadorId || r.FisioterapeutaId == relacionamento.FisioterapeutaId)
-            );
+            bool jaExiste = false;
+
+            if (tipoUsuarioLogado == "Idoso")
+            {
+                jaExiste = _context.RelacionamentosIdosoProfissional.Any(r =>
+                    r.IdosoId == relacionamento.IdosoId &&
+                    (
+                        r.CuidadorId == relacionamento.CuidadorId ||
+                        r.FisioterapeutaId == relacionamento.FisioterapeutaId
+                    )
+                );
+            }
+            else if (tipoUsuarioLogado == "Tutor")
+            {
+                jaExiste = _context.RelacionamentosIdosoProfissional.Any(r =>
+                    r.TutorId == relacionamento.TutorId &&
+                    (
+                        r.CuidadorId == relacionamento.CuidadorId ||
+                        r.FisioterapeutaId == relacionamento.FisioterapeutaId
+                    )
+                );
+            }
 
             if (!jaExiste)
             {
                 _context.RelacionamentosIdosoProfissional.Add(relacionamento);
                 _context.SaveChanges();
 
-                TempData["Sucesso"] = "Solicitação de conexão enviada com sucesso!";
+                TempData["ToastTipo"] = "sucesso";
+                TempData["ToastMensagem"] = "Solicitação de conexão enviada com sucesso!";
             }
             else
             {
-                TempData["Sucesso"] = "Você já solicitou conexão com este profissional.";
+                TempData["ToastTipo"] = "info";
+                TempData["ToastMensagem"] = "Você já solicitou conexão com este profissional.";
             }
 
             return RedirectToAction("PerfilDetalhado", "Perfil", new { IdentificadorUnico = identificador });
@@ -97,10 +117,34 @@ namespace meuCuidado.Controllers
                     })
                     .ToList();
             }
-            else 
+            else if (tipoUsuarioLogado == "Cuidador")
             {
                 lista = query
-                    .Where(r => r.CuidadorId == idUsuarioLogado || r.FisioterapeutaId == idUsuarioLogado)
+                    .Where(r => r.CuidadorId == idUsuarioLogado)
+                    .Select(r => new ConexaoViewModel
+                    {
+                        Id = r.Id,
+
+                        Nome = r.Idoso != null
+                            ? r.Idoso.Nome
+                            : r.Tutor.Nome,
+
+                        Tipo = r.Idoso != null
+                            ? "Idoso"
+                            : "Tutor",
+
+                        IdentificadorUnico = r.Idoso != null
+                            ? r.Idoso.IdentificadorUnico
+                            : r.Tutor.IdentificadorUnico,
+
+                        EtapaAtivacao = r.EtapaAtivacao
+                    })
+                    .ToList();
+            }
+            else // Fisioterapeuta
+            {
+                lista = query
+                    .Where(r => r.FisioterapeutaId == idUsuarioLogado)
                     .Select(r => new ConexaoViewModel
                     {
                         Id = r.Id,
