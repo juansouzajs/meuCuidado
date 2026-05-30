@@ -260,7 +260,7 @@
         background: #f8d7da;
         transform: scale(1.15);
     }
-    
+
     .table-lembretes {
         width: 100%;
         border-collapse: collapse;
@@ -426,6 +426,127 @@
             transform: translateY(0);
         }
     }
+
+    /* RESPONSIVO */
+@@media (max-width: 768px) {
+
+    .table-lembretes {
+        box-shadow: none;
+        background: transparent;
+    }
+
+    .table-lembretes thead {
+        display: none;
+    }
+
+    .table-lembretes,
+    .table-lembretes tbody,
+    .table-lembretes tr,
+    .table-lembretes td {
+        display: block;
+        width: 100%;
+    }
+
+    .table-lembretes tr {
+        background: white;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        padding: 12px;
+        box-shadow: 0 3px 10px rgba(0,0,0,.06);
+        border: 1px solid #eef3f6;
+    }
+
+    .table-lembretes td {
+        border: none;
+        padding: 6px 0;
+    }
+
+    .col-descricao::before {
+        content: "Descrição";
+        display: block;
+        font-size: 12px;
+        color: #5a9fa8;
+        margin-bottom: 2px;
+    }
+
+    .col-hora::before {
+        content: "Hora";
+        display: block;
+        font-size: 12px;
+        color: #5a9fa8;
+        margin-bottom: 2px;
+    }
+
+    .col-medicamento::before {
+        content: "Medicamento";
+        display: block;
+        font-size: 12px;
+        color: #5a9fa8;
+        margin-bottom: 4px;
+    }
+
+    .col-acoes {
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+        padding-top: 10px !important;
+        border-top: 1px solid #eef3f6 !important;
+    }
+
+    .acoes-botoes {
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .btn-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+    }
+
+    .med-cell {
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .med-nome {
+        word-break: break-word;
+        flex: 1;
+    }
+
+    .modal-box {
+        width: calc(100% - 24px);
+        max-width: 400px;
+        padding: 18px;
+    }
+
+    .modal-item span {
+        display: block;
+        margin-top: 4px;
+        word-break: break-word;
+    }
+}
+
+/* CELULARES PEQUENOS */
+@@media (max-width: 480px) {
+
+    .table-lembretes tr {
+        padding: 10px;
+    }
+
+    .btn-icon {
+        width: 46px;
+        height: 46px;
+    }
+
+    .modal-box {
+        width: calc(100% - 16px);
+    }
+
+    .modal-title {
+        font-size: 15px;
+    }
+}
 </style>
 
 

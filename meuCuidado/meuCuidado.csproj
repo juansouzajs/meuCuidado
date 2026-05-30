@@ -288,6 +288,7 @@
     <Content Include="Imagens\facebook-logo.png" />
     <Content Include="Imagens\facebook-logo.svg" />
     <Content Include="Imagens\gmail-logo.png" />
+    <Content Include="Imagens\landing-page.jpg" />
     <Content Include="Imagens\linkedin-logo.png" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
@@ -319,7 +320,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Web.config" />
-    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Home\meuCuidado.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />

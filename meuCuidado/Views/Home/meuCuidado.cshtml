@@ -1,0 +1,553 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>meuCuidado</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f8fbff;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1300px;
+            margin: auto;
+            padding: 0 30px;
+        }
+
+        /* ==========================
+           NAVBAR
+        =========================== */
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: rgba(255,255,255,.95);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 2px 20px rgba(0,0,0,.06);
+            z-index: 9999;
+        }
+
+        .navbar-content {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 40px;
+            font-weight: 800;
+            color: #4db6ac;
+            text-decoration: none;
+        }
+
+        .menu {
+            display: flex;
+            align-items: center;
+            gap: 35px;
+        }
+
+            .menu a {
+                text-decoration: none;
+                color: #444;
+                font-weight: 600;
+                font-size: 17px;
+                transition: .2s;
+            }
+
+                .menu a:hover {
+                    color: #4db6ac;
+                }
+
+        .btn-login {
+            background: #4db6ac;
+            color: white !important;
+            padding: 12px 28px;
+            border-radius: 14px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            font-size: 26px;
+            cursor: pointer;
+        }
+
+        /* ==========================
+           HERO
+        =========================== */
+
+        .hero {
+            min-height: 100vh;
+            padding-top: 120px;
+            display: flex;
+            align-items: center;
+            background-image: linear-gradient( rgba(0,0,0,.55), rgba(0,0,0,.55)), url('/Imagens/landing-page.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .hero-content {
+            max-width: 720px;
+            color: white;
+        }
+
+            .hero-content h1 {
+                font-size: 72px;
+                line-height: 1.05;
+                margin-bottom: 25px;
+            }
+
+            .hero-content p {
+                font-size: 24px;
+                line-height: 1.7;
+                margin-bottom: 35px;
+            }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: #4db6ac;
+            color: white;
+            padding: 16px 30px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: .2s;
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+            }
+
+        .btn-secondary {
+            background: rgba(255,255,255,.15);
+            border: 1px solid rgba(255,255,255,.3);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 16px 30px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* ==========================
+           SEÇÕES
+        =========================== */
+
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+            .section-title h2 {
+                font-size: 48px;
+                color: #2f6f68;
+                margin-bottom: 10px;
+            }
+
+            .section-title p {
+                color: #777;
+                font-size: 18px;
+            }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 35px;
+            border-radius: 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.08);
+            text-align: center;
+            transition: .25s;
+        }
+
+            .card:hover {
+                transform: translateY(-8px);
+            }
+
+            .card i {
+                font-size: 50px;
+                color: #4db6ac;
+                margin-bottom: 20px;
+            }
+
+            .card h3 {
+                margin-bottom: 15px;
+                color: #2f6f68;
+            }
+
+        /* ==========================
+           PASSOS
+        =========================== */
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+            gap: 25px;
+        }
+
+        .step {
+            background: white;
+            padding: 35px;
+            border-radius: 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.08);
+        }
+
+        .step-number {
+            width: 55px;
+            height: 55px;
+            background: #4db6ac;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* ==========================
+           CTA
+        =========================== */
+
+        .cta {
+            background: linear-gradient( 135deg, #4db6ac, #67c9bf);
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+            .cta h2 {
+                font-size: 54px;
+                margin-bottom: 20px;
+            }
+
+            .cta p {
+                font-size: 22px;
+                margin-bottom: 35px;
+            }
+
+            .cta .btn-primary {
+                background: white;
+                color: #4db6ac;
+            }
+
+        /* ==========================
+           FOOTER
+        =========================== */
+
+        footer {
+            background: #233a38;
+            color: white;
+            text-align: center;
+            padding: 35px;
+        }
+
+        /* ==========================
+           MOBILE
+        =========================== */
+
+        @@media(max-width:900px) {
+
+            .hero {
+                padding-top: 110px;
+                text-align: center;
+            }
+
+            .hero-content {
+                margin: auto;
+            }
+
+                .hero-content h1 {
+                    font-size: 46px;
+                    line-height: 1.15;
+                }
+
+                .hero-content p {
+                    font-size: 19px;
+                }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .menu {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .logo {
+                font-size: 32px;
+            }
+        }
+
+        @@media(max-width:600px) {
+
+            .container {
+                padding: 0 20px;
+            }
+
+            .hero-content h1 {
+                font-size: 38px;
+            }
+
+            .hero-content p {
+                font-size: 17px;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                text-align: center;
+            }
+
+            .section-title h2 {
+                font-size: 34px;
+            }
+
+            .cta h2 {
+                font-size: 36px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <nav class="navbar">
+
+        <div class="container navbar-content">
+
+            <a href="#" class="logo">
+                meuCuidado
+            </a>
+
+            <div class="menu">
+
+                <a href="#servicos">
+                    Serviços
+                </a>
+
+                <a href="#como-funciona">
+                    Como funciona
+                </a>
+
+                <a href="/Cadastro/Cadastro">
+                    Criar Conta
+                </a>
+
+                <a href="/Login/Login"
+                   class="btn-login">
+                    Entrar
+                </a>
+
+            </div>
+
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+
+        </div>
+
+    </nav>
+
+    <section class="hero">
+
+        <div class="container">
+
+            <div class="hero-content">
+
+                <h1>
+                    Conectando famílias aos melhores profissionais de cuidado.
+                </h1>
+
+                <p>
+                    Encontre cuidadores de idosos,
+                    fisioterapeutas e profissionais
+                    qualificados para oferecer mais
+                    segurança, conforto e qualidade de vida.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a href="/Cadastro/Cadastro"
+                       class="btn-primary">
+                        Criar Conta
+                    </a>
+
+                    <a href="#como-funciona"
+                       class="btn-secondary">
+                        Saiba Mais
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section id="servicos" class="section">
+
+        <div class="container">
+
+            <div class="section-title">
+
+                <h2>O que você encontra</h2>
+
+                <p>
+                    Tudo em um só lugar
+                </p>
+
+            </div>
+
+            <div class="cards">
+
+                <div class="card">
+                    <i class="fas fa-user-nurse"></i>
+                    <h3>Cuidadores</h3>
+                    <p>
+                        Profissionais para auxiliar idosos
+                        em atividades diárias.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <i class="fas fa-heartbeat"></i>
+                    <h3>Fisioterapeutas</h3>
+                    <p>
+                        Especialistas para recuperação,
+                        mobilidade e qualidade de vida.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <i class="fas fa-link"></i>
+                    <h3>Conexões Seguras</h3>
+                    <p>
+                        Solicite conexão e converse apenas
+                        com profissionais verificados.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section id="como-funciona" class="section">
+
+        <div class="container">
+
+            <div class="section-title">
+
+                <h2>Como funciona</h2>
+
+            </div>
+
+            <div class="steps">
+
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Cadastre-se</h3>
+                    <p>
+                        Crie sua conta gratuitamente.
+                    </p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Encontre profissionais</h3>
+                    <p>
+                        Busque cuidadores e fisioterapeutas.
+                    </p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Conecte-se</h3>
+                    <p>
+                        Solicite conexão e entre em contato.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="cta">
+
+        <h2>
+            Comece hoje mesmo
+        </h2>
+
+        <p>
+            Encontre o cuidado ideal para quem você ama.
+        </p>
+
+        <a href="/Cadastro/Cadastro"
+           class="btn-primary">
+            Criar Conta Gratuitamente
+        </a>
+
+    </section>
+
+    <footer id="contato">
+
+        © @DateTime.Now.Year - MeuCuidado
+
+    </footer>
+
+</body>
+</html>

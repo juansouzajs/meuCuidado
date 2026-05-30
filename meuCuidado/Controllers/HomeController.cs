@@ -5,6 +5,11 @@ namespace meuCuidado.Controllers
 {
     public class HomeController : Controller
     {
+        public ActionResult MeuCuidado()
+        {
+            return View();
+        }
+
         public ActionResult Index()
         {
             return View();

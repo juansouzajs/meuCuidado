@@ -241,4 +241,66 @@
         box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         min-height: 300px;
     }
+
+    /* MOBILE */
+@@media (max-width: 768px) {
+
+    .dashboard-wrapper {
+        padding: 15px 10px;
+    }
+
+    .dashboard-header {
+        margin-bottom: 20px;
+    }
+
+    .dashboard-title {
+        font-size: 24px;
+    }
+
+    .dashboard-subtitle {
+        font-size: 13px;
+    }
+
+    /* Botões quebram linha */
+    .dashboard-actions {
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .btn-dashboard {
+        flex: 1 1 calc(50% - 10px);
+        min-width: 140px;
+        justify-content: center;
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .dashboard-content {
+        padding: 12px;
+        border-radius: 12px;
+        min-height: 250px;
+    }
+}
+
+/* CELULARES PEQUENOS */
+@@media (max-width: 480px) {
+
+    .dashboard-title {
+        font-size: 22px;
+    }
+
+    .dashboard-actions {
+        flex-direction: column;
+    }
+
+    .btn-dashboard {
+        width: 100%;
+        flex: unset;
+    }
+
+    .dashboard-content {
+        padding: 10px;
+    }
+}
 </style>

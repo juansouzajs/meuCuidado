@@ -472,6 +472,142 @@
         padding: 10px 16px;
         cursor: pointer;
     }
+
+    /* MOBILE */
+@@media (max-width: 768px) {
+
+    .cadastro-container {
+        padding: 10px;
+    }
+
+    .cadastro-card {
+        width: 100%;
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .cadastro-titulo {
+        font-size: 22px;
+        margin-bottom: 16px;
+    }
+
+    /* Barra superior */
+    .top-bar {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .top-bar .btn-padrao,
+    .top-bar .btn-add {
+        width: 100%;
+    }
+
+    .btn-add {
+        border-radius: 8px;
+        height: 45px;
+    }
+
+    /* Calendário */
+    .calendar-card {
+        padding: 12px;
+    }
+
+    .calendar-header {
+        gap: 10px;
+    }
+
+    #monthYear {
+        font-size: 16px;
+        text-align: center;
+        flex: 1;
+    }
+
+    .calendar-grid {
+        gap: 4px;
+    }
+
+    .day {
+        padding: 8px 4px;
+        font-size: 13px;
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-btn {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+    }
+
+    /* Formulário */
+    .form-area h3 {
+        font-size: 18px;
+    }
+
+    .acoes {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .acoes .btn-padrao,
+    .acoes .btn-link {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Inputs */
+    .input-padrao {
+        font-size: 16px; /* evita zoom automático no iPhone */
+    }
+
+    /* Modais */
+    .modal-card {
+        width: calc(100% - 24px);
+        max-width: 400px;
+        padding: 18px;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .modal-actions button {
+        width: 100%;
+    }
+
+    /* Toast */
+    .toast {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        text-align: center;
+    }
+}
+
+/* CELULARES MUITO PEQUENOS */
+@@media (max-width: 480px) {
+
+    .calendar-grid {
+        gap: 2px;
+    }
+
+    .day {
+        min-height: 36px;
+        font-size: 12px;
+        padding: 4px;
+    }
+
+    #monthYear {
+        font-size: 14px;
+    }
+
+    .cadastro-card {
+        padding: 12px;
+    }
+}
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
