@@ -79,73 +79,162 @@ namespace meuCuidado.Controllers
 
         public ActionResult CadastroTutorEMedicoDoIdoso()
         {
-            // Desserializa os dados do idoso
-            var idoso = JsonConvert.DeserializeObject<Idoso>(Session["Idoso"]?.ToString());
+            var json = Session["Idoso"]?.ToString();
 
-            if (idoso == null)
+            if (string.IsNullOrEmpty(json))
                 return RedirectToAction("Cadastro");
 
-            // Cria um ViewModel para o cadastro de Tutor e Médico
-            var viewModel = new CadastroTutorEMedicoDoIdosoViewModel
-            {
-                Idoso = idoso,
-                Tutor = new Tutor(),
-                Medicos = new List<Medico>() // Inicializa a lista de médicos
-            };
+            var idoso =
+                JsonConvert.DeserializeObject<Idoso>(json);
 
-            return View(viewModel);
+            var vm =
+                new CadastroTutorEMedicoDoIdosoViewModel
+                {
+                    Idoso = idoso,
+                    Tutor = new Tutor(),
+                    Medicos = new List<Medico>
+                    {
+                new Medico()
+                    }
+                };
+
+            return View(vm);
         }
 
         [HttpPost]
-        public ActionResult SalvarCadastroTutorEMedico(CadastroTutorEMedicoDoIdosoViewModel viewModel)
+        public ActionResult SalvarCadastroTutorEMedico(
+     CadastroTutorEMedicoDoIdosoViewModel viewModel)
         {
             try
             {
-                // Desserializa os dados do idoso
-                var idoso = JsonConvert.DeserializeObject<Idoso>(Session["Idoso"]?.ToString());
+                var jsonIdoso = Session["Idoso"]?.ToString();
 
-                if (idoso == null)
+                if (string.IsNullOrEmpty(jsonIdoso))
                     return RedirectToAction("Cadastro");
+
+                var idoso =
+                    JsonConvert.DeserializeObject<Idoso>(jsonIdoso);
 
                 viewModel.Idoso = idoso;
 
-                if (viewModel.Tutor != null)
+                // ==========================
+                // VALIDAÇÃO DO TUTOR
+                // ==========================
+
+                if (viewModel.Tutor == null ||
+                    string.IsNullOrWhiteSpace(viewModel.Tutor.Nome) ||
+                    string.IsNullOrWhiteSpace(viewModel.Tutor.Email) ||
+                    string.IsNullOrWhiteSpace(viewModel.Tutor.CPF) ||
+                    string.IsNullOrWhiteSpace(viewModel.Tutor.RelacaoComIdoso))
                 {
-                    var tutor = viewModel.Tutor;
-                    tutor.IdentificadorUnico = Guid.NewGuid();
-                    tutor.DataCadasto = DateTime.Now;
-                    tutor.Endereco = idoso.Endereco;
-                    tutor.Telefone = idoso.Telefone;
-                    _context.Tutores.Add(tutor);
-                    _context.SaveChanges();
-                    idoso.TutorId = tutor.Id;
+                    ModelState.AddModelError(
+                        "",
+                        "Preencha todos os dados do tutor.");
+
+                    return View(
+                        "CadastroTutorEMedicoDoIdoso",
+                        viewModel);
                 }
-                else
-                    throw new Exception("Os dados do Tutor não foram preenchidos.");
+
+                // ==========================
+                // VALIDAÇÃO DOS MÉDICOS
+                // ==========================
+
+                if (viewModel.Medicos == null ||
+                    !viewModel.Medicos.Any(x =>
+                        !string.IsNullOrWhiteSpace(x.Nome)))
+                {
+                    ModelState.AddModelError(
+                        "",
+                        "Informe pelo menos um médico de referência.");
+
+                    return View(
+                        "CadastroTutorEMedicoDoIdoso",
+                        viewModel);
+                }
+
+                // Remove médicos vazios
+                viewModel.Medicos = viewModel.Medicos
+                    .Where(x => !string.IsNullOrWhiteSpace(x.Nome))
+                    .ToList();
+
+                // ==========================
+                // SALVA TUTOR
+                // ==========================
+
+                var tutor = viewModel.Tutor;
+
+                tutor.IdentificadorUnico = Guid.NewGuid();
+                tutor.DataCadasto = DateTime.Now;
+
+                tutor.Endereco = idoso.Endereco;
+                tutor.Telefone = idoso.Telefone;
+
+                _context.Tutores.Add(tutor);
+                _context.SaveChanges();
+
+                idoso.TutorId = tutor.Id;
+
+                // ==========================
+                // SALVA IDOSO
+                // ==========================
 
                 _context.Idosos.Add(idoso);
                 _context.SaveChanges();
 
-                // Adiciona o médico (caso tenha sido inserido)
+                // ==========================
+                // SALVA MÉDICOS
+                // ==========================
 
                 foreach (var medico in viewModel.Medicos)
                 {
                     medico.IdosoId = idoso.Id;
-                    medico.IdentificadorUnico = Guid.NewGuid();
-                    medico.DataCadasto = DateTime.Now;
-                    medico.Endereco = idoso.Endereco;
-                    medico.Telefone = idoso.Telefone;
-                    medico.Email = idoso.Email.ToLower();
+
+                    medico.IdentificadorUnico =
+                        Guid.NewGuid();
+
+                    medico.DataCadasto =
+                        DateTime.Now;
+
+                    medico.Endereco =
+                        idoso.Endereco;
+
+                    medico.Telefone =
+                        idoso.Telefone;
+
+                    medico.Email =
+                        idoso.Email.ToLower();
+
                     _context.Medicos.Add(medico);
                 }
 
                 _context.SaveChanges();
 
-                return RedirectToAction("Login", "Login");
+                // Limpa a sessão
+                Session.Remove("Idoso");
+
+                return RedirectToAction(
+                    "Login",
+                    "Login");
             }
             catch (Exception ex)
             {
-                throw ex;
+                ModelState.AddModelError(
+                    "",
+                    "Ocorreu um erro ao finalizar o cadastro.");
+
+                var jsonIdoso = Session["Idoso"]?.ToString();
+
+                if (!string.IsNullOrEmpty(jsonIdoso))
+                {
+                    viewModel.Idoso =
+                        JsonConvert.DeserializeObject<Idoso>(
+                            jsonIdoso);
+                }
+
+                return View(
+                    "CadastroTutorEMedicoDoIdoso",
+                    viewModel);
             }
         }
 

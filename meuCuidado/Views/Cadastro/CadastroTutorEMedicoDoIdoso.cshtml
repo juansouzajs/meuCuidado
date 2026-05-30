@@ -1,185 +1,462 @@
 ﻿@model meuCuidado.Dominio.ViewModels.CadastroTutorEMedicoDoIdosoViewModel
 
 @{
-    ViewBag.Title = "Cadastro Tutor e Médico";
+    ViewBag.Title = "Tutor e Médicos de Referência";
 }
 
-<div class="container cadastro-container">
-    <h2>Informe o Tutor e Médico(s) de Referência</h2>
+<div class="cadastro-wrapper">
 
-    <!-- Dados do Idoso -->
-    <div class="dados-idoso">
-        <div class="form-group">
-            <label>Nome:</label>
-            <p class="form-control-static">@Model.Idoso.Nome</p>
+    <div class="cadastro-card">
+
+        <div class="header-card">
+
+            <h2>Tutor e Médicos de Referência</h2>
+
+            <p>
+                Precisamos dessas informações para garantir um atendimento
+                mais seguro ao idoso em situações de necessidade.
+            </p>
+
         </div>
 
-        <div class="form-group">
-            <label>E-mail:</label>
-            <p class="form-control-static">@Model.Idoso.Email</p>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert-erro">
+
+                @foreach (var erro in ViewData.ModelState.Values.SelectMany(x => x.Errors))
+                {
+                    <div>@erro.ErrorMessage</div>
+                }
+
+            </div>
+        }
+
+        <div class="idoso-box">
+
+            <h3>Dados do Idoso</h3>
+
+            <div class="idoso-grid">
+
+                <div class="form-group">
+                    <label>Nome</label>
+
+                    <input type="text"
+                           class="form-control readonly"
+                           value="@Model.Idoso.Nome"
+                           readonly />
+                </div>
+
+                <div class="form-group">
+                    <label>E-mail</label>
+
+                    <input type="text"
+                           class="form-control readonly"
+                           value="@Model.Idoso.Email"
+                           readonly />
+                </div>
+
+            </div>
+
         </div>
+
+        @using (Html.BeginForm(
+            "SalvarCadastroTutorEMedico",
+            "Cadastro",
+            FormMethod.Post))
+        {
+            <div class="section-divider"></div>
+
+            <h3 class="section-title">
+                Dados do Tutor
+            </h3>
+
+            <div class="form-group">
+                <label>Nome do Tutor *</label>
+
+                <input type="text"
+                       name="Tutor.Nome"
+                       value="@Model.Tutor.Nome"
+                       class="form-control"
+                       required />
+            </div>
+
+            <div class="form-group">
+                <label>E-mail do Tutor *</label>
+
+                <input type="email"
+                       name="Tutor.Email"
+                       value="@Model.Tutor.Email"
+                       class="form-control"
+                       required />
+            </div>
+
+            <div class="form-group">
+                <label>CPF do Tutor *</label>
+
+                <input type="text"
+                       name="Tutor.CPF"
+                       value="@Model.Tutor.CPF"
+                       class="form-control"
+                       required />
+            </div>
+
+            <div class="form-group">
+                <label>Relação com o Idoso *</label>
+
+                <input type="text"
+                       name="Tutor.RelacaoComIdoso"
+                       value="@Model.Tutor.RelacaoComIdoso"
+                       class="form-control"
+                       placeholder="Ex: Filho, Filha, Esposa, Neto..."
+                       required />
+            </div>
+
+            <div class="section-divider"></div>
+
+            <div class="medicos-header">
+
+                <div>
+
+                    <h3 class="section-title">
+                        Médicos de Referência
+                    </h3>
+
+                    <p class="section-subtitle">
+                        É obrigatório informar pelo menos um médico.
+                    </p>
+
+                </div>
+
+                <button type="button"
+                        id="add-medico-btn"
+                        class="btn-add">
+
+                    + Adicionar Médico
+
+                </button>
+
+            </div>
+
+            <div id="medicos-container">
+
+                @for (int i = 0; i < Model.Medicos.Count; i++)
+                {
+                    <div class="medico-item">
+
+                        <div class="medico-header">
+
+                            <span>
+                                Médico @(i + 1)
+                            </span>
+
+                            @if (i > 0)
+                            {
+                                <button type="button"
+                                        class="btn-remover">
+                                    Remover
+                                </button>
+                            }
+
+                        </div>
+
+                        <input type="text"
+                               name="Medicos[@i].Nome"
+                               value="@Model.Medicos[i].Nome"
+                               class="form-control"
+                               placeholder="Nome completo do médico"
+                               required />
+
+                    </div>
+                }
+
+            </div>
+
+            <div class="alerta-lgpd">
+
+                <h4>Privacidade e Segurança</h4>
+
+                <p>
+                    Os dados informados nesta etapa serão tratados de acordo com a LGPD
+                    e utilizados exclusivamente para identificação dos responsáveis
+                    e profissionais de referência do idoso.
+                </p>
+
+                <p>
+                    Em situações de emergência, cuidadores e fisioterapeutas
+                    vinculados ao idoso poderão acessar estas informações para
+                    contato com familiares, responsáveis e médicos de referência,
+                    visando preservar a saúde e a segurança do paciente.
+                </p>
+
+                <p>
+                    Nenhuma informação será compartilhada para fins comerciais
+                    ou fora das hipóteses previstas em lei.
+                </p>
+
+            </div>
+
+            <button type="submit"
+                    class="btn-salvar">
+
+                Finalizar Cadastro
+
+            </button>
+        }
+
     </div>
 
-    <hr />
-
-    @using (Html.BeginForm("SalvarCadastroTutorEMedico", "Cadastro", FormMethod.Post))
-    {
-        <!-- Tutor -->
-        <h3>Cadastro do Tutor</h3>
-
-        <div class="form-group">
-            <label>Nome do Tutor</label>
-            <input type="text" name="Tutor.Nome" value="@Model.Tutor.Nome" class="form-control" required />
-        </div>
-
-        <div class="form-group">
-            <label>E-mail do Tutor</label>
-            <input type="email" name="Tutor.Email" value="@Model.Tutor.Email" class="form-control" required />
-        </div>
-
-        <div class="form-group">
-            <label>CPF do Tutor</label>
-            <input type="text" name="Tutor.CPF" value="@Model.Tutor.CPF" class="form-control" required />
-        </div>
-
-        <div class="form-group">
-            <label>Relação com o Idoso</label>
-            <input type="text" name="Tutor.RelacaoComIdoso" value="@Model.Tutor.RelacaoComIdoso" class="form-control" required />
-        </div>
-
-        <hr />
-
-        <!-- Médicos -->
-        <h3>Médicos de Referência</h3>
-
-        <div id="medicos-container">
-            @for (int i = 0; i < Model.Medicos.Count; i++)
-            {
-                <div class="form-group medico-item">
-                    <label>Médico @(i + 1)</label>
-                    <input type="text"
-                           name="Medicos[@i].Nome"
-                           value="@Model.Medicos[i].Nome"
-                           class="form-control"
-                           required />
-                </div>
-            }
-        </div>
-
-        <button type="button" class="btn btn-secondary" id="add-medico-btn">
-            + Adicionar Médico
-        </button>
-
-        <hr />
-
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-submit">
-                Salvar Cadastro
-            </button>
-        </div>
-    }
 </div>
 
 <style>
-    .cadastro-container {
-        max-width: 650px;
-        margin: 40px auto;
-        background-color: #f5f5f5;
-        padding: 25px;
-        border-radius: 10px;
+
+    body {
+        background: linear-gradient(135deg,#e6f4f1,#f8fbff);
+        font-family: 'Segoe UI',sans-serif;
     }
 
-    h2 {
+    .cadastro-wrapper {
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    .cadastro-card {
+        width: 100%;
+        max-width: 850px;
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 12px 35px rgba(0,0,0,.08);
+    }
+
+    .header-card {
         text-align: center;
-        margin-bottom: 25px;
+        margin-bottom: 30px;
     }
 
-    h3 {
-        margin-top: 25px;
-        color: #555;
+        .header-card h2 {
+            color: #2f6f68;
+            margin-bottom: 10px;
+        }
+
+        .header-card p {
+            color: #6d8581;
+        }
+
+    .alert-erro {
+        background: #ffe8e8;
+        border: 1px solid #ffb5b5;
+        color: #b30000;
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .idoso-box {
+        background: #f8fbfb;
+        border: 1px solid #d8ece9;
+        border-radius: 14px;
+        padding: 20px;
+    }
+
+    .idoso-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .section-divider {
+        height: 1px;
+        background: #e5efed;
+        margin: 30px 0;
+    }
+
+    .section-title {
+        color: #2f6f68;
     }
 
     .form-group {
-        margin-bottom: 15px;
+        margin-bottom: 18px;
     }
 
-    label {
-        font-weight: 500;
-    }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
 
     .form-control {
         width: 100%;
-        padding: 10px;
-        margin-top: 5px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
+        height: 48px;
+        border: 1px solid #d6e8e5;
+        border-radius: 12px;
+        padding: 0 15px;
     }
 
-    .form-control-static {
-        padding: 10px;
-        background-color: #fafafa;
-        border: 1px solid #ddd;
-        border-radius: 5px;
+        .form-control:focus {
+            outline: none;
+            border-color: #4db6ac;
+            box-shadow: 0 0 0 3px rgba(77,182,172,.15);
+        }
+
+    .readonly {
+        background: #f5f7f7;
+    }
+
+    .medicos-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .section-subtitle {
+        color: #7b8d89;
+    }
+
+    .btn-add {
+        background: #4db6ac;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 18px;
+        cursor: pointer;
     }
 
     .medico-item {
-        background: #ffffff;
-        padding: 12px;
-        border-radius: 6px;
-        border: 1px solid #ddd;
+        background: #f8fbfb;
+        border: 1px solid #d8ece9;
+        border-radius: 14px;
+        padding: 18px;
+        margin-bottom: 15px;
     }
 
-    .btn {
+    .medico-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+        .medico-header span {
+            font-weight: 700;
+            color: #2f6f68;
+        }
+
+    .btn-remover {
+        background: #dc3545;
+        color: white;
         border: none;
+        border-radius: 8px;
+        padding: 8px 12px;
         cursor: pointer;
-        border-radius: 6px;
     }
 
-    .btn-primary {
-        background-color: #007bff;
-        color: #fff;
-        padding: 12px;
+    .alerta-lgpd {
+        margin-top: 30px;
+        background: #eef9f7;
+        border-left: 5px solid #4db6ac;
+        padding: 20px;
+        border-radius: 12px;
+    }
+
+    .btn-salvar {
         width: 100%;
-        font-size: 16px;
-    }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        color: #fff;
-        padding: 8px 14px;
-        margin-top: 10px;
-    }
-
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
-
-    .btn-secondary:hover {
-        background-color: #5a6268;
-    }
-
-    hr {
-        margin: 30px 0;
+        margin-top: 25px;
+        height: 52px;
         border: none;
-        border-top: 1px solid #ccc;
+        border-radius: 14px;
+        background: #4db6ac;
+        color: white;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    @@media(max-width:768px) {
+
+        .idoso-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .medicos-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .btn-add {
+            width: 100%;
+        }
     }
 </style>
 
 <script>
-    document.getElementById('add-medico-btn').addEventListener('click', function () {
-        const container = document.getElementById('medicos-container');
-        const index = container.children.length;
 
-        const div = document.createElement('div');
-        div.className = 'form-group medico-item';
-        div.innerHTML = `
-            <label>Médico ${index + 1}</label>
-            <input type="text"
-                   name="Medicos[${index}].Nome"
-                   class="form-control"
-                   required />
-        `;
+    document.addEventListener("DOMContentLoaded", function () {
 
-        container.appendChild(div);
+        const container =
+            document.getElementById("medicos-container");
+
+        document.getElementById("add-medico-btn")
+            .addEventListener("click", function () {
+
+                const index =
+                    container.querySelectorAll(".medico-item").length;
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "medico-item";
+
+                div.innerHTML = `
+                <div class="medico-header">
+
+                    <span>Médico ${index + 1}</span>
+
+                    <button type="button"
+                            class="btn-remover">
+                        Remover
+                    </button>
+
+                </div>
+
+                <input type="text"
+                       name="Medicos[${index}].Nome"
+                       class="form-control"
+                       placeholder="Nome completo do médico"
+                       required />
+            `;
+
+                container.appendChild(div);
+            });
+
+        container.addEventListener("click", function (e) {
+
+            if (!e.target.classList.contains("btn-remover"))
+                return;
+
+            e.target.closest(".medico-item").remove();
+
+            atualizarIndices();
+        });
+
+        function atualizarIndices() {
+
+            const items =
+                container.querySelectorAll(".medico-item");
+
+            items.forEach((item, index) => {
+
+                item.querySelector("span")
+                    .textContent =
+                    `Médico ${index + 1}`;
+
+                item.querySelector("input")
+                    .name =
+                    `Medicos[${index}].Nome`;
+            });
+        }
+
     });
+
 </script>

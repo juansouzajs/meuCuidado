@@ -12,8 +12,6 @@ namespace meuCuidado.Dominio.Models
         [StringLength(1000, ErrorMessage = "A descrição deve ter no máximo 1000 caracteres.")]
         public string Descricao { get; set; }
 
-        [Required(ErrorMessage = "O telefone é obrigatório.")]
-        [RegularExpression(@"^\+55\s\(\d{2}\)\s9\s\d{4}-\d{4}$", ErrorMessage = "O número de telefone deve estar no formato +55 (XX) 9 XXXX-XXXX.")]
         public string Telefone { get; set; }
 
         [Required(ErrorMessage = "O e-mail é obrigatório.")]

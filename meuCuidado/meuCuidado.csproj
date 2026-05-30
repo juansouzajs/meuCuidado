@@ -289,6 +289,7 @@
     <Content Include="Imagens\facebook-logo.svg" />
     <Content Include="Imagens\gmail-logo.png" />
     <Content Include="Imagens\landing-page.jpg" />
+    <Content Include="Imagens\LGPD.png" />
     <Content Include="Imagens\linkedin-logo.png" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />

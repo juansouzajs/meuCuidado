@@ -141,9 +141,30 @@
 
             </div>
 
+            <div class="privacy-consent">
+
+                <input type="checkbox"
+                       id="aceitaPolitica" />
+
+                <label for="aceitaPolitica">
+
+                    Ao se cadastrar você concorda com a nossa
+
+                    <a href="javascript:void(0)"
+                       id="abrirPolitica">
+
+                        Política de Privacidade
+
+                    </a>
+
+                </label>
+
+            </div>
+
             <button type="submit"
                     id="btnCadastrar"
-                    class="btn-primary-auth">
+                    class="btn-primary-auth"
+                    disabled>
 
                 Criar conta
 
@@ -259,11 +280,107 @@
 
 </div>
 
+<div id="modalPolitica" class="modal-overlay">
+
+    <div class="modal-politica">
+
+        <div class="modal-politica-header">
+
+            <h2>
+                Política de Privacidade
+            </h2>
+
+            <button type="button"
+                    id="fecharPolitica">
+                ×
+            </button>
+
+        </div>
+
+        <div class="modal-politica-body">
+
+            <h3>1. Compromisso com sua privacidade</h3>
+
+            <p>
+                O MeuCuidado respeita a sua privacidade e trata
+                seus dados pessoais com responsabilidade,
+                transparência e segurança.
+            </p>
+
+            <h3>2. Dados coletados</h3>
+
+            <p>
+                Coletamos apenas as informações estritamente
+                necessárias para o funcionamento da plataforma,
+                como nome, email, telefone, endereço e demais
+                dados necessários para identificação,
+                autenticação e conexão entre usuários.
+            </p>
+
+            <h3>3. Finalidade do tratamento</h3>
+
+            <p>
+                Os dados são utilizados exclusivamente para
+                possibilitar o uso dos serviços do MeuCuidado,
+                melhorar a experiência do usuário,
+                garantir segurança e cumprir obrigações legais.
+            </p>
+
+            <h3>4. LGPD</h3>
+
+            <p>
+                O MeuCuidado está comprometido com os princípios
+                da Lei Geral de Proteção de Dados (Lei nº 13.709/2018 - LGPD),
+                adotando medidas técnicas e administrativas para proteger
+                seus dados pessoais contra acessos não autorizados,
+                perda, alteração ou divulgação indevida.
+            </p>
+
+            <p>
+                Você possui direito de solicitar acesso,
+                correção, atualização, anonimização,
+                exclusão ou portabilidade dos seus dados,
+                conforme previsto na legislação vigente.
+            </p>
+
+            <h3>5. Compartilhamento</h3>
+
+            <p>
+                Seus dados não são vendidos ou compartilhados
+                com terceiros sem fundamento legal,
+                consentimento ou necessidade operacional
+                relacionada aos serviços prestados.
+            </p>
+
+            <h3>6. Segurança</h3>
+
+            <p>
+                Utilizamos mecanismos de segurança para proteger
+                as informações armazenadas em nossos sistemas.
+            </p>
+
+            <h3>7. Contato</h3>
+
+            <p>
+                Em caso de dúvidas sobre privacidade e proteção
+                de dados, entre em contato com nossa equipe
+                de suporte.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
 
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const aceitaPolitica =
+            document.getElementById("aceitaPolitica");
 
     const telefone = document.getElementById("telefone");
     const senha = document.getElementById("senha");
@@ -553,7 +670,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         botao.disabled =
-            !(senhaValida && senhasIguais && emailValido)
+            !(senhaValida
+                && senhasIguais
+                && emailValido
+                && aceitaPolitica.checked)
             || emailExiste;
     }
 
@@ -582,7 +702,30 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    validarFormulario();
+        validarFormulario();
+
+        aceitaPolitica.addEventListener(
+            "change",
+            validarFormulario
+        );
+
+        document
+            .getElementById("abrirPolitica")
+            .addEventListener("click", function () {
+
+                document
+                    .getElementById("modalPolitica")
+                    .style.display = "flex";
+            });
+
+        document
+            .getElementById("fecharPolitica")
+            .addEventListener("click", function () {
+
+                document
+                    .getElementById("modalPolitica")
+                    .style.display = "none";
+            });
 
 });
 
@@ -590,6 +733,80 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 <style>
+
+    .privacy-consent {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin: 18px 0;
+        font-size: 13px;
+        color: #555;
+    }
+
+        .privacy-consent input {
+            margin-top: 3px;
+            cursor: pointer;
+        }
+
+        .privacy-consent a {
+            color: #4db6ac;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+            .privacy-consent a:hover {
+                text-decoration: underline;
+            }
+
+    .modal-politica {
+        width: 95%;
+        max-width: 800px;
+        max-height: 85vh;
+        background: #fff;
+        border-radius: 18px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+
+    .modal-politica-header {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eaeaea;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .modal-politica-header h2 {
+            margin: 0;
+            color: #2f6f68;
+        }
+
+        .modal-politica-header button {
+            border: none;
+            background: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+
+    .modal-politica-body {
+        padding: 25px;
+        overflow-y: auto;
+        line-height: 1.8;
+    }
+
+        .modal-politica-body h3 {
+            margin-top: 20px;
+            margin-bottom: 8px;
+            color: #2f6f68;
+        }
+
+        .modal-politica-body p {
+            color: #555;
+            margin-bottom: 15px;
+        }
 
     .modal-overlay {
         position: fixed;

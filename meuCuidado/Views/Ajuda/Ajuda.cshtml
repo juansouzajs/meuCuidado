@@ -1,157 +1,438 @@
 ﻿@model meuCuidado.Dominio.Models.Ajuda
+
 @{
     ViewBag.Title = "Ajuda";
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-6 col-sm-10">
+<style>
 
-        <div class="card shadow-sm mt-5">
-            <div class="card-body">
+    .ajuda-page {
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        background: linear-gradient(135deg,#f8fbff,#eef8f7);
+    }
 
-                <h4 class="text-center mb-4">Solicitar suporte</h4>
+    .ajuda-container {
+        width: 100%;
+        max-width: 1100px;
+        display: grid;
+        grid-template-columns: 420px 1fr;
+        gap: 35px;
+    }
 
-                @using (Html.BeginForm("Ajuda", "Home", FormMethod.Post))
-                {
-                    @*@Html.AntiForgeryToken()*@
+    .ajuda-info {
+        background: linear-gradient(135deg,#4db6ac,#67c9bf);
+        border-radius: 24px;
+        padding: 40px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
 
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Titulo)
-                        @Html.TextBoxFor(m => m.Titulo, new
-                        {
-                            @class = "form-control",
-                            maxlength = "100",
-                            placeholder = "Ex: Problema no cadastro"
-                        })
-                        @Html.ValidationMessageFor(m => m.Titulo, "", new { @class = "text-danger" })
-                    </div>
+        .ajuda-info::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.08);
+            top: -120px;
+            right: -120px;
+        }
 
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Descricao)
-                        @Html.TextAreaFor(m => m.Descricao, new
-                        {
-                            @class = "form-control",
-                            rows = 4,
-                            maxlength = "1000",
-                            placeholder = "Descreva o problema com detalhes"
-                        })
-                        @Html.ValidationMessageFor(m => m.Descricao, "", new { @class = "text-danger" })
-                    </div>
+        .ajuda-info h2 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
 
-                    <div class="form-group">
-                        @Html.Label("Telefone")
-                        @Html.TextBoxFor(
-                            m => m.Telefone,
-                            new
-                            {
-                                @class = "form-control",
-                                @id = "telefone",
-                                value = "+55 ",
-                                placeholder = "+55 (XX) XXXXX-XXXX",
-                                type = "tel"
-                            })
-                        @Html.ValidationMessageFor(m => m.Telefone, "", new { @class = "text-danger" })
-                    </div>
+        .ajuda-info p {
+            line-height: 1.8;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
+        }
 
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.Email)
-                        @Html.TextBoxFor(m => m.Email, new
-                        {
-                            @class = "form-control",
-                            placeholder = "contato@email.com",
-                            type = "email"
-                        })
-                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                    </div>
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 25px;
+        position: relative;
+        z-index: 2;
+    }
 
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.FormaDeRetorno)
-                        @Html.DropDownListFor(
-                            m => m.FormaDeRetorno,
-                            new SelectList(new[]
-                            {
-                                new { Value = "email", Text = "E-mail" },
-                                new { Value = "whatsapp", Text = "WhatsApp" }
-                            }, "Value", "Text"),
-                            "Selecione uma opção",
-                            new { @class = "form-control" }
-                        )
-                        @Html.ValidationMessageFor(m => m.FormaDeRetorno, "", new { @class = "text-danger" })
-                    </div>
+        .info-item i {
+            font-size: 22px;
+            margin-top: 4px;
+        }
 
-                    <button type="submit" class="btn btn-primary btn-block">
-                        Enviar solicitação
-                    </button>
+        .info-item strong {
+            display: block;
+            margin-bottom: 4px;
+        }
 
-                    if (ViewBag.Message != null)
-                    {
-                        <div class="alert alert-success mt-3 text-center">
-                            @ViewBag.Message
-                        </div>
-                    }
-                }
+    .ajuda-card {
+        background: white;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0,0,0,.08);
+    }
 
+        .ajuda-card h3 {
+            font-size: 30px;
+            color: #2f6f68;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .ajuda-card .subtitulo {
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+    .form-control {
+        height: 52px;
+        border-radius: 12px;
+        border: 1px solid #dfe7ec;
+        box-shadow: none !important;
+        transition: .2s;
+    }
+
+    textarea.form-control {
+        height: auto;
+        min-height: 140px;
+        resize: vertical;
+    }
+
+    .form-control:focus {
+        border-color: #4db6ac;
+    }
+
+    .btn-enviar {
+        width: 100%;
+        border: none;
+        height: 56px;
+        border-radius: 14px;
+        background: #4db6ac;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        transition: .2s;
+    }
+
+        .btn-enviar:hover {
+            background: #3ca398;
+            transform: translateY(-2px);
+        }
+
+    .contador {
+        text-align: right;
+        color: #888;
+        font-size: 13px;
+        margin-top: 6px;
+    }
+
+    .alert-sucesso {
+        margin-top: 25px;
+        background: #e9fff5;
+        border: 1px solid #b5f0d0;
+        color: #188754;
+        padding: 15px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .text-danger {
+        font-size: 13px;
+        margin-top: 4px;
+        display: block;
+    }
+
+    @@media(max-width:991px) {
+
+        .ajuda-container {
+            grid-template-columns: 1fr;
+        }
+
+        .ajuda-info {
+            order: 2;
+        }
+
+        .ajuda-card {
+            order: 1;
+        }
+    }
+
+    @@media(max-width:576px) {
+
+        .ajuda-page {
+            padding: 25px 15px;
+        }
+
+        .ajuda-card,
+        .ajuda-info {
+            padding: 25px;
+        }
+
+            .ajuda-card h3 {
+                font-size: 24px;
+            }
+
+            .ajuda-info h2 {
+                font-size: 28px;
+            }
+    }
+</style>
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<div class="ajuda-page">
+
+    <div class="ajuda-container">
+
+        <div class="ajuda-info">
+
+            <h2>Precisa de ajuda?</h2>
+
+            <p>
+                Nossa equipe está pronta para auxiliar você.
+                Envie sua solicitação e responderemos o mais
+                rápido possível através do canal escolhido.
+            </p>
+
+            <div class="info-item">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <strong>Resposta rápida</strong>
+                    Retornamos sua solicitação o mais breve possível.
+                </div>
             </div>
+
+            <div class="info-item">
+                <i class="fas fa-shield-heart"></i>
+                <div>
+                    <strong>Atendimento seguro</strong>
+                    Seus dados são utilizados apenas para contato e suporte.
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="fas fa-headset"></i>
+                <div>
+                    <strong>Suporte especializado</strong>
+                    Equipe preparada para ajudar famílias e profissionais.
+                </div>
+            </div>
+
+        </div>
+
+        <div class="ajuda-card">
+
+            <h3>Solicitar suporte</h3>
+
+            <p class="subtitulo">
+                Preencha as informações abaixo para abrir um atendimento.
+            </p>
+
+            @using (Html.BeginForm("Ajuda", "Ajuda", FormMethod.Post))
+            {
+                @Html.ValidationSummary(false, "", new { @class = "text-danger mb-3" })
+
+                <div class="form-group">
+
+                    @Html.LabelFor(m => m.Titulo)
+
+                    @Html.TextBoxFor(m => m.Titulo, new
+                    {
+                        @class = "form-control",
+                        maxlength = "100",
+                        placeholder = "Ex: Problema ao criar minha conta"
+                    })
+
+                    @Html.ValidationMessageFor(m => m.Titulo, "", new { @class = "text-danger" })
+
+                </div>
+
+                <div class="form-group">
+
+                    @Html.LabelFor(m => m.Descricao)
+
+                    @Html.TextAreaFor(m => m.Descricao, new
+                    {
+                        @class = "form-control",
+                        rows = 6,
+                        maxlength = "1000",
+                        placeholder = "Descreva sua solicitação com o máximo de detalhes possível...",
+                        id = "descricao"
+                    })
+
+                    <div class="contador">
+                        <span id="contadorDescricao">0</span>/1000
+                    </div>
+
+                    @Html.ValidationMessageFor(m => m.Descricao, "", new { @class = "text-danger" })
+
+                </div>
+
+                <div class="form-group">
+
+                    @Html.Label("Telefone")
+
+                    @Html.TextBoxFor(m => m.Telefone, new
+                    {
+                        @class = "form-control",
+                        id = "telefone",
+                        placeholder = "+55 (31) 99999-9999",
+                        type = "tel"
+                    })
+
+                    @Html.ValidationMessageFor(m => m.Telefone, "", new { @class = "text-danger" })
+
+                </div>
+
+                <div class="form-group">
+
+                    @Html.LabelFor(m => m.Email)
+
+                    @Html.TextBoxFor(m => m.Email, new
+                    {
+                        @class = "form-control",
+                        placeholder = "voce@email.com",
+                        type = "email"
+                    })
+
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+
+                </div>
+
+                <div class="form-group">
+
+                    @Html.LabelFor(m => m.FormaDeRetorno)
+
+                    @Html.DropDownListFor(
+                        m => m.FormaDeRetorno,
+                        new SelectList(new[]
+                        {
+                            new { Value = "email", Text = "E-mail" },
+                            new { Value = "whatsapp", Text = "WhatsApp" }
+                        },
+                        "Value",
+                        "Text"),
+                        "Selecione como deseja receber o retorno",
+                        new { @class = "form-control" })
+
+                    @Html.ValidationMessageFor(
+                        m => m.FormaDeRetorno,
+                        "",
+                        new { @class = "text-danger" })
+
+                </div>
+
+                <button type="submit" class="btn-enviar">
+                    <i class="fas fa-paper-plane"></i>
+                    Enviar solicitação
+                </button>
+
+                if (ViewBag.Message != null)
+                {
+                    <div class="alert-sucesso">
+                        <i class="fas fa-circle-check"></i>
+                        @ViewBag.Message
+                    </div>
+                }
+            }
+
         </div>
 
     </div>
+
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const input = document.getElementById("telefone");
-        if (!input) return;
 
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const input = document.getElementById("telefone");
         const PREFIX = "+55 ";
 
-        // Garante que o prefixo sempre exista
-        if (!input.value.startsWith(PREFIX)) {
-            input.value = PREFIX;
-        }
+        if (input) {
 
-        input.addEventListener("input", function () {
-            // Se tentar apagar o +55, restaura
             if (!input.value.startsWith(PREFIX)) {
                 input.value = PREFIX;
             }
 
-            // Só trabalha com o que vem depois do +55
-            let digits = input.value.substring(PREFIX.length).replace(/\D/g, "");
+            input.addEventListener("input", function () {
 
-            // Limite: DDD + número (11 dígitos)
-            if (digits.length > 11) {
+                if (!input.value.startsWith(PREFIX)) {
+                    input.value = PREFIX;
+                }
+
+                let digits = input.value
+                    .substring(PREFIX.length)
+                    .replace(/\D/g, "");
+
                 digits = digits.substring(0, 11);
-            }
 
-            let result = PREFIX;
+                let result = PREFIX;
 
-            // DDD
-            if (digits.length > 2) {
-                result += "(" + digits.substring(0, 2) + ") ";
-                digits = digits.substring(2);
-            } else {
-                result += digits;
+                if (digits.length > 2) {
+
+                    result += "(" + digits.substring(0, 2) + ") ";
+
+                    let restante = digits.substring(2);
+
+                    if (restante.length <= 4) {
+                        result += restante;
+                    }
+                    else if (restante.length <= 8) {
+                        result += restante.substring(0, 4)
+                            + "-"
+                            + restante.substring(4);
+                    }
+                    else {
+                        result += restante.substring(0, 5)
+                            + "-"
+                            + restante.substring(5);
+                    }
+                }
+                else {
+                    result += digits;
+                }
+
                 input.value = result;
-                return;
+            });
+        }
+
+        const descricao = document.getElementById("descricao");
+        const contador = document.getElementById("contadorDescricao");
+
+        if (descricao && contador) {
+
+            function atualizarContador() {
+                contador.innerText = descricao.value.length;
             }
 
-            // Número
-            if (digits.length <= 4) {
-                result += digits;
-            } else if (digits.length <= 8) {
-                result += digits.substring(0, 4) + "-" + digits.substring(4);
-            } else {
-                result += digits.substring(0, 5) + "-" + digits.substring(5);
-            }
+            descricao.addEventListener("input", atualizarContador);
 
-            input.value = result;
-        });
-
-        // Impede cursor antes do +55
-        input.addEventListener("keydown", function (e) {
-            if (input.selectionStart < PREFIX.length) {
-                input.setSelectionRange(PREFIX.length, PREFIX.length);
-            }
-        });
+            atualizarContador();
+        }
     });
+
 </script>

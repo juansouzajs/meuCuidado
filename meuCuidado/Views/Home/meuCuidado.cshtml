@@ -355,6 +355,80 @@
                 font-size: 36px;
             }
         }
+
+        /* ==========================
+   LGPD
+=========================== */
+
+        .lgpd-section {
+            padding: 100px 0;
+            background: #ffffff;
+        }
+
+        .lgpd-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .lgpd-image {
+            text-align: center;
+        }
+
+            .lgpd-image img {
+                width: 100%;
+                max-width: 420px;
+            }
+
+        .lgpd-content h2 {
+            font-size: 44px;
+            color: #2f6f68;
+            margin-bottom: 20px;
+        }
+
+        .lgpd-content p {
+            font-size: 18px;
+            line-height: 1.9;
+            color: #555;
+            margin-bottom: 18px;
+        }
+
+        .lgpd-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .lgpd-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: #444;
+        }
+
+            .lgpd-item i {
+                color: #4db6ac;
+                font-size: 20px;
+                margin-top: 3px;
+            }
+
+        @@media(max-width:900px) {
+
+            .lgpd-wrapper {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .lgpd-item {
+                text-align: left;
+            }
+
+            .lgpd-content h2 {
+                font-size: 34px;
+            }
+        }
     </style>
 
 </head>
@@ -518,6 +592,80 @@
                     <p>
                         Solicite conexão e entre em contato.
                     </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="lgpd-section">
+
+        <div class="container">
+
+            <div class="lgpd-wrapper">
+
+                <div class="lgpd-image">
+
+                    <img src="/Imagens/LGPD.png"
+                         alt="Proteção de Dados LGPD" />
+
+                </div>
+
+                <div class="lgpd-content">
+
+                    <h2>
+                        Seus dados protegidos com responsabilidade
+                    </h2>
+
+                    <p>
+                        No meuCuidado, a privacidade e a segurança das informações
+                        são prioridades. Seguimos os princípios da Lei Geral de
+                        Proteção de Dados (LGPD), coletando apenas os dados
+                        estritamente necessários para conectar famílias,
+                        cuidadores e profissionais de saúde de forma segura.
+                    </p>
+
+                    <p>
+                        Não solicitamos informações desnecessárias e utilizamos
+                        seus dados exclusivamente para o funcionamento da
+                        plataforma, autenticação de usuários e facilitação do
+                        contato entre as partes interessadas.
+                    </p>
+
+                    <div class="lgpd-list">
+
+                        <div class="lgpd-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>
+                                Coleta apenas das informações necessárias.
+                            </span>
+                        </div>
+
+                        <div class="lgpd-item">
+                            <i class="fas fa-lock"></i>
+                            <span>
+                                Proteção e armazenamento seguro dos dados.
+                            </span>
+                        </div>
+
+                        <div class="lgpd-item">
+                            <i class="fas fa-user-check"></i>
+                            <span>
+                                Transparência sobre como suas informações são utilizadas.
+                            </span>
+                        </div>
+
+                        <div class="lgpd-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>
+                                Tratamento de dados alinhado às exigências da LGPD.
+                            </span>
+                        </div>
+
+                    </div>
+
                 </div>
 
             </div>
