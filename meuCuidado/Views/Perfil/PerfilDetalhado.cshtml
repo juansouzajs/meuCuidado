@@ -70,6 +70,24 @@
                 </button>
             }
 
+            @if (temConexao && Model.Idoso != null)
+            {
+                <button class="btn-emergencia" onclick="abrirModalEmergencia()">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    Emergência
+                </button>
+            }
+
+            @if (temConexao && (Model.TipoUsuario == "Cuidador" || Model.TipoUsuario == "Fisioterapeuta")
+    && (Model.Idoso != null || Model.Tutor != null))
+            {
+                <button class="btn-primary-soft"
+                        onclick="adicionarAoQuadro()">
+                    <i class="fas fa-thumbtack"></i>
+                    Adicionar ao quadro de lembretes
+                </button>
+            }
+
         </div>
         @if (temConexao)
         {
@@ -354,6 +372,83 @@
     </div>
 </div>
 
+@if (Model.Idoso != null && temConexao)
+{
+    <div id="modalEmergencia" class="modal">
+
+        <div class="modal-box emergencia-box">
+
+            <h2>
+                <i class="fas fa-triangle-exclamation"></i>
+                Contatos de Emergência
+            </h2>
+
+            <hr />
+
+            <h3>Tutor Responsável</h3>
+
+            <p>
+                <strong>Nome:</strong>
+                @(Model.Idoso.Tutor != null ? Model.Idoso.Tutor.Nome : "")
+            </p>
+
+            <p>
+                <strong>Telefone:</strong>
+                @(Model.Idoso.Tutor != null ? Model.Idoso.Tutor.Telefone : "")
+            </p>
+
+            @if (!string.IsNullOrEmpty(Model.Idoso.Tutor?.Telefone))
+            {
+                var telTutor = new string(
+                    Model.Idoso.Tutor.Telefone.Where(char.IsDigit).ToArray()
+                );
+
+                <a href="https://wa.me/55@telTutor"
+                   target="_blank"
+                   class="btn-whatsapp">
+                    <i class="fab fa-whatsapp"></i>
+                    Chamar Tutor
+                </a>
+            }
+
+            <hr />
+
+            <h3>Médicos</h3>
+
+            @if (Model.Idoso.Medicos != null && Model.Idoso.Medicos.Any())
+            {
+                foreach (var medico in Model.Idoso.Medicos)
+                {
+                    <div class="medico-emergencia">
+
+                        <p>
+                            <strong>@medico.Nome</strong>
+                        </p>
+
+                        <p>
+                            @medico.Telefone
+                        </p>
+
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Nenhum médico cadastrado.</p>
+            }
+
+            <div class="acoes-modal">
+                <button class="btn-cancelar"
+                        onclick="fecharModalEmergencia()">
+                    Fechar
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+}
+
 <!-- TOAST -->
 <div id="toast" class="toast-custom">
     <i id="toast-icon" class="fas"></i>
@@ -375,7 +470,13 @@
 </script>
 
 <script>
+    function abrirModalEmergencia() {
+        document.getElementById("modalEmergencia").style.display = "flex";
+    }
 
+    function fecharModalEmergencia() {
+        document.getElementById("modalEmergencia").style.display = "none";
+    }
     function mostrarToast(tipo, mensagem) {
         const toast = document.getElementById("toast");
         const icon = document.getElementById("toast-icon");
@@ -492,6 +593,40 @@
             localStorage.removeItem("toastTemp");
         }
     });
+
+    function adicionarAoQuadro() {
+
+        fetch('/Lembrete/AdicionarAoQuadro', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nome:
+                    "@(Model.Idoso?.Nome
+                    ?? Model.Tutor?.Nome)"
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+
+            if (data.sucesso) {
+
+                mostrarToast(
+                    "sucesso",
+                    data.nome + " adicionado ao quadro."
+                );
+
+            } else {
+
+                mostrarToast(
+                    "info",
+                    data.mensagem
+                );
+            }
+        });
+    }
+
 </script>
 
 @if (TempData["ToastMensagem"] != null)
@@ -507,6 +642,42 @@
 }
 
 <style>
+
+    .btn-emergencia {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 15px;
+        margin-left: 10px;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 12px;
+        background: #e53935;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+        .btn-emergencia:hover {
+            background: #c62828;
+            transform: translateY(-2px);
+        }
+
+    .emergencia-box {
+        max-width: 500px;
+        width: 95%;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+
+    .medico-emergencia {
+        background: #f5f5f5;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
     .escolaridade-box {
         background: #f5f9f8;
         border-radius: 12px;

@@ -1,13 +1,14 @@
-﻿using System;
+﻿using iTextSharp.text;
+using iTextSharp.text.pdf;
+using meuCuidado.Dominio.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using meuCuidado.Dominio.Models;
+using static meuCuidado.Dominio.Extensions.EnumExtension;
 
 namespace meuCuidado.Controllers
 {
@@ -573,6 +574,60 @@ namespace meuCuidado.Controllers
                     "application/pdf",
                     $"{nomePessoa}_lembretes_{periodo}.pdf"
                 );
+            }
+        }
+
+        [HttpPost]
+        public JsonResult AdicionarAoQuadro(string nome)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(nome))
+                {
+                    return Json(new
+                    {
+                        sucesso = false,
+                        mensagem = "Nome inválido."
+                    });
+                }
+
+                nome = nome.Trim();
+
+                bool existe = _context.Pessoas.Any(p =>
+                    p.Nome == nome);
+
+                if (existe)
+                {
+                    return Json(new
+                    {
+                        sucesso = false,
+                        mensagem = "Pessoa já está no quadro."
+                    });
+                }
+
+                var pessoa = new Pessoa
+                {
+                    Nome = nome
+                };
+
+                _context.Pessoas.Add(pessoa);
+
+                _context.SaveChanges();
+
+                return Json(new
+                {
+                    sucesso = true,
+                    id = pessoa.Id,
+                    nome = pessoa.Nome
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    sucesso = false,
+                    mensagem = ex.Message
+                });
             }
         }
     }

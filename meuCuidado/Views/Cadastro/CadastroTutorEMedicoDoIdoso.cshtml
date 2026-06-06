@@ -319,8 +319,12 @@
         color: white;
         border: none;
         border-radius: 12px;
-        padding: 12px 18px;
+        padding: 12px 20px;
         cursor: pointer;
+        font-weight: 600;
+        white-space: nowrap;
+        min-width: 180px;
+        text-align: center;
     }
 
     .medico-item {
@@ -331,11 +335,12 @@
         margin-bottom: 15px;
     }
 
-    .medico-header {
+    .medicos-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 12px;
+        gap: 15px;
+        flex-wrap: wrap;
     }
 
         .medico-header span {

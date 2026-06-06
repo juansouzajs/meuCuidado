@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using meuCuidado.Dominio.Models;
+﻿using meuCuidado.Dominio.Models;
 using meuCuidado.Dominio.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Data.Entity;
 using static meuCuidado.Dominio.Extensions.EnumExtension;
 
 namespace meuCuidado.Controllers
@@ -209,16 +209,16 @@ namespace meuCuidado.Controllers
 
         private TipoUsuario DetectarTipoUsuario(Usuario u)
         {
-            if (_context.Idosos.Any(x => x.Id == u.Id))
-                return TipoUsuario.Idoso;
-
-            if (_context.Tutores.Any(x => x.Id == u.Id))
-                return TipoUsuario.Tutor;
-
             if (_context.CuidadoresDeIdoso.Any(x => x.Id == u.Id))
                 return TipoUsuario.Cuidador;
 
-            return TipoUsuario.Fisioterapeuta;
+            if (_context.Fisioterapeutas.Any(x => x.Id == u.Id))
+                return TipoUsuario.Fisioterapeuta;
+
+            if (_context.Idosos.Any(x => x.Id == u.Id))
+                return TipoUsuario.Idoso;
+
+            return TipoUsuario.Tutor;
         }
 
         public ActionResult PerfilDetalhado(Guid IdentificadorUnico)
@@ -238,6 +238,8 @@ namespace meuCuidado.Controllers
                     .SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
 
                 Idoso = _context.Idosos
+                    .Include(x => x.Tutor)
+                    .Include(x => x.Medicos)
                     .SingleOrDefault(p => p.IdentificadorUnico == IdentificadorUnico),
 
                 TipoUsuario = tipoUsuarioSessao,
@@ -355,21 +357,20 @@ namespace meuCuidado.Controllers
                         .ToList();
                 }
 
-                perfilDetalhado.JaAvaliou = _context.Avaliacoes.Any(a =>
-                    (
-                        a.RelacionamentoIdosoProfissional.CuidadorId == idAlvo ||
-                        a.RelacionamentoIdosoProfissional.FisioterapeutaId == idAlvo ||
-                        a.RelacionamentoIdosoProfissional.IdosoId == idAlvo ||
-                        a.RelacionamentoIdosoProfissional.TutorId == idAlvo
-                    )
-                    &&
-                    (
-                        a.RelacionamentoIdosoProfissional.IdosoId == idUsuarioLogado ||
-                        a.RelacionamentoIdosoProfissional.TutorId == idUsuarioLogado ||
-                        a.RelacionamentoIdosoProfissional.CuidadorId == idUsuarioLogado ||
-                        a.RelacionamentoIdosoProfissional.FisioterapeutaId == idUsuarioLogado
-                    )
-                );
+                var relacionamento = _context.RelacionamentosIdosoProfissional
+                     .FirstOrDefault(r =>
+                         r.EtapaAtivacao == EtapaAtivacao.AtivacaoLiberada &&
+                         (
+                             (r.IdosoId == idUsuarioLogado || r.TutorId == idUsuarioLogado)
+                             &&
+                             (
+                                 r.CuidadorId == idAlvo ||
+                                 r.FisioterapeutaId == idAlvo
+                             )
+                         )
+                     );
+
+                    perfilDetalhado.JaAvaliou = relacionamento != null && _context.Avaliacoes.Any(a =>a.RelacionamentoIdosoProfissionalId == relacionamento.Id);
 
                 var foto = _context.Documentos
                     .Where(d =>
