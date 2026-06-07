@@ -10,6 +10,7 @@ namespace meuCuidado.Controllers
     public class RelacionamentoController : Controller
     {
         private readonly MeuCuidadoDbContext _context = new MeuCuidadoDbContext();
+        private readonly EmailController _emailController = new EmailController();
 
         public ActionResult SolicitarConexao(Guid identificador)
         {
@@ -67,6 +68,42 @@ namespace meuCuidado.Controllers
             {
                 _context.RelacionamentosIdosoProfissional.Add(relacionamento);
                 _context.SaveChanges();
+
+                string emailProfissional;
+                string nomeProfissional;
+
+                if (cuidador != null)
+                {
+                    emailProfissional = cuidador.Email;
+                    nomeProfissional = cuidador.Nome;
+                }
+                else
+                {
+                    emailProfissional = fisio.Email;
+                    nomeProfissional = fisio.Nome;
+                }
+
+                string nomeSolicitante;
+
+                if (tipoUsuarioLogado == "Idoso")
+                {
+                    nomeSolicitante = _context.Idosos
+                        .Where(x => x.Id == idUsuarioLogado)
+                        .Select(x => x.Nome)
+                        .FirstOrDefault();
+                }
+                else
+                {
+                    nomeSolicitante = _context.Tutores
+                        .Where(x => x.Id == idUsuarioLogado)
+                        .Select(x => x.Nome)
+                        .FirstOrDefault();
+                }
+
+                _emailController.EnviarSolicitacaoConexao(
+                    emailProfissional,
+                    nomeProfissional,
+                    nomeSolicitante);
 
                 TempData["ToastTipo"] = "sucesso";
                 TempData["ToastMensagem"] = "Solicitação de conexão enviada com sucesso!";
@@ -214,6 +251,10 @@ namespace meuCuidado.Controllers
             var idUsuario = Convert.ToInt32(Session["IdUsuario"]);
 
             var rel = _context.RelacionamentosIdosoProfissional
+                .Include("Idoso")
+                .Include("Tutor")
+                .Include("Cuidador")
+                .Include("Fisioterapeuta")
                 .FirstOrDefault(r => r.Id == id);
 
             if (rel == null)
@@ -230,6 +271,20 @@ namespace meuCuidado.Controllers
 
             _context.SaveChanges();
 
+            string emailSolicitante =
+                rel.Idoso != null
+                    ? rel.Idoso.Email
+                    : rel.Tutor.Email;
+
+            string nomeProfissional =
+                rel.Cuidador != null
+                    ? rel.Cuidador.Nome
+                    : rel.Fisioterapeuta.Nome;
+
+            _emailController.EnviarConexaoAprovada(
+                emailSolicitante,
+                nomeProfissional);
+
             return Json(new { success = true });
         }
 
@@ -240,6 +295,10 @@ namespace meuCuidado.Controllers
             var idUsuario = Convert.ToInt32(Session["IdUsuario"]);
 
             var rel = _context.RelacionamentosIdosoProfissional
+                .Include("Idoso")
+                .Include("Tutor")
+                .Include("Cuidador")
+                .Include("Fisioterapeuta")
                 .FirstOrDefault(r => r.Id == id);
 
             if (rel == null)
@@ -255,6 +314,20 @@ namespace meuCuidado.Controllers
             rel.EtapaAtivacao = EtapaAtivacao.AcessoNegado;
 
             _context.SaveChanges();
+
+            string emailSolicitante =
+                rel.Idoso != null
+                    ? rel.Idoso.Email
+                    : rel.Tutor.Email;
+
+            string nomeProfissional =
+                rel.Cuidador != null
+                    ? rel.Cuidador.Nome
+                    : rel.Fisioterapeuta.Nome;
+
+            _emailController.EnviarConexaoRejeitada(
+                emailSolicitante,
+                nomeProfissional);
 
             return Json(new { success = true });
         }

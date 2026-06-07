@@ -71,6 +71,11 @@ namespace meuCuidado.Controllers
                 _context.Tutores.Add(tutor);
                 _context.SaveChanges();
 
+                new EmailController()
+                .EnviarEmailCadastroConcluido(
+                    tutor.Email,
+                    tutor.Nome);
+
                 return RedirectToAction("Login", "Login");
             }
 
@@ -173,6 +178,11 @@ namespace meuCuidado.Controllers
                 _context.Tutores.Add(tutor);
                 _context.SaveChanges();
 
+                new EmailController()
+                .EnviarEmailCadastroConcluido(
+                    tutor.Email,
+                    tutor.Nome);
+
                 idoso.TutorId = tutor.Id;
 
                 // ==========================
@@ -181,6 +191,7 @@ namespace meuCuidado.Controllers
 
                 _context.Idosos.Add(idoso);
                 _context.SaveChanges();
+
 
                 // ==========================
                 // SALVA MÉDICOS
@@ -209,6 +220,11 @@ namespace meuCuidado.Controllers
                 }
 
                 _context.SaveChanges();
+
+                new EmailController()
+                .EnviarEmailCadastroConcluido(
+                    idoso.Email,
+                    idoso.Nome);
 
                 // Limpa a sessão
                 Session.Remove("Idoso");
@@ -304,6 +320,11 @@ namespace meuCuidado.Controllers
 
                     _context.SaveChanges();
 
+                    new EmailController()
+                    .EnviarEmailCadastroEmAnalise(
+                        cuidadorExistente.Email,
+                        cuidadorExistente.Nome);
+
                     idUsuario = cuidadorExistente.Id;
                 }
                 else
@@ -324,6 +345,11 @@ namespace meuCuidado.Controllers
 
                     _context.CuidadoresDeIdoso.Add(cuidadorDeIdoso);
                     _context.SaveChanges();
+
+                    new EmailController()
+                    .EnviarEmailCadastroEmAnalise(
+                        cuidadorDeIdoso.Email,
+                        cuidadorDeIdoso.Nome);
 
                     idUsuario = cuidadorDeIdoso.Id;
                 }
@@ -370,6 +396,11 @@ namespace meuCuidado.Controllers
 
                     _context.SaveChanges();
 
+                    new EmailController()
+                    .EnviarEmailCadastroEmAnalise(
+                        fisioterapeutaExistente.Email,
+                        fisioterapeutaExistente.Nome);
+
                     idUsuario = fisioterapeutaExistente.Id;
                 }
                 else
@@ -390,6 +421,11 @@ namespace meuCuidado.Controllers
 
                     _context.Fisioterapeutas.Add(fisioterapeuta);
                     _context.SaveChanges();
+
+                    new EmailController()
+                    .EnviarEmailCadastroEmAnalise(
+                        fisioterapeuta.Email,
+                        fisioterapeuta.Nome);
 
                     idUsuario = fisioterapeuta.Id;
                 }
