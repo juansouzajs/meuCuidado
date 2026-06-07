@@ -1,0 +1,184 @@
+﻿@{
+    ViewBag.Title = "Código de Recuperação";
+}
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<div class="codigo-wrapper">
+
+    <div class="codigo-card">
+
+        <div class="icone-topo">
+            <i class="fas fa-shield-halved"></i>
+        </div>
+
+        <h2>Validar Código</h2>
+
+        <p class="subtitulo">
+            Digite o código enviado para o seu e-mail para continuar a recuperação da senha.
+        </p>
+
+        <div class="campo">
+            <input type="text"
+                   id="codigo"
+                   maxlength="8"
+                   placeholder="Código de recuperação" />
+        </div>
+
+        <button class="btn-validar"
+                onclick="validarCodigo()">
+            Validar Código
+        </button>
+
+        <a href="@Url.Action("RedefinirSenha","Login")"
+           class="link-voltar">
+            Voltar
+        </a>
+
+    </div>
+
+</div>
+
+<script>
+    function validarCodigo() {
+
+        const codigo =
+            document.getElementById('codigo').value;
+
+        if (!codigo) {
+            alert("Digite o código recebido.");
+            return;
+        }
+
+        fetch('/Login/ValidarCodigoRecuperacao', {
+            method: 'POST',
+            headers: {
+                'Content-Type':
+                    'application/x-www-form-urlencoded'
+            },
+            body:
+                'codigo=' +
+                encodeURIComponent(codigo)
+        })
+            .then(r => r.json())
+            .then(data => {
+
+                if (data.success) {
+
+                    window.location.href =
+                        '/Login/RedefinirSenha';
+
+                } else {
+
+                    alert(data.message);
+                }
+            });
+    }
+</script>
+
+<style>
+
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient( 135deg, #e6f4f1, #f8fbff );
+        min-height: 100vh;
+    }
+
+    .codigo-wrapper {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .codigo-card {
+        width: 100%;
+        max-width: 420px;
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0,0,0,.08);
+    }
+
+    .icone-topo {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #e6f4f1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .icone-topo i {
+            font-size: 34px;
+            color: #4db6ac;
+        }
+
+    .codigo-card h2 {
+        margin-bottom: 10px;
+        color: #2f6f68;
+        font-weight: 600;
+    }
+
+    .subtitulo {
+        color: #7a8a8a;
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 25px;
+    }
+
+    .campo input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid #d9e5e3;
+        font-size: 15px;
+        text-align: center;
+        letter-spacing: 2px;
+        transition: .2s;
+    }
+
+        .campo input:focus {
+            outline: none;
+            border-color: #4db6ac;
+            box-shadow: 0 0 0 4px rgba(77,182,172,.15);
+        }
+
+    .btn-validar {
+        width: 100%;
+        margin-top: 20px;
+        padding: 14px;
+        border: none;
+        border-radius: 12px;
+        background: #4db6ac;
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+        .btn-validar:hover {
+            background: #3da59b;
+            transform: translateY(-2px);
+        }
+
+    .link-voltar {
+        display: inline-block;
+        margin-top: 20px;
+        color: #4db6ac;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .link-voltar:hover {
+            text-decoration: underline;
+        }
+</style>

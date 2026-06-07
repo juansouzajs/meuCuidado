@@ -85,5 +85,39 @@ namespace meuCuidado.Controllers
                 smtp.Send(mensagem);
             }
         }
+
+        public string EnviarEmailRecuperacaoSenha(string email)
+        {
+            var mensagem = new MailMessage();
+
+            var codigo = Guid.NewGuid()
+                .ToString("N")
+                .Substring(0, 8)
+                .ToUpper();
+
+            mensagem.From = new MailAddress("no-reply@gmail.com");
+            mensagem.To.Add(email);
+            mensagem.Subject = "meuCuidado - Recuperação de Senha";
+            mensagem.Body =
+                $"Seu código para redefinir a senha é: {codigo}\n\n" +
+                "Digite este código na tela de recuperação de senha.";
+
+            mensagem.IsBodyHtml = false;
+
+            using (var smtp = new SmtpClient())
+            {
+                smtp.Host = "smtp.gmail.com";
+                smtp.Port = 587;
+                smtp.EnableSsl = true;
+                smtp.Credentials = new NetworkCredential(
+                    _email,
+                    _senhaDeApp
+                );
+
+                smtp.Send(mensagem);
+            }
+
+            return codigo;
+        }
     }
 }

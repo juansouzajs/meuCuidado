@@ -1,0 +1,177 @@
+﻿@{
+    ViewBag.Title = "Recuperar Senha";
+}
+
+<div class="recuperar-wrapper">
+
+    <div class="recuperar-card">
+
+        <div class="icone-topo">
+            <i class="fas fa-key"></i>
+        </div>
+
+        <h2>Recuperar Senha</h2>
+
+        <p class="subtitulo">
+            Informe o e-mail cadastrado para receber um código de recuperação.
+        </p>
+
+        <div class="campo">
+            <input type="email"
+                   id="email"
+                   placeholder="Digite seu e-mail" />
+        </div>
+
+        <button class="btn-recuperar"
+                onclick="enviarCodigo()">
+            Enviar código
+        </button>
+
+        <a href="@Url.Action("Login","Login")"
+           class="link-voltar">
+            Voltar para o login
+        </a>
+
+    </div>
+
+</div>
+
+<script>
+    function enviarCodigo() {
+
+        const email = document.getElementById('email').value;
+
+        if (!email) {
+            alert("Informe um e-mail.");
+            return;
+        }
+
+        fetch('/Login/SolicitarRecuperacaoSenha', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'email=' + encodeURIComponent(email)
+        })
+            .then(r => r.json())
+            .then(data => {
+
+                if (data.success) {
+
+                    window.location.href =
+                        '/Login/ValidarCodigoRecuperacao';
+
+                } else {
+
+                    alert(data.message);
+                }
+            });
+    }
+</script>
+
+<style>
+
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient( 135deg, #e6f4f1, #f8fbff );
+        min-height: 100vh;
+    }
+
+    .recuperar-wrapper {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .recuperar-card {
+        width: 100%;
+        max-width: 420px;
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0,0,0,.08);
+    }
+
+    .icone-topo {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #e6f4f1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .icone-topo i {
+            font-size: 34px;
+            color: #4db6ac;
+        }
+
+    .recuperar-card h2 {
+        margin-bottom: 10px;
+        color: #2f6f68;
+        font-weight: 600;
+    }
+
+    .subtitulo {
+        color: #7a8a8a;
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 25px;
+    }
+
+    .campo input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid #d9e5e3;
+        font-size: 15px;
+        transition: .2s;
+    }
+
+        .campo input:focus {
+            outline: none;
+            border-color: #4db6ac;
+            box-shadow: 0 0 0 4px rgba(77,182,172,.15);
+        }
+
+    .btn-recuperar {
+        width: 100%;
+        margin-top: 20px;
+        padding: 14px;
+        border: none;
+        border-radius: 12px;
+        background: #4db6ac;
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+        .btn-recuperar:hover {
+            background: #3da59b;
+            transform: translateY(-2px);
+        }
+
+    .link-voltar {
+        display: inline-block;
+        margin-top: 20px;
+        color: #4db6ac;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .link-voltar:hover {
+            text-decoration: underline;
+        }
+</style>
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />

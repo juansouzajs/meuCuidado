@@ -20,8 +20,17 @@
         </button>
 
         <button id="conexoesBtn" class="btn-dashboard secondary">
+
             <i class="fa fa-user"></i>
+
             Conexões
+
+            <span id="badgeConexoes"
+                  class="badge-conexoes"
+                  style="display:none;">
+                0
+            </span>
+
         </button>
 
         @if (ViewBag.TipoUsuario == "Cuidador" || ViewBag.TipoUsuario == "Fisioterapeuta")
@@ -53,8 +62,31 @@
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script>
+<script>    
     jQuery(document).ready(function ($) {
+
+        function carregarQuantidadePendentes() {
+
+            $.ajax({
+                url: '@Url.Action("ObterQuantidadePendentes", "Relacionamento")',
+                type: 'GET',
+                success: function (data) {
+
+                    const badge =
+                        $('#badgeConexoes');
+
+                    if (data.quantidade > 0) {
+
+                        badge.text(data.quantidade);
+                        badge.show();
+                    }
+                    else {
+
+                        badge.hide();
+                    }
+                }
+            });
+        }
 
         function carregarPerfil() {
             $.ajax({
@@ -89,6 +121,7 @@
         }
 
         carregarPerfil();
+        carregarQuantidadePendentes();
 
         $('#perfilBtn').on('click', function () {
             carregarPerfil();
@@ -167,6 +200,26 @@
 </script>
 
 <style>
+
+    #conexoesBtn {
+        position: relative;
+    }
+
+    .badge-conexoes {
+        background: #e53935;
+        color: white;
+        min-width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 6px;
+        margin-left: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
 
     body {
         background: linear-gradient(135deg, #e6f4f1, #f8fbff);

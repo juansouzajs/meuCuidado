@@ -1,0 +1,354 @@
+﻿@{
+    ViewBag.Title = "Nova Senha";
+}
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<div class="senha-wrapper">
+
+    <div class="senha-card">
+
+        <div class="icone-topo">
+            <i class="fas fa-lock"></i>
+        </div>
+
+        <h2>Criar Nova Senha</h2>
+
+        <p class="subtitulo">
+            Escolha uma nova senha para acessar sua conta.
+        </p>
+
+        <div class="campo">
+            <input type="password"
+                   id="novaSenha"
+                   placeholder="Nova senha" />
+        </div>
+
+        <div class="campo">
+            <input type="password"
+                   id="confirmarSenha"
+                   placeholder="Confirmar senha" />
+        </div>
+
+        <div class="requisitos-senha">
+
+            <h4>Requisitos da senha</h4>
+
+            <ul>
+
+                <li id="r1">
+                    <i class="fas fa-circle"></i>
+                    Mínimo de 8 caracteres
+                </li>
+
+                <li id="r2">
+                    <i class="fas fa-circle"></i>
+                    Pelo menos 1 letra maiúscula
+                </li>
+
+                <li id="r3">
+                    <i class="fas fa-circle"></i>
+                    Pelo menos 1 letra minúscula
+                </li>
+
+                <li id="r4">
+                    <i class="fas fa-circle"></i>
+                    Pelo menos 1 número
+                </li>
+
+                <li id="r5">
+                    <i class="fas fa-circle"></i>
+                    Pelo menos 1 caractere especial
+                </li>
+
+                <li id="r6">
+                    <i class="fas fa-circle"></i>
+                    Senhas coincidem
+                </li>
+
+            </ul>
+
+        </div>
+
+        <button class="btn-salvar"
+                onclick="salvarSenha()">
+            Alterar Senha
+        </button>
+
+        <a href="@Url.Action("Login","Login")"
+           class="link-voltar">
+            Voltar para o login
+        </a>
+
+    </div>
+
+</div>
+
+<script>
+
+    const senhaInput =
+        document.getElementById("novaSenha");
+
+    const confirmarInput =
+        document.getElementById("confirmarSenha");
+
+    senhaInput.addEventListener("input", validarSenha);
+    confirmarInput.addEventListener("input", validarSenha);
+
+    function marcar(id, valido) {
+
+        const item =
+            document.getElementById(id);
+
+        if (valido) {
+
+            item.classList.add("ok");
+
+        } else {
+
+            item.classList.remove("ok");
+        }
+    }
+
+    function validarSenha() {
+
+        const senha =
+            senhaInput.value;
+
+        const confirmar =
+            confirmarInput.value;
+
+        marcar("r1", senha.length >= 8);
+
+        marcar("r2",
+            /[A-Z]/.test(senha));
+
+        marcar("r3",
+            /[a-z]/.test(senha));
+
+        marcar("r4",
+            /[0-9]/.test(senha));
+
+        marcar("r5",
+            /[!@@#$%^&*()_\-+=\[{\]};:<>|./?]/.test(senha));
+
+        marcar("r6",
+            senha.length > 0 &&
+            senha === confirmar);
+    }
+
+    function senhaValida(senha) {
+
+        return senha.length >= 8
+            && /[A-Z]/.test(senha)
+            && /[a-z]/.test(senha)
+            && /[0-9]/.test(senha)
+            && /[!@@#$%^&*()_\-+=\[{\]};:<>|./?]/.test(senha);
+    }
+
+    function salvarSenha() {
+
+        const novaSenha =
+            senhaInput.value;
+
+        const confirmarSenha =
+            confirmarInput.value;
+
+        if (!novaSenha || !confirmarSenha) {
+
+            alert("Preencha todos os campos.");
+            return;
+        }
+
+        if (!senhaValida(novaSenha)) {
+
+            alert(
+                "A senha não atende aos requisitos."
+            );
+
+            return;
+        }
+
+        if (novaSenha !== confirmarSenha) {
+
+            alert(
+                "As senhas não coincidem."
+            );
+
+            return;
+        }
+
+        fetch('/Login/RedefinirSenha', {
+            method: 'POST',
+            headers: {
+                'Content-Type':
+                    'application/x-www-form-urlencoded'
+            },
+            body:
+                'novaSenha=' +
+                encodeURIComponent(novaSenha)
+                +
+                '&confirmarSenha=' +
+                encodeURIComponent(confirmarSenha)
+        })
+            .then(r => r.json())
+            .then(data => {
+
+                if (data.success) {
+
+                    alert(data.message);
+
+                    window.location.href =
+                        '/Login/Login';
+
+                } else {
+
+                    alert(data.message);
+                }
+            });
+    }
+
+</script>
+
+<style>
+
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient( 135deg, #e6f4f1, #f8fbff );
+        min-height: 100vh;
+    }
+
+    .senha-wrapper {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .senha-card {
+        width: 100%;
+        max-width: 450px;
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0,0,0,.08);
+    }
+
+    .icone-topo {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #e6f4f1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .icone-topo i {
+            font-size: 34px;
+            color: #4db6ac;
+        }
+
+    .senha-card h2 {
+        margin-bottom: 10px;
+        color: #2f6f68;
+    }
+
+    .subtitulo {
+        color: #7a8a8a;
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+
+    .campo {
+        margin-bottom: 15px;
+    }
+
+        .campo input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid #d9e5e3;
+            font-size: 15px;
+        }
+
+            .campo input:focus {
+                outline: none;
+                border-color: #4db6ac;
+                box-shadow: 0 0 0 4px rgba(77,182,172,.15);
+            }
+
+    .requisitos-senha {
+        text-align: left;
+        background: #f5f9f8;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 20px;
+        border-left: 4px solid #4db6ac;
+    }
+
+        .requisitos-senha h4 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: #2f6f68;
+        }
+
+        .requisitos-senha ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .requisitos-senha li {
+            margin-bottom: 8px;
+            color: #888;
+            transition: .2s;
+            font-size: 14px;
+        }
+
+            .requisitos-senha li i {
+                margin-right: 8px;
+                font-size: 10px;
+            }
+
+            .requisitos-senha li.ok {
+                color: #28a745;
+                font-weight: 600;
+            }
+
+    .btn-salvar {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 12px;
+        background: #4db6ac;
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+        .btn-salvar:hover {
+            background: #3da59b;
+            transform: translateY(-2px);
+        }
+
+    .link-voltar {
+        display: inline-block;
+        margin-top: 20px;
+        color: #4db6ac;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .link-voltar:hover {
+            text-decoration: underline;
+        }
+</style>

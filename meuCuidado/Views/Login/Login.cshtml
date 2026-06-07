@@ -42,6 +42,13 @@
             Entrar
         </button>
 
+        <div class="forgot-password">
+            <a href="@Url.Action("EsqueciMinhaSenha", "Login")">
+                <i class="fas fa-key"></i>
+                Esqueci minha senha
+            </a>
+        </div>
+
         <div class="divider">
             <span>ou</span>
         </div>
@@ -506,4 +513,14 @@ $("#btnLogin").click(function(){
             font-weight: 600;
             text-decoration: none;
         }
+
+    .forgot-password a {
+        color: #4db6ac;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
 </style>

@@ -171,6 +171,42 @@ namespace meuCuidado.Controllers
             return PartialView("_Conexoes", lista);
         }
 
+        [HttpGet]
+        public JsonResult ObterQuantidadePendentes()
+        {
+            var idUsuario = Convert.ToInt32(Session["IdUsuario"]);
+            var tipoUsuario = Session["TipoUsuario"]?.ToString();
+
+            int quantidade = 0;
+
+            if (tipoUsuario == "Cuidador")
+            {
+                quantidade = _context.RelacionamentosIdosoProfissional.Count(r =>
+                    r.CuidadorId == idUsuario &&
+                    r.EtapaAtivacao == EtapaAtivacao.AguardandoAprovacao);
+            }
+            else if (tipoUsuario == "Fisioterapeuta")
+            {
+                quantidade = _context.RelacionamentosIdosoProfissional.Count(r =>
+                    r.FisioterapeutaId == idUsuario &&
+                    r.EtapaAtivacao == EtapaAtivacao.AguardandoAprovacao);
+            }
+            else if (tipoUsuario == "Idoso")
+            {
+                quantidade = _context.RelacionamentosIdosoProfissional.Count(r =>
+                    r.IdosoId == idUsuario &&
+                    r.EtapaAtivacao == EtapaAtivacao.AguardandoAprovacao);
+            }
+            else if (tipoUsuario == "Tutor")
+            {
+                quantidade = _context.RelacionamentosIdosoProfissional.Count(r =>
+                    r.TutorId == idUsuario &&
+                    r.EtapaAtivacao == EtapaAtivacao.AguardandoAprovacao);
+            }
+
+            return Json(new { quantidade }, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpPost]
         public JsonResult Aceitar(int id)
         {

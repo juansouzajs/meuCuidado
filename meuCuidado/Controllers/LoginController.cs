@@ -210,5 +210,201 @@ namespace meuCuidado.Controllers
             }
             return RedirectToAction("Dashboard");
         }
+
+        public ActionResult EsqueciMinhaSenha()
+        {
+            return View();
+        }
+
+        public ActionResult ValidarCodigoRecuperacao()
+        {
+            return View();
+        }
+
+        public ActionResult RedefinirSenha()
+        {
+            if (Session["RecuperacaoAutorizada"] == null)
+            {
+                return RedirectToAction("EsqueciMinhaSenha");
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult SolicitarRecuperacaoSenha(string email)
+        {
+            try
+            {
+                var usuarioExiste =
+                    _context.CuidadoresDeIdoso.Any(x => x.Email == email) ||
+                    _context.Fisioterapeutas.Any(x => x.Email == email) ||
+                    _context.Idosos.Any(x => x.Email == email) ||
+                    _context.Tutores.Any(x => x.Email == email);
+
+                if (!usuarioExiste)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "E-mail não encontrado."
+                    });
+                }
+
+                var codigo = _emailController
+                    .EnviarEmailRecuperacaoSenha(email);
+
+                Session["CodigoRecuperacaoSenha"] = codigo;
+                Session["EmailRecuperacaoSenha"] = email;
+
+                return Json(new
+                {
+                    success = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult ValidarCodigoRecuperacao(string codigo)
+        {
+            var codigoSessao =
+                Session["CodigoRecuperacaoSenha"]?.ToString();
+
+            if (string.IsNullOrEmpty(codigoSessao))
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Código expirado."
+                });
+            }
+
+            if (codigoSessao != codigo)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Código inválido."
+                });
+            }
+
+            Session["RecuperacaoAutorizada"] = true;
+
+            return Json(new
+            {
+                success = true
+            });
+        }
+
+        [HttpPost]
+        public JsonResult RedefinirSenha(
+            string novaSenha,
+            string confirmarSenha)
+        {
+            try
+            {
+                if (Session["RecuperacaoAutorizada"] == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Recuperação não autorizada."
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(novaSenha))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Informe a nova senha."
+                    });
+                }
+
+                if (novaSenha != confirmarSenha)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "As senhas não coincidem."
+                    });
+                }
+
+                var email =
+                    Session["EmailRecuperacaoSenha"]?.ToString();
+
+                if (string.IsNullOrEmpty(email))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Sessão inválida."
+                    });
+                }
+
+                var senhaHash =
+                    SenhaHelper.HashSenha(novaSenha);
+
+                var cuidador = _context.CuidadoresDeIdoso
+                    .FirstOrDefault(x => x.Email == email);
+
+                if (cuidador != null)
+                {
+                    cuidador.Senha = senhaHash;
+                }
+
+                var fisioterapeuta = _context.Fisioterapeutas
+                    .FirstOrDefault(x => x.Email == email);
+
+                if (fisioterapeuta != null)
+                {
+                    fisioterapeuta.Senha = senhaHash;
+                }
+
+                var idoso = _context.Idosos
+                    .FirstOrDefault(x => x.Email == email);
+
+                if (idoso != null)
+                {
+                    idoso.Senha = senhaHash;
+                }
+
+                var tutor = _context.Tutores
+                    .FirstOrDefault(x => x.Email == email);
+
+                if (tutor != null)
+                {
+                    tutor.Senha = senhaHash;
+                }
+
+                _context.SaveChanges();
+
+                Session.Remove("CodigoRecuperacaoSenha");
+                Session.Remove("EmailRecuperacaoSenha");
+                Session.Remove("RecuperacaoAutorizada");
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Senha alterada com sucesso."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
     }
 }

@@ -354,6 +354,9 @@
     <Content Include="Views\Avaliacao\MinhasAvaliacoes.cshtml" />
     <Content Include="Views\Perfil\EditarPerfil.cshtml" />
     <Content Include="Views\Dashboard\Farmacias.cshtml" />
+    <Content Include="Views\Login\EsqueciMinhaSenha.cshtml" />
+    <Content Include="Views\Login\ValidarCodigoRecuperacao.cshtml" />
+    <Content Include="Views\Login\RedefinirSenha.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

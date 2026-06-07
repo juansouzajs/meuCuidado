@@ -5,6 +5,9 @@
     ViewBag.Title = "Cadastro";
 }
 
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
 <div class="auth-wrapper">
     <div class="auth-card">
 
@@ -105,6 +108,7 @@
 
             </div>
 
+
             <div class="form-group">
 
                 @Html.Label("Confirmar Senha")
@@ -119,6 +123,42 @@
                     })
 
                 <span id="confirmarMensagem" class="text-danger"></span>
+
+            </div>
+
+            <div class="password-rules">
+
+                <h4>Requisitos da senha</h4>
+
+                <div id="rule-length" class="rule">
+                    <i class="fas fa-circle"></i>
+                    Mínimo de 8 caracteres
+                </div>
+
+                <div id="rule-upper" class="rule">
+                    <i class="fas fa-circle"></i>
+                    Pelo menos 1 letra maiúscula
+                </div>
+
+                <div id="rule-lower" class="rule">
+                    <i class="fas fa-circle"></i>
+                    Pelo menos 1 letra minúscula
+                </div>
+
+                <div id="rule-number" class="rule">
+                    <i class="fas fa-circle"></i>
+                    Pelo menos 1 número
+                </div>
+
+                <div id="rule-special" class="rule">
+                    <i class="fas fa-circle"></i>
+                    Pelo menos 1 caractere especial
+                </div>
+
+                <div id="rule-match" class="rule">
+                    <i class="fas fa-circle"></i>
+                    Senhas coincidem
+                </div>
 
             </div>
 
@@ -532,19 +572,59 @@
 
         email.classList.remove("input-invalido");
 
+
         validarFormulario();
     };
 
     // VALIDAÇÕES
 
-    function validarSenhaForte(valor) {
+        function validarSenhaForte(valor) {
 
-        const min = valor.length >= 6;
-        const letra = /[A-Za-z]/.test(valor);
-        const numero = /[0-9]/.test(valor);
+            const min =
+                valor.length >= 8;
 
-        return min && letra && numero;
-    }
+            const upper =
+                /[A-Z]/.test(valor);
+
+            const lower =
+                /[a-z]/.test(valor);
+
+            const number =
+                /[0-9]/.test(valor);
+
+            const special =
+                /[^A-Za-z0-9]/.test(valor);
+
+            atualizarRegra("rule-length", min);
+            atualizarRegra("rule-upper", upper);
+            atualizarRegra("rule-lower", lower);
+            atualizarRegra("rule-number", number);
+            atualizarRegra("rule-special", special);
+
+            return min &&
+                upper &&
+                lower &&
+                number &&
+                special;
+        }
+
+        function atualizarRegra(id, valido) {
+
+            const elemento =
+                document.getElementById(id);
+
+            if (!elemento)
+                return;
+
+            elemento.classList.remove(
+                "valid",
+                "invalid"
+            );
+
+            elemento.classList.add(
+                valido ? "valid" : "invalid"
+            );
+        }
 
     function validarEmail(valor) {
 
@@ -619,22 +699,17 @@
             validarSenhaForte(s);
 
         const senhasIguais =
-            s === c && s.length > 0;
+            s === c &&
+            s.length > 0;
+
+        atualizarRegra(
+            "rule-match",
+            senhasIguais
+        );
 
         const emailValido =
             validarEmail(e);
 
-        // SENHA
-
-        if (!senhaValida) {
-
-            msgSenha.textContent =
-                "A senha deve ter pelo menos 6 caracteres, letras e números.";
-        }
-        else {
-
-            msgSenha.textContent = "";
-        }
 
         // CONFIRMAR
 
@@ -702,6 +777,17 @@
         }
     });
 
+        [
+            "rule-length",
+            "rule-upper",
+            "rule-lower",
+            "rule-number",
+            "rule-special",
+            "rule-match"
+        ].forEach(id =>
+            atualizarRegra(id, false)
+        );
+
         validarFormulario();
 
         aceitaPolitica.addEventListener(
@@ -733,6 +819,55 @@
 
 
 <style>
+
+    .password-rules {
+        background: #f4f7f7;
+        border-left: 4px solid #4db6ac;
+        border-radius: 14px;
+        padding: 18px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+        .password-rules h4 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #2f6f68;
+            font-size: 18px;
+        }
+
+    .rule {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        font-weight: 500;
+        transition: .2s;
+    }
+
+        .rule i {
+            font-size: 12px;
+        }
+
+        .rule.valid {
+            color: #28a745;
+        }
+
+        .rule.invalid {
+            color: #b7b7b7;
+        }
+
+        .rule.valid i::before {
+            content: "\f058";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
+
+        .rule.invalid i::before {
+            content: "\f111";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
 
     .privacy-consent {
         display: flex;
