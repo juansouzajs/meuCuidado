@@ -15,13 +15,11 @@ namespace meuCuidado.Controllers
     {
         private readonly MeuCuidadoDbContext _context = new MeuCuidadoDbContext();
 
-        // Tela de Cadastro
         public ActionResult Cadastro()
         {
             return View();
         }
 
-        // Método para realizar cadastro
         [HttpPost]
         public ActionResult Cadastro(CadastroViewModel pessoa)
         {
@@ -41,7 +39,6 @@ namespace meuCuidado.Controllers
                     Senha = SenhaHelper.HashSenha(pessoa.Usuario.Senha),
                     DataCadasto = DateTime.Now,
 
-                    // NÃO USA DateTime.MinValue
                     DataNascimento = new DateTime(2000, 1, 1),
 
                     NecessidadesEspeciais = false
@@ -122,10 +119,6 @@ namespace meuCuidado.Controllers
 
                 viewModel.Idoso = idoso;
 
-                // ==========================
-                // VALIDAÇÃO DO TUTOR
-                // ==========================
-
                 if (viewModel.Tutor == null ||
                     string.IsNullOrWhiteSpace(viewModel.Tutor.Nome) ||
                     string.IsNullOrWhiteSpace(viewModel.Tutor.Email) ||
@@ -141,10 +134,6 @@ namespace meuCuidado.Controllers
                         viewModel);
                 }
 
-                // ==========================
-                // VALIDAÇÃO DOS MÉDICOS
-                // ==========================
-
                 if (viewModel.Medicos == null ||
                     !viewModel.Medicos.Any(x =>
                         !string.IsNullOrWhiteSpace(x.Nome)))
@@ -158,14 +147,10 @@ namespace meuCuidado.Controllers
                         viewModel);
                 }
 
-                // Remove médicos vazios
                 viewModel.Medicos = viewModel.Medicos
                     .Where(x => !string.IsNullOrWhiteSpace(x.Nome))
                     .ToList();
 
-                // ==========================
-                // SALVA TUTOR
-                // ==========================
 
                 var tutor = viewModel.Tutor;
 
@@ -185,17 +170,10 @@ namespace meuCuidado.Controllers
 
                 idoso.TutorId = tutor.Id;
 
-                // ==========================
-                // SALVA IDOSO
-                // ==========================
 
                 _context.Idosos.Add(idoso);
                 _context.SaveChanges();
 
-
-                // ==========================
-                // SALVA MÉDICOS
-                // ==========================
 
                 foreach (var medico in viewModel.Medicos)
                 {
@@ -226,7 +204,6 @@ namespace meuCuidado.Controllers
                     idoso.Email,
                     idoso.Nome);
 
-                // Limpa a sessão
                 Session.Remove("Idoso");
 
                 return RedirectToAction(
@@ -285,7 +262,6 @@ namespace meuCuidado.Controllers
                         x.Email.ToLower() == email ||
                         x.CPF == cpf);
 
-                // APROVADO = BLOQUEIA
                 if (cuidadorExistente != null &&
                     cuidadorExistente.EtapaAcesso == EtapaAcesso.AcessoLiberado)
                 {
@@ -293,7 +269,6 @@ namespace meuCuidado.Controllers
                     return View(cadastroProfissionalViewModel);
                 }
 
-                // REPROVADO = REAPROVEITA
                 if (cuidadorExistente != null &&
                     cuidadorExistente.EtapaAcesso == EtapaAcesso.AcessoNegado)
                 {
@@ -488,7 +463,6 @@ namespace meuCuidado.Controllers
                         throw new InvalidOperationException("Tipo de arquivo não suportado.");
                 }
 
-                // Caminho onde o arquivo será salvo
                 var caminho = Server.MapPath("~/DocumentosAnalise/");
 
                 if (!Directory.Exists(caminho))
@@ -497,10 +471,8 @@ namespace meuCuidado.Controllers
                 var nomeArquivo = Guid.NewGuid() + extensao;
                 var caminhoCompleto = Path.Combine(caminho, nomeArquivo);
 
-                // Salvar o arquivo no servidor
                 arquivo.SaveAs(caminhoCompleto);
 
-                // Criar a instância do documento e associá-lo ao usuário
                 var documento = new Documento
                 {
                     Id = Guid.NewGuid(),

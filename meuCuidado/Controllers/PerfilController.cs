@@ -452,14 +452,12 @@ namespace meuCuidado.Controllers
                     throw new Exception("Tipo de usuário não encontrado na sessão.");
 
                 var tipoUsuarioEnum = (TipoUsuario)Enum.Parse(typeof(TipoUsuario), tipoUsuarioStr);
-
-                // FOTO
+                
                 if (FotoPerfil != null && FotoPerfil.ContentLength > 0)
                 {
                     SalvarDocumento(FotoPerfil, TipoDocumento.FotoDocumento, idUsuario, tipoUsuarioEnum);
                 }
 
-                // WHATSAPP (para todos)
                 Usuario usuario = null;
 
                 if (tipoUsuarioStr == "Cuidador")
@@ -477,10 +475,8 @@ namespace meuCuidado.Controllers
                     {
                         LinkWhatsapp = LinkWhatsapp.Trim();
 
-                        // se não vier com http, força padrão do WhatsApp
                         if (!LinkWhatsapp.StartsWith("http"))
                         {
-                            // remove tudo que não for número
                             var numeros = new string(LinkWhatsapp.Where(char.IsDigit).ToArray());
 
                             if (!string.IsNullOrEmpty(numeros))
@@ -495,7 +491,6 @@ namespace meuCuidado.Controllers
                     }
                 }
 
-                // NECESSIDADES ESPECIAIS
                 if (tipoUsuarioStr == "Tutor")
                 {
                     var tutor = usuario as Tutor;

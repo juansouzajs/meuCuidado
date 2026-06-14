@@ -24,9 +24,9 @@ namespace meuCuidado.Controllers
 
             using (var smtp = new SmtpClient())
             {
-                smtp.Host = "smtp.gmail.com"; // mesmo host configurado no web.config
-                smtp.Port = 587; // mesmo port configurado no web.config
-                smtp.EnableSsl = true; // mesmo enableSsl configurado no web.config
+                smtp.Host = "smtp.gmail.com"; 
+                smtp.Port = 587; 
+                smtp.EnableSsl = true; 
                 smtp.Credentials = new NetworkCredential(_email, _senhaDeApp);
                 smtp.Send(mensagem);
             }
@@ -65,9 +65,9 @@ namespace meuCuidado.Controllers
 
             using (var smtp = new SmtpClient())
             {
-                smtp.Host = "smtp.gmail.com"; // mesmo host configurado no web.config
-                smtp.Port = 587; // mesmo port configurado no web.config
-                smtp.EnableSsl = true; // mesmo enableSsl configurado no web.config
+                smtp.Host = "smtp.gmail.com"; 
+                smtp.Port = 587; 
+                smtp.EnableSsl = true; 
                 smtp.Credentials = new NetworkCredential(_email, _senhaDeApp);
                 smtp.Send(mensagem);
             }

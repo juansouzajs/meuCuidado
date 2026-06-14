@@ -178,7 +178,7 @@ namespace meuCuidado.Controllers
                     })
                     .ToList();
             }
-            else // Fisioterapeuta
+            else 
             {
                 lista = query
                     .Where(r => r.FisioterapeutaId == idUsuarioLogado)

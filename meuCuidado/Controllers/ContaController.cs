@@ -20,33 +20,27 @@ namespace meuCuidado.Controllers
         private readonly MeuCuidadoDbContext _context = new MeuCuidadoDbContext();
         private readonly EmailController _emailController = new EmailController();
 
-        // Tela de Login
         public ActionResult Login(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
-        // Tela de Cadastro
         public ActionResult Cadastro()
         {
             return View();
         }
 
-        // Tela de Cadastro do Profissional
         public ActionResult CadastroProfissional()
         {
             return View();
         }
 
         [HttpPost]
-        //public ActionResult CadastroProfissional(Usuario model, HttpPostedFileBase FotoDocumento, HttpPostedFileBase Documento, HttpPostedFileBase CertificadoBonsAntecedentes, HttpPostedFileBase CertificadoDispensa)
         public ActionResult CadastroProfissional(CadastroProfissionalViewModel cadastroProfissionalViewModel, HttpPostedFileBase FotoDocumento, HttpPostedFileBase Documento, HttpPostedFileBase CertificadoBonsAntecedentes, HttpPostedFileBase CertificadoDispensa)
         {
             if (ModelState.IsValid)
             {
-                // Aqui você pode salvar as informações do profissional
-                // Verifique se cada arquivo foi enviado e faça o upload
                 if (FotoDocumento != null && FotoDocumento.ContentLength > 0)
                 {
                     var caminhoFotoDocumento = Server.MapPath("~/DocumentosAnalise/FotosDocumento/");
@@ -90,10 +84,8 @@ namespace meuCuidado.Controllers
                 return RedirectToAction("Dashboard");
             }
 
-            // Pega os erros da model
             var errors = GetModelErrors();
 
-            // Aqui você pode fazer algo com os erros, como logar ou enviar para a view
             ViewBag.Errors = errors;
 
             return View(cadastroProfissionalViewModel);
@@ -114,57 +106,21 @@ namespace meuCuidado.Controllers
             return errors;
         }
 
-        // Dashboard
         public ActionResult Dashboard()
         {
             var usuarioLogado = User.Identity.Name;
-            //var pessoa = _context.Usuarios.SingleOrDefault(p => p.Email == usuarioLogado);
-
-            //if (pessoa == null)
-            //{
-            //    return RedirectToAction("Login");
-            //}
-
-            // Verifica se a pessoa é CuidadorDeIdoso ou Fisioterapeuta
-            //if (pessoa is CuidadorDeIdoso || pessoa is Fisioterapeuta)
-            //{
-            //    var idosos = _context.Idosos.ToList();
-            //    var familiares = _context.Familiares.ToList();
-            //    ViewBag.UsuariosParaExibir = idosos.Concat<Usuario>(familiares);
-            //}
-            // Verifica se a pessoa é Idoso ou Familiar
-            //else if (pessoa is Idoso || pessoa is Familiar)
-            //{
-            //    var cuidadores = _context.Cuidadores.ToList();
-            //    var fisioterapeutas = _context.Fisioterapeutas.ToList();
-            //    ViewBag.UsuariosParaExibir = cuidadores.Concat<Usuario>(fisioterapeutas);
-            //}
-
-            //var pessoas = _context.Usuarios.ToList();
-            //ViewBag.UsuariosParaExibir = pessoas;
 
             return View();
         }
 
-        // Exibe o perfil do usuário com base no ID
         public ActionResult Perfil(int id)
         {
-            //var usuario = _context.Pessoas.SingleOrDefault(p => p.Id == id);
-            //if (usuario == null)
-            //{
-            //    return HttpNotFound();
-            //}
-
             return View();
-            //return View(usuario);
         }
 
-        // Método para realizar login e autenticação
         [HttpPost]
         public ActionResult Login(string email, string senha, string returnUrl)
         {
-            // verificar uma forma de melhorar isso
-
             var cuidadorDeIdoso = _context.CuidadoresDeIdoso.FirstOrDefault(p => p.Email == email && p.Senha == senha);
             var fisioterapeuta = _context.Fisioterapeutas.FirstOrDefault(p => p.Email == email && p.Senha == senha);
             var idoso = _context.Idosos.FirstOrDefault(p => p.Email == email && p.Senha == senha);
@@ -181,7 +137,6 @@ namespace meuCuidado.Controllers
                 var codigoAutenticacao = _emailController.EnviarEmailAutenticacao(email);
                 Session["CodigoAutenticacao"] = codigoAutenticacao;
 
-                // Exibir popup com a mensagem de envio do código
                 ViewBag.ShowPopup = true;
                 ViewBag.PopupMessage = "Código de autenticação enviado para seu e-mail.";
 
@@ -205,20 +160,16 @@ namespace meuCuidado.Controllers
         [HttpPost]
         public ActionResult ValidarCodigoAutenticacao(AutenticacaoViewModel model)
         {
-            // Concatenar os códigos em um só
             var codigoInserido = $"{model.Codigo1}{model.Codigo2}{model.Codigo3}{model.Codigo4}{model.Codigo5}";
-            // Pega o código da sessão
             var codigoCorreto = Session["CodigoAutenticacao"].ToString();
 
             if (codigoInserido == codigoCorreto)
                 return Json(new { success = true, redirectUrl = Url.Action("Dashboard", "Conta") });
 
-            // Se o código estiver incorreto, retorna ao login com mensagem de erro
             return Json(new { success = false, message = "Código de autenticação inválido." });
         }
 
 
-        // Método para redirecionar após o login
         private ActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
@@ -228,7 +179,6 @@ namespace meuCuidado.Controllers
             return RedirectToAction("Dashboard");
         }
 
-        // Método para realizar cadastro
         [HttpPost]
         public ActionResult Cadastro(CadastroViewModel pessoa)
         {
@@ -236,7 +186,6 @@ namespace meuCuidado.Controllers
             {
                 if (pessoa.TipoUsuario == TipoUsuario.Idoso)
                 {
-                    // MODEL PARA CADASTRO DE IDOSO
                     Idoso idoso = new Idoso
                     {
                         IdentificadorUnico = Guid.NewGuid(),
@@ -256,7 +205,6 @@ namespace meuCuidado.Controllers
                 }
                 else if (pessoa.TipoUsuario == TipoUsuario.Tutor)
                 {
-                    // MODEL PARA CADASTRO DE TUTOR
                     Tutor tutor = new Tutor
                     {
                         IdentificadorUnico = new Guid(),
@@ -285,16 +233,13 @@ namespace meuCuidado.Controllers
             return View();
         }
 
-        // Métodos para login com Google
         [HttpGet]
         [AllowAnonymous]
         public ActionResult ExternalLogin(string provider, string returnUrl)
         {
-            // Solicitar redirecionamento para o provedor de autenticação externa
             return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", new { ReturnUrl = returnUrl }));
         }
 
-        // Método de callback após autenticação externa
         [HttpGet]
         [AllowAnonymous]
         public async System.Threading.Tasks.Task<ActionResult> ExternalLoginCallback(string returnUrl)
@@ -305,26 +250,6 @@ namespace meuCuidado.Controllers
                 return RedirectToAction("Login");
             }
 
-            //var usuario = _context.Pessoas.SingleOrDefault(p => p.Email == loginInfo.Email);
-            //if (usuario == null)
-            //{
-            //    // Se não existir, você pode criar um novo usuário aqui
-            //    usuario = new Usuario
-            //    {
-            //        Email = loginInfo.Email,
-            //        // Preencha outros campos necessários
-            //    };
-            //    _context.Pessoas.Add(usuario);
-            //    _context.SaveChanges();
-            //}
-
-            // Realizar login
-            //var claims = new[] { new Claim(ClaimTypes.Name, usuario.Email) };
-            //var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
-            //var authManager = HttpContext.GetOwinContext().Authentication;
-            //authManager.SignIn(identity);
-
-            //return RedirectToLocal(returnUrl);
             return RedirectToAction("Login");
         }
     }

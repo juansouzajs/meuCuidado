@@ -16,7 +16,6 @@ namespace meuCuidado.Controllers
         private readonly MeuCuidadoDbContext _context = new MeuCuidadoDbContext();
         private readonly EmailController _emailController = new EmailController();
 
-        // Tela de Login
         public ActionResult Login(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
@@ -114,16 +113,13 @@ namespace meuCuidado.Controllers
             return RealizarLogin(email, senha, returnUrl);
         }
 
-        // Métodos para login com Google
         [HttpGet]
         [AllowAnonymous]
         public ActionResult ExternalLogin(string provider, string returnUrl)
         {
-            // Solicitar redirecionamento para o provedor de autenticação externa
             return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", new { ReturnUrl = returnUrl }));
         }
 
-        // Método de callback após autenticação externa
         [HttpGet]
         [AllowAnonymous]
         public async System.Threading.Tasks.Task<ActionResult> ExternalLoginCallback(string returnUrl)
@@ -135,26 +131,12 @@ namespace meuCuidado.Controllers
             var email = string.Empty;
             var senha = string.Empty;
 
-            //var usuario = _context.Pessoas.SingleOrDefault(p => p.Email == loginInfo.Email);
-            //if (usuario == null)
-            //{
-            //    // Se não existir, você pode criar um novo usuário aqui
-            //    usuario = new Usuario
-            //    {
-            //        Email = loginInfo.Email,
-            //        // Preencha outros campos necessários
-            //    };
-            //    _context.Pessoas.Add(usuario);
-            //    _context.SaveChanges();
-            //}
-
             var claims = new[] { new Claim(ClaimTypes.Name, email) };
             var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
 
             var authManager = HttpContext.GetOwinContext().Authentication;
             authManager.SignIn(identity);
 
-            //Realizar login
             authManager.SignIn(identity);
 
             return RedirectToLocal(returnUrl);
@@ -163,9 +145,7 @@ namespace meuCuidado.Controllers
         [HttpPost]
         public ActionResult ValidarCodigoAutenticacao(AutenticacaoViewModel model)
         {
-            // Concatenar os códigos em um só
             var codigoInserido = $"{model.Codigo1}{model.Codigo2}{model.Codigo3}{model.Codigo4}{model.Codigo5}";
-            // Pega o código da sessão
             var codigoCorreto = Session["CodigoAutenticacao"].ToString();
 
             if (codigoInserido == codigoCorreto)
@@ -201,7 +181,6 @@ namespace meuCuidado.Controllers
             return RedirectToAction("Login", "Login");
         }
 
-        // Método para redirecionar após o login
         private ActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))

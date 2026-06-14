@@ -30,19 +30,16 @@ namespace meuCuidado.Controllers
 
         public ActionResult Perfil()
         {
-            // Código para obter dados do perfil
             return View();
         }
 
         public ActionResult Curriculo()
         {
-            // Código para obter dados do currículo
             return View();
         }
 
         public ActionResult Avaliacoes()
         {
-            // Código para obter avaliações
             return View();
         }
     }
